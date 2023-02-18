@@ -36,6 +36,7 @@ ui function - this is the basic building block.
 - Event Listening auto binding.
 - Lifecycle Hooks - connected, disconnected, adopted, attributeChanged
 - Pretty code - prettier.
+- minification - WIP.
 - Tree Shaking - WIP.
 - CLI - WIP.
 - npm - WIP.
