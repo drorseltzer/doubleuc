@@ -8,8 +8,7 @@ It's doing all the heavy lifting and boiler plates code that WC APIs has.
 
 It's purpose it to simplify, make it easier, to create a small web building block to use anywhere.
 
-**Small Web Building Block?**
-
+#### Small Web Building Block?
 well in my perspective, web components hasn't lifted as it should have been.
 
 one of the reasons are that u can do all in any frontend modern framework.
