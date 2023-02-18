@@ -87,18 +87,14 @@ export class DoubleUCGenerator {
   }
 
   private replaceStyle() {
-    this.wcString = this.wcString.replaceAll(
-      '{{STYLE}}',
-      this.importStyleFile() || this.declaration.style || ''
-    );
+    const style = this.declaration.styleFile
+      ? sass.compile(this.declaration.styleFile, { style: 'compressed' }).css
+      : this.declaration.style
+      ? sass.compileString(this.declaration.style, { style: 'compressed' }).css
+      : '';
+    this.wcString = this.wcString.replaceAll('{{STYLE}}', style);
 
     return this;
-  }
-
-  private importStyleFile() {
-    if (!this.declaration.styleFile) return;
-    return sass.compile(this.declaration.styleFile, { style: 'compressed' })
-      .css;
   }
 
   private replaceTemplateHtmlLiterals(html: string) {
