@@ -28,7 +28,7 @@ ui function - this is the basic building block.
 - Shipped without any extra code.
 - Compatible with all modern browsers - 100% Native.
 - Compatible with all modern frontend frameworks: React, Vue, Angular, Svelte and any other u can think of.
-- Templating with auto attribute/method binding - inline or file.
+- Templating with auto attribute/method binding - inline or html file.
 - Styling - SASS, inline or file.
 - Styling Templating - WIP.
 - Slots and Templates - WIP.
