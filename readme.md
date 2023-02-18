@@ -25,7 +25,7 @@ ui function - this is the basic building block.
 ## Features
 
 - Standard Web Component - based on declarative object.
-- Shipped without any extra code
+- Shipped without any extra code.
 - Compatible with all modern browsers - 100% Native.
 - Compatible with all modern frontend frameworks: React, Vue, Angular, Svelte and any other u can think of.
 - Templating with auto attribute/method binding - inline or file.
