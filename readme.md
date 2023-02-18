@@ -31,6 +31,7 @@ ui function - this is the basic building block.
 - Templating with auto attribute/method binding - inline or file.
 - Styling - SASS, inline or file.
 - Styling Templating - WIP.
+- Slots and Templates - WIP.
 - Attribute auto initiation and observing.
 - Event Listening auto binding.
 - Lifecycle Hooks - connected, disconnected, adopted, attributeChanged
