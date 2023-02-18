@@ -16,7 +16,8 @@ one of the reasons are that u can do all in any frontend modern framework.
 
 but, the use of multiple frameworks under the same app has increased and still is.
 
-big and complex components are most likely will be build on top of smaller components that are also built from smaller
+big and complex state managed components are most likely will be build on top of smaller components that are also built
+from smaller
 components, what if we need to migrate, update and maintain across different frameworks?
 
 if we can break down our smallest blocks in the chain - the ones without too much state managing or much logic - a pure
