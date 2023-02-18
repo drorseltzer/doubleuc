@@ -1,0 +1,49 @@
+class {{CLASS_NAME}} extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  {{METHODS}}
+
+  #initAttributes() {
+    {{ATTRIBUTES_INITS}}
+  }
+
+  #initListeners() {
+    {{LISTENERS_INITS}}
+  }
+
+  static get observedAttributes() {
+    return [{{OBSERVED_ATTRIBUTES}}];
+  }
+
+  connectedCallback() {
+    this.#initAttributes();
+    {{CONNECTED_CALLBACKS}}
+    this.render();
+  }
+
+  disconnectedCallback() {
+    {{DISCONNECTED_CALLBACKS}}
+  }
+
+  adoptedCallback() {
+    {{ADOPTED_CALLBACKS}}
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue) this.render();
+    {{ATTRIBUTE_CHANGED_CALLBACKS}}
+  }
+
+  render() {
+    this.shadowRoot.innerHTML = `
+      <style>{{STYLE}}</style>
+      {{TEMPLATE_HTML}}
+    `.trim();
+    this.#initListeners();
+  }
+}
+
+customElements.define('{{TAG_NAME}}', {{CLASS_NAME}});
