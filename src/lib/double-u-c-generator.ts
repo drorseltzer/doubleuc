@@ -1,7 +1,4 @@
-import {
-  DeclarativeWebComponent,
-  DeclarativeWebComponentOutputType
-} from './types';
+import { DeclarativeWebComponent, DeclarativeWebComponentOutputType } from './types';
 import path from 'path';
 import fs from 'fs';
 import prettier from 'prettier';
@@ -60,23 +57,15 @@ export class DoubleUCGenerator {
   }
 
   private replaceTagName() {
-    this.wcString = this.wcString.replaceAll(
-      '{{TAG_NAME}}',
-      this.declaration.tagName
-    );
+    this.wcString = this.wcString.replaceAll('{{TAG_NAME}}', this.declaration.tagName);
 
     return this;
   }
 
   private replaceTemplateHtml() {
     const html = this.getHtmlFile() || this.declaration.templateHtml;
-    const replacedTemplateHtml = html
-      ? this.replaceTemplateHtmlLiterals(html)
-      : '';
-    this.wcString = this.wcString.replaceAll(
-      '{{TEMPLATE_HTML}}',
-      replacedTemplateHtml || ''
-    );
+    const replacedTemplateHtml = html ? this.replaceTemplateHtmlLiterals(html) : '';
+    this.wcString = this.wcString.replaceAll('{{TEMPLATE_HTML}}', replacedTemplateHtml || '');
 
     return this;
   }
@@ -106,10 +95,7 @@ export class DoubleUCGenerator {
       const stripped = literal.replaceAll(/({{|}})/g, '');
       const isFunction = stripped.includes('(');
       if (isFunction) {
-        replacedTemplateHtml = replacedTemplateHtml.replace(
-          literal,
-          `\${this.#${stripped}}`
-        );
+        replacedTemplateHtml = replacedTemplateHtml.replace(literal, `\${this.#${stripped}}`);
         continue;
       }
 
@@ -133,9 +119,7 @@ export class DoubleUCGenerator {
     }
     let methodString = '';
     for (const methodsKey in methods) {
-      methodString += `\n#${methods[methodsKey]
-        .toString()
-        .replace('function', methodsKey)}\n`;
+      methodString += `\n#${methods[methodsKey].toString().replace('function', methodsKey)}\n`;
     }
     this.wcString = this.wcString.replace('{{METHODS}}', methodString);
 
@@ -152,10 +136,7 @@ export class DoubleUCGenerator {
     for (const callback of callbacks) {
       callString += `this.#${callback}();\n`;
     }
-    this.wcString = this.wcString.replace(
-      '{{CONNECTED_CALLBACKS}}',
-      callString
-    );
+    this.wcString = this.wcString.replace('{{CONNECTED_CALLBACKS}}', callString);
 
     return this;
   }
@@ -170,10 +151,7 @@ export class DoubleUCGenerator {
     for (const callback of callbacks) {
       callString += `this.#${callback}();\n`;
     }
-    this.wcString = this.wcString.replace(
-      '{{DISCONNECTED_CALLBACKS}}',
-      callString
-    );
+    this.wcString = this.wcString.replace('{{DISCONNECTED_CALLBACKS}}', callString);
 
     return this;
   }
@@ -196,20 +174,14 @@ export class DoubleUCGenerator {
   private replaceAttributeChangedCallback() {
     const callbacks = this.declaration.hooks?.attributeChanged;
     if (!callbacks) {
-      this.wcString = this.wcString.replace(
-        '{{ATTRIBUTE_CHANGED_CALLBACKS}}',
-        ''
-      );
+      this.wcString = this.wcString.replace('{{ATTRIBUTE_CHANGED_CALLBACKS}}', '');
       return this;
     }
     let callString = '';
     for (const callback of callbacks) {
       callString += `this.#${callback}(name, oldValue, newValue);\n`;
     }
-    this.wcString = this.wcString.replace(
-      '{{ATTRIBUTE_CHANGED_CALLBACKS}}',
-      callString
-    );
+    this.wcString = this.wcString.replace('{{ATTRIBUTE_CHANGED_CALLBACKS}}', callString);
 
     return this;
   }
@@ -219,26 +191,18 @@ export class DoubleUCGenerator {
       .filter(attr => attr.observed)
       .map(attr => `'${attr.name}'`)
       .join(',');
-    this.wcString = this.wcString.replace(
-      '{{OBSERVED_ATTRIBUTES}}',
-      attributes || ''
-    );
+    this.wcString = this.wcString.replace('{{OBSERVED_ATTRIBUTES}}', attributes || '');
 
     return this;
   }
 
   private replaceAttributesInits() {
-    const attributes = this.declaration.attributes.filter(
-      attr => attr.initValue
-    );
+    const attributes = this.declaration.attributes.filter(attr => attr.initValue);
     let attributeInitsString = '';
     for (const attribute of attributes) {
       attributeInitsString += `this.setAttribute('${attribute.name}', '${attribute.initValue}');\n`;
     }
-    this.wcString = this.wcString.replace(
-      '{{ATTRIBUTES_INITS}}',
-      attributeInitsString
-    );
+    this.wcString = this.wcString.replace('{{ATTRIBUTES_INITS}}', attributeInitsString);
 
     return this;
   }
@@ -256,10 +220,7 @@ export class DoubleUCGenerator {
         listenersString += `this.shadowRoot.querySelectorAll('${target}').forEach(ele => ele.addEventListener('${event}', ev => {this.#${method}(ev)}));\n`;
       }
     }
-    this.wcString = this.wcString.replace(
-      '{{LISTENERS_INITS}}',
-      listenersString
-    );
+    this.wcString = this.wcString.replace('{{LISTENERS_INITS}}', listenersString);
 
     return this;
   }
@@ -281,11 +242,11 @@ export class DoubleUCGenerator {
 
   private outputFile() {
     const filePath =
-      this.declaration.outputDir ||
+      this.declaration.config?.outputDir ||
       path.join(
         __dirname,
         '../../output',
-        (this.declaration.outputFilename || this.declaration.tagName) + '.js'
+        (this.declaration.config?.outputFilename || this.declaration.tagName) + '.js'
       );
     fs.writeFileSync(filePath, Buffer.from(this.wcString));
 
