@@ -23,7 +23,7 @@ ui function - this is the basic building block.
 
 modern framework should manage components state, but why waste time on pieces of the app that should look, feel and behave exactly the same across the app on multiple frameworks?
 
-**doubleuc is a pure ui functions generator tool**
+### DoubleUC is a pure UI functions generator tool
 
 ## Features
 
