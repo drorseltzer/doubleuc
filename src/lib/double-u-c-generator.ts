@@ -3,12 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import prettier from 'prettier';
 import { kebabToPascal } from './utils.js';
-import { fileURLToPath } from 'url';
 import sass from 'sass';
 import { minify } from 'terser';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class DoubleUCGenerator {
   private wcString = '';
@@ -19,30 +15,31 @@ export class DoubleUCGenerator {
     this.declaration = declaration;
   }
 
-  generateWebComponent(
+  async generateWebComponent(
     outputType: DeclarativeWebComponentOutputType = DeclarativeWebComponentOutputType.FILE
   ) {
     const { tagName } = this.declaration;
     this.className = kebabToPascal(tagName);
 
-    return this.getTemplateFile()
-      .replaceClassName()
-      .replaceTagName()
-      .replaceTemplateHtml()
-      .replaceStyle()
-      .replaceMethods()
-      .replaceAttributesInits()
-      .replaceListenersInits()
-      .replaceObservedAttributes()
-      .replaceConnectedCallback()
-      .replaceDisconnectedCallback()
-      .replaceAdoptedCallback()
-      .replaceAttributeChangedCallback()
-      .format()
-      .treeShaking()
-      .format()
-      .minify()
-      .then(() => this.output(outputType));
+    return (
+      await this.getTemplateFile()
+        .replaceClassName()
+        .replaceTagName()
+        .replaceTemplateHtml()
+        .replaceStyle()
+        .replaceMethods()
+        .replaceAttributesInits()
+        .replaceListenersInits()
+        .replaceObservedAttributes()
+        .replaceConnectedCallback()
+        .replaceDisconnectedCallback()
+        .replaceAdoptedCallback()
+        .replaceAttributeChangedCallback()
+        .format()
+        .treeShaking()
+        .format()
+        .minify()
+    ).output(outputType);
   }
 
   private getTemplateFile() {
@@ -233,11 +230,21 @@ export class DoubleUCGenerator {
   }
 
   private treeShaking() {
-    this.wcString = this.wcString.replace('disconnectedCallback() {}', '');
-    this.wcString = this.wcString.replace('adoptedCallback() {}', '');
-    this.wcString = this.wcString.replace('#initAttributes() {}', '');
-    this.wcString = this.wcString.replace('#initListeners() {}', '');
-    this.wcString = this.wcString.replace('static get observedAttributes() {}', '');
+    if (!this.declaration.hooks?.disconnected) {
+      this.wcString = this.wcString.replace('disconnectedCallback() {}', '');
+    }
+    if (!this.declaration.hooks?.adopted) {
+      this.wcString = this.wcString.replace('adoptedCallback() {}', '');
+    }
+    if (!this.declaration.listeners?.length) {
+      this.wcString = this.wcString.replace('#initListeners() {}', '');
+      this.wcString = this.wcString.replace('this.#initListeners();', '');
+    }
+    if (!this.declaration.attributes.length) {
+      this.wcString = this.wcString.replace('#initAttributes() {}', '');
+      this.wcString = this.wcString.replace('static get observedAttributes() {}', '');
+      this.wcString = this.wcString.replace('this.#initAttributes();', '');
+    }
 
     return this;
   }
