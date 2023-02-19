@@ -90,12 +90,12 @@ const dwc: DeclarativeWebComponent = {
       methods: ['clicked'] // cbs are the methods names to call
     },
   ],
-  config: {
+  config: { // generator config - optional
     outputDir: './output', // output directory - optional
     outputFilename: 'example-component', // output file name - optional
     minify: {
-      enabled: true, // enabled terser minification
-      config: {} // terser config
+      enabled: true, // enabled terser minification - optional
+      config: {} // terser config - optional
     }
   }
 };

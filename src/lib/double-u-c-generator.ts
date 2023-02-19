@@ -222,13 +222,13 @@ export class DoubleUCGenerator {
         listenersString += `this.shadowRoot.querySelectorAll('${target}').forEach(ele => ele.addEventListener('${event}', ev => {this.#${method}(ev)}));\n`;
       }
     }
-    this.wcString = this.wcString.replace("{{LISTENERS_INITS}}", listenersString);
+    this.wcString = this.wcString.replace('{{LISTENERS_INITS}}', listenersString);
 
     return this;
   }
 
   private format() {
-    this.wcString = prettier.format(this.wcString, { parser: "babel" });
+    this.wcString = prettier.format(this.wcString, { parser: 'babel' });
 
     return this;
   }
