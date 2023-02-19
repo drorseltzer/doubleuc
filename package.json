@@ -1,15 +1,17 @@
 {
   "name": "doubleuc",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Declarative Web Component Generator",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./src/types.d.ts",
   "type": "commonjs",
   "bin": "./cli.cjs",
   "scripts": {
     "start": "node ./dist/index",
     "build": "npm run clean && npm run build:ts",
     "clean": "rm -rf ./dist/*",
-    "build:ts": "tsc"
+    "build:ts": "tsc",
+    "prepare": "npm run build"
   },
   "keywords": [],
   "author": "Dror Seltzer",

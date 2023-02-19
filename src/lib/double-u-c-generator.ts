@@ -1,4 +1,4 @@
-import { DeclarativeWebComponent, DeclarativeWebComponentOutputType } from './types';
+import { DeclarativeWebComponent, DeclarativeWebComponentOutputType } from '../types';
 import path from 'path';
 import fs from 'fs';
 import prettier from 'prettier';
@@ -276,8 +276,8 @@ export class DoubleUCGenerator {
     const filePath =
       this.declaration.config?.outputDir ||
       path.join(
-        __dirname,
-        '../../output',
+        process.cwd(),
+        'output',
         (this.declaration.config?.outputFilename || this.declaration.tagName) + '.js'
       );
     fs.writeFileSync(filePath, Buffer.from(this.wcString));
