@@ -6,21 +6,24 @@
 
 It's doing all the heavy lifting and boiler plates code that WC APIs has.
 
-It's purpose it to simplify, make it easier, to create a small web building block to use anywhere.
+It's purpose it to simplify & make it easier to create a small web building block to use anywhere.
 
 #### Small Web Building Block?
 well in my perspective, web components hasn't lifted as it should have been.
 
-one of the reasons are that u can do all in any frontend modern framework.
+one of the reasons is that it's easy to do all in any frontend modern framework.
 
-but, the use of multiple frameworks under the same app has increased and still is.
+but, the use of multiple frameworks on the same app has increased in the recently years.
 
-big and complex state managed components are most likely will be build on top of smaller components that are also built
-from smaller
-components, what if we need to migrate, update and maintain across different frameworks?
+big and complex state managed components are most likely to be build from smaller components that are also built
+from smaller components, why it needed to migrate, update and maintain components across different frameworks?
 
-if we can break down our smallest blocks in the chain - the ones without too much state managing or much logic - a pure
+if we can break down component to his smallest building blocks - the ones without too much state handling or much logic - a pure
 ui function - this is the basic building block.
+
+modern framework should manage components state, but why waste time on pieces of the app that should look, feel and behave exactly the same across the app on multiple frameworks?
+
+**doubleuc is a pure ui functions generator tool**
 
 ## Features
 
