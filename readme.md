@@ -44,8 +44,6 @@ modern framework should manage components state, but why waste time on pieces of
 - CLI - currently only generate components - TODO: init project.
 - npm - WIP.
 
-## Declarative Web Component
-
 ### Install - WIP
 
 ```
@@ -71,6 +69,7 @@ const stringComponent = await generateWebComponent(DeclarativeWebComponentOutput
 await generateWebComponent(); // File
 ```
 
+## Declarative Web Component
 ```typescript
 const dwc: DeclarativeWebComponent = {
   tagName: 'example-component', // html tag name - required
