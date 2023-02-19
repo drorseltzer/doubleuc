@@ -6,12 +6,10 @@ const fs = require("fs");
 const path = require("path");
 
 yargs
-  .command("generate [path]", "Generate Web Component", (yargs) => {
+  .command(["generate [path]", "gen [path]", "g [path]"], "Generate Web Component", (yargs) => {
     return yargs
       .positional("path", {
-        describe: "Path to declaration file/s",
-        alias: "p",
-        type: "string",
+        describe: "Path to declaration file/directory",
         demandOption: true
       });
   }, (argv) => {
