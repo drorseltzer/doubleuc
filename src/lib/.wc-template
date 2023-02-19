@@ -6,11 +6,11 @@ class {{CLASS_NAME}} extends HTMLElement {
 
   {{METHODS}}
 
-  #initAttributes() {
+  initAttributes() {
     {{ATTRIBUTES_INITS}}
   }
 
-  #initListeners() {
+  initListeners() {
     {{LISTENERS_INITS}}
   }
 
@@ -19,7 +19,7 @@ class {{CLASS_NAME}} extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#initAttributes();
+    this.initAttributes();
     {{CONNECTED_CALLBACKS}}
     this.render();
   }
@@ -42,7 +42,7 @@ class {{CLASS_NAME}} extends HTMLElement {
       <style>{{STYLE}}</style>
       {{TEMPLATE_HTML}}
     `.trim();
-    this.#initListeners();
+    this.initListeners();
   }
 }
 

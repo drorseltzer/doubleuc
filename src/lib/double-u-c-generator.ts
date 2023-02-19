@@ -96,7 +96,7 @@ export class DoubleUCGenerator {
       const stripped = literal.replaceAll(/({{|}})/g, '');
       const isFunction = stripped.includes('(');
       if (isFunction) {
-        replacedTemplateHtml = replacedTemplateHtml.replace(literal, `\${this.#${stripped}}`);
+        replacedTemplateHtml = replacedTemplateHtml.replace(literal, `\${this.${stripped}}`);
         continue;
       }
 
@@ -120,7 +120,7 @@ export class DoubleUCGenerator {
     }
     let methodString = '';
     for (const methodsKey in methods) {
-      methodString += `\n#${methods[methodsKey].toString().replace('function', methodsKey)}\n`;
+      methodString += `\n${methods[methodsKey].toString().replace('function', methodsKey)}\n`;
     }
     this.wcString = this.wcString.replace('{{METHODS}}', methodString);
 
@@ -135,7 +135,7 @@ export class DoubleUCGenerator {
     }
     let callString = '';
     for (const callback of callbacks) {
-      callString += `this.#${callback}();\n`;
+      callString += `this.${callback}();\n`;
     }
     this.wcString = this.wcString.replace('{{CONNECTED_CALLBACKS}}', callString);
 
@@ -150,7 +150,7 @@ export class DoubleUCGenerator {
     }
     let callString = '';
     for (const callback of callbacks) {
-      callString += `this.#${callback}();\n`;
+      callString += `this.${callback}();\n`;
     }
     this.wcString = this.wcString.replace('{{DISCONNECTED_CALLBACKS}}', callString);
 
@@ -165,7 +165,7 @@ export class DoubleUCGenerator {
     }
     let callString = '';
     for (const callback of callbacks) {
-      callString += `this.#${callback}();\n`;
+      callString += `this.${callback}();\n`;
     }
     this.wcString = this.wcString.replace('{{ADOPTED_CALLBACKS}}', callString);
 
@@ -180,7 +180,7 @@ export class DoubleUCGenerator {
     }
     let callString = '';
     for (const callback of callbacks) {
-      callString += `this.#${callback}(name, oldValue, newValue);\n`;
+      callString += `this.${callback}(name, oldValue, newValue);\n`;
     }
     this.wcString = this.wcString.replace('{{ATTRIBUTE_CHANGED_CALLBACKS}}', callString);
 
@@ -221,7 +221,7 @@ export class DoubleUCGenerator {
     for (const listener of listeners) {
       const { target, event, methods } = listener;
       for (const method of methods) {
-        listenersString += `this.shadowRoot.querySelectorAll('${target}').forEach(ele => ele.addEventListener('${event}', ev => {this.#${method}(ev)}));\n`;
+        listenersString += `this.shadowRoot.querySelectorAll('${target}').forEach(ele => ele.addEventListener('${event}', ev => {this.${method}(ev)}));\n`;
       }
     }
     this.wcString = this.wcString.replace('{{LISTENERS_INITS}}', listenersString);
@@ -237,13 +237,13 @@ export class DoubleUCGenerator {
       this.wcString = this.wcString.replace('adoptedCallback() {}', '');
     }
     if (!this.declaration.listeners?.length) {
-      this.wcString = this.wcString.replace('#initListeners() {}', '');
-      this.wcString = this.wcString.replace('this.#initListeners();', '');
+      this.wcString = this.wcString.replace('initListeners() {}', '');
+      this.wcString = this.wcString.replace('this.initListeners();', '');
     }
     if (!this.declaration.attributes.length) {
-      this.wcString = this.wcString.replace('#initAttributes() {}', '');
+      this.wcString = this.wcString.replace('initAttributes() {}', '');
       this.wcString = this.wcString.replace('static get observedAttributes() {}', '');
-      this.wcString = this.wcString.replace('this.#initAttributes();', '');
+      this.wcString = this.wcString.replace('this.initAttributes();', '');
     }
 
     return this;
