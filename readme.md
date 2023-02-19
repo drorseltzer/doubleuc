@@ -56,6 +56,12 @@ npm i doubleuc
 **Generate component from declaration file:**
 ```
 npx doubleuc generate -p ./components
+npx doubleuc gen -p ./components
+npx doubleuc g -p ./components
+// OR
+npx doubleuc generate -p ./components/comnponent.js
+npx doubleuc gen -p ./components/comnponent.js
+npx doubleuc g -p ./components/comnponent.js
 ```
 ### API
 
