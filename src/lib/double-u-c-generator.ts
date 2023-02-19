@@ -5,6 +5,7 @@ import prettier from 'prettier';
 import { kebabToPascal } from './utils.js';
 import { fileURLToPath } from 'url';
 import sass from 'sass';
+import { minify } from 'terser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,7 +39,8 @@ export class DoubleUCGenerator {
       .replaceAdoptedCallback()
       .replaceAttributeChangedCallback()
       .format()
-      .output(outputType);
+      .minify()
+      .then(() => this.output(outputType));
   }
 
   private getTemplateFile() {
@@ -220,13 +222,21 @@ export class DoubleUCGenerator {
         listenersString += `this.shadowRoot.querySelectorAll('${target}').forEach(ele => ele.addEventListener('${event}', ev => {this.#${method}(ev)}));\n`;
       }
     }
-    this.wcString = this.wcString.replace('{{LISTENERS_INITS}}', listenersString);
+    this.wcString = this.wcString.replace("{{LISTENERS_INITS}}", listenersString);
 
     return this;
   }
 
   private format() {
-    this.wcString = prettier.format(this.wcString, { parser: 'babel' });
+    this.wcString = prettier.format(this.wcString, { parser: "babel" });
+
+    return this;
+  }
+
+  private async minify() {
+    if (!this.declaration.config?.minify?.enabled) return this;
+    this.wcString =
+      (await minify(this.wcString, this.declaration.config?.minify?.config)).code || this.wcString;
 
     return this;
   }

@@ -36,7 +36,7 @@ ui function - this is the basic building block.
 - Event Listening auto binding.
 - Lifecycle Hooks - connected, disconnected, adopted, attributeChanged
 - Pretty code - prettier.
-- minification - WIP.
+- minification - terser.
 - Tree Shaking - WIP.
 - CLI - WIP.
 - npm - WIP.
@@ -87,8 +87,14 @@ const dwc: DeclarativeWebComponent = {
       methods: ['clicked'] // cbs are the methods names to call
     },
   ],
-  outputDir: './output', // output directory - optional
-  outputFilename: 'example-component', // output file name - optional
+  config: {
+    outputDir: './output', // output directory - optional
+    outputFilename: 'example-component', // output file name - optional
+    minify: {
+      enabled: true, // enabled terser minification
+      config: {} // terser config
+    }
+  }
 };
 ```
 

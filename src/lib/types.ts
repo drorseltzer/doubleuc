@@ -1,3 +1,5 @@
+import { MinifyOptions } from 'terser';
+
 export type DeclarativeWebComponent = {
   tagName: string;
   attributes: DeclarativeWebComponentAttribute[];
@@ -6,13 +8,9 @@ export type DeclarativeWebComponent = {
   style?: string;
   styleFile?: string;
   hooks?: DeclarativeWebComponentHooks;
-  methods?: Record<
-    string,
-    (name?: string, oldValue?: string, newValue?: string) => unknown
-  >;
+  methods?: Record<string, (name?: string, oldValue?: string, newValue?: string) => unknown>;
   listeners?: DeclarativeWebComponentListener[];
-  outputDir?: string;
-  outputFilename?: string;
+  config?: DeclarativeWebComponentConfig;
 };
 
 export type DeclarativeWebComponentAttribute = {
@@ -38,3 +36,12 @@ export const enum DeclarativeWebComponentOutputType {
   FILE,
   STRING
 }
+
+export type DeclarativeWebComponentConfig = {
+  outputDir?: string;
+  outputFilename?: string;
+  minify?: {
+    enabled?: boolean;
+    config?: MinifyOptions;
+  };
+};
