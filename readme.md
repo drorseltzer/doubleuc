@@ -136,22 +136,16 @@ const dwc: DeclarativeWebComponent = {
 #### Counter Component:
 
 ```typescript
-const mockCounter: DeclarativeWebComponent = {
+module.exports = {
   tagName: 'mock-counter',
-  templateHtml: `
-    <div>
-      <p>Counter: {{counter}}</p>
-      <button id="count">count</button>
-      <button id="reset">reset</button>
-    </div>    
-  `,
-  style: 'p {font-size: 2rem}',
+  templateFile: './mocks/mock-counter/mock.html',
+  styleFile: './mocks/mock-counter/mock.scss',
   attributes: [{ name: 'counter', initValue: '0', observed: true }],
   methods: {
     count: function() {
       this.setAttribute(
         'counter',
-        (parseInt(this.getAttribute('counter') as string) + 1).toString()
+        Number(this.getAttribute('counter')) + 1
       );
     },
     reset: function() {
@@ -177,10 +171,7 @@ class MockCounter extends HTMLElement {
   }
 
   #count() {
-    this.setAttribute(
-      "counter",
-      (parseInt(this.getAttribute("counter")) + 1).toString()
-    );
+    this.setAttribute("counter", Number(this.getAttribute("counter")) + 1);
   }
 
   #reset() {
@@ -212,12 +203,6 @@ class MockCounter extends HTMLElement {
     this.#initAttributes();
 
     this.render();
-  }
-
-  disconnectedCallback() {
-  }
-
-  adoptedCallback() {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
