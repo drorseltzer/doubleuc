@@ -51,15 +51,12 @@ modern framework should manage components state, but why waste time on pieces of
 ```
 npm i doubleuc
 ```
-
 ### CLI
 
 **Generate component from declaration file:**
-
 ```
 npx doubleuc generate -p ./components
 ```
-
 ### API
 
 ```typescript
@@ -71,7 +68,8 @@ const stringComponent = await generateWebComponent(DeclarativeWebComponentOutput
 await generateWebComponent(); // File
 ```
 
-## Declarative Web Component
+### Declarative Web Component
+
 ```typescript
 const dwc: DeclarativeWebComponent = {
   tagName: 'example-component', // html tag name - required
