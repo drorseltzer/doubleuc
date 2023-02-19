@@ -1,6 +1,6 @@
 # DoubleUC - Declarative Web Component Generator
 
-## Overview
+### Overview
 
 `DoubleUC` is a tool to generate web component based on declaration schema.
 
@@ -8,7 +8,7 @@ It's doing all the heavy lifting and boiler plates code that WC APIs has.
 
 It's purpose it to simplify & make it easier to create a small web building block to use anywhere.
 
-#### Small Web Building Block?
+##### Small Web Building Block?
 well in my perspective, web components hasn't lifted as it should have been.
 
 one of the reasons is that it's easy to do all in any frontend modern framework.
@@ -23,7 +23,7 @@ ui function - this is the basic building block.
 
 modern framework should manage components state, but why waste time on pieces of the app that should look, feel and behave exactly the same across the app on multiple frameworks?
 
-### DoubleUC is a pure UI functions generator tool
+#### DoubleUC is a pure UI functions generator tool
 
 ## Features
 
@@ -43,6 +43,8 @@ modern framework should manage components state, but why waste time on pieces of
 - Tree Shaking.
 - CLI - currently only generate components - TODO: init project.
 - npm - WIP.
+
+## How To Use
 
 ### Install - WIP
 
