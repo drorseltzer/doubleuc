@@ -170,27 +170,27 @@ class MockCounter extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
-  #count() {
+  count() {
     this.setAttribute("counter", Number(this.getAttribute("counter")) + 1);
   }
 
-  #reset() {
+  reset() {
     this.setAttribute("counter", "0");
   }
 
-  #initAttributes() {
+  initAttributes() {
     this.setAttribute("counter", "0");
   }
 
-  #initListeners() {
+  initListeners() {
     this.shadowRoot.querySelectorAll("#count").forEach((ele) =>
       ele.addEventListener("click", (ev) => {
-        this.#count(ev);
+        this.count(ev);
       })
     );
     this.shadowRoot.querySelectorAll("#reset").forEach((ele) =>
       ele.addEventListener("click", (ev) => {
-        this.#reset(ev);
+        this.reset(ev);
       })
     );
   }
@@ -200,7 +200,7 @@ class MockCounter extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#initAttributes();
+    this.initAttributes();
 
     this.render();
   }
@@ -218,9 +218,10 @@ class MockCounter extends HTMLElement {
         <button id="reset">reset</button>
       </div>
     `.trim();
-    this.#initListeners();
+    this.initListeners();
   }
 }
 
 customElements.define("mock-counter", MockCounter);
+
 ```
