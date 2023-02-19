@@ -46,6 +46,31 @@ modern framework should manage components state, but why waste time on pieces of
 
 ## Declarative Web Component
 
+### Install - WIP
+
+```
+npm i doubleuc
+```
+
+### CLI
+
+**Generate component from declaration file:**
+
+```
+npx doubleuc generate -p ./components
+```
+
+### API
+
+```typescript
+import { DoubleUCGenerator, DeclarativeWebComponent, DeclarativeWebComponentOutputType } from 'doubleuc';
+
+const mockDec: DeclarativeWebComponent = { ... }
+const generator = new DoubleUCGenerator(mockDec);
+const stringComponent = await generateWebComponent(DeclarativeWebComponentOutputType.STRING);
+await generateWebComponent(); // File
+```
+
 ```typescript
 const dwc: DeclarativeWebComponent = {
   tagName: 'example-component', // html tag name - required
@@ -99,25 +124,6 @@ const dwc: DeclarativeWebComponent = {
     }
   }
 };
-```
-
-### CLI
-
-**Generate component from declaration file:**
-
-```
-npx doubleuc generate -p ./components
-```
-
-### API
-
-```typescript
-import { DoubleUCGenerator, DeclarativeWebComponent, DeclarativeWebComponentOutputType } from 'doubleuc';
-
-const mockDec: DeclarativeWebComponent = { ... }
-const generator = new DoubleUCGenerator(mockDec);
-const stringComponent = await generateWebComponent(DeclarativeWebComponentOutputType.STRING);
-await generateWebComponent(); // File
 ```
 
 ### Examples
