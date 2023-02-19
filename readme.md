@@ -109,6 +109,17 @@ const dwc: DeclarativeWebComponent = {
 npx doubleuc generate -p ./components
 ```
 
+### API
+
+```typescript
+import { DoubleUCGenerator, DeclarativeWebComponent, DeclarativeWebComponentOutputType } from 'doubleuc';
+
+const mockDec: DeclarativeWebComponent = { ... }
+const generator = new DoubleUCGenerator(mockDec);
+const stringComponent = await generateWebComponent(DeclarativeWebComponentOutputType.STRING);
+await generateWebComponent(); // File
+```
+
 ### Examples
 
 #### Counter Component:
@@ -216,15 +227,4 @@ class MockCounter extends HTMLElement {
 }
 
 customElements.define("mock-counter", MockCounter);
-```
-
-### API
-
-```typescript
-import { DoubleUCGenerator, DeclarativeWebComponent, DeclarativeWebComponentOutputType } from 'doubleuc';
-
-const mockDec: DeclarativeWebComponent = { ... }
-const generator = new DoubleUCGenerator(mockDec);
-const stringComponent = await generateWebComponent(DeclarativeWebComponentOutputType.STRING);
-await generateWebComponent(); // File
 ```
