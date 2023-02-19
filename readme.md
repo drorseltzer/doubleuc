@@ -41,7 +41,7 @@ modern framework should manage components state, but why waste time on pieces of
 - Pretty code - prettier.
 - minification - terser.
 - Tree Shaking.
-- CLI - WIP.
+- CLI - currently only generate components - TODO: init project.
 - npm - WIP.
 
 ## Declarative Web Component
@@ -99,6 +99,14 @@ const dwc: DeclarativeWebComponent = {
     }
   }
 };
+```
+
+### CLI
+
+**Generate component from declaration file:**
+
+```
+npx doubleuc generate -p ./components
 ```
 
 ### Examples
