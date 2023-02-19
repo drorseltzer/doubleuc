@@ -40,7 +40,7 @@ modern framework should manage components state, but why waste time on pieces of
 - Lifecycle Hooks - connected, disconnected, adopted, attributeChanged
 - Pretty code - prettier.
 - minification - terser.
-- Tree Shaking - WIP.
+- Tree Shaking.
 - CLI - WIP.
 - npm - WIP.
 

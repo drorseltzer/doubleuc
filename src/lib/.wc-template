@@ -15,7 +15,7 @@ class {{CLASS_NAME}} extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return [{{OBSERVED_ATTRIBUTES}}];
+    {{OBSERVED_ATTRIBUTES}};
   }
 
   connectedCallback() {
