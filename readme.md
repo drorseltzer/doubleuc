@@ -18,7 +18,7 @@ but, the use of multiple frameworks on the same app has increased in the recentl
 big and complex state managed components are most likely to be build from smaller components that are also built
 from smaller components, why it needed to migrate, update and maintain components across different frameworks?
 
-if we can break down component to his smallest building blocks - the ones without too much state handling or much logic - a pure
+if we can break down component to its smallest building blocks - the ones without too much state handling or much logic - a pure
 ui function - this is the basic building block.
 
 modern framework should manage components state, but why waste time on pieces of the app that should look, feel and behave exactly the same across the app on multiple frameworks?
