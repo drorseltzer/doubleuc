@@ -168,73 +168,71 @@ Will produce this file:
 ```typescript
 // mock-counter.js
 
-class MockCounter extends HTMLElement {
+class MockClock extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+    this.isRendered = false;
   }
 
   static get observedAttributes() {
-    return ["counter"];
+    return ["time"];
   }
 
-  get counter() {
-    return this.hasAttribute("counter")
-      ? +this.getAttribute("counter")
-      : undefined;
+  get time() {
+    return this.getAttribute("time");
   }
 
-  set counter(value) {
-    this.setAttribute("counter", value.toString());
+  set time(value) {
+    this.setAttribute("time", value);
   }
 
-  count() {
-    this.counter++;
+  init() {
+    this.updateTime();
+
+    setInterval(() => {
+      this.updateTime();
+    }, 1000);
   }
 
-  reset() {
-    this.counter = 0;
+  updateTime() {
+    this.time = new Date().toString();
   }
 
   initAttributes() {
-    this.setAttribute("counter", "0");
-  }
-
-  initListeners() {
-    this.shadowRoot.querySelectorAll("#count").forEach((ele) =>
-      ele.addEventListener("click", (ev) => {
-        this.count(ev);
-      })
-    );
-    this.shadowRoot.querySelectorAll("#reset").forEach((ele) =>
-      ele.addEventListener("click", (ev) => {
-        this.reset(ev);
-      })
-    );
   }
 
   connectedCallback() {
     this.initAttributes();
+    this.init();
 
-    this.render();
+    this.firstRender();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue) this.render();
+    if (newValue !== oldValue && this.isRendered) this.render();
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = `
+      <style>p{font-size:2rem}</style>
+      <div class="ref">
+        <div>
+          <p>${this.time}</p>
+        </div>
+      </div>
+    `.trim();
+
+    this.isRendered = true;
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
-      <style>h1{font-size:2rem}</style>
-      <div>
-        <p>Counter: ${this.counter}</p>
-        <button id="count">count</button>
-        <button id="reset">reset</button>
-      </div>
-    `.trim();
-    this.initListeners();
+    const ref = this.shadowRoot.querySelector(".ref");
+    ref.innerHTML = `<div>
+      <p>${this.time}</p>
+    </div>`;
   }
 }
 
-customElements.define("mock-counter", MockCounter);
+customElements.define("mock-clock", MockClock);
 ```
