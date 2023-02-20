@@ -4,6 +4,10 @@ class {{CLASS_NAME}} extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
+  static get observedAttributes() {
+    {{OBSERVED_ATTRIBUTES}};
+  }
+
   {{GETTERS_SETTERS}}
 
   {{METHODS}}
@@ -14,10 +18,6 @@ class {{CLASS_NAME}} extends HTMLElement {
 
   initListeners() {
     {{LISTENERS_INITS}}
-  }
-
-  static get observedAttributes() {
-    {{OBSERVED_ATTRIBUTES}};
   }
 
   connectedCallback() {
