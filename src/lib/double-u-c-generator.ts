@@ -281,7 +281,7 @@ export class DoubleUCGenerator {
     }
     if (!this.declaration.listeners?.length) {
       this.wcString = this.wcString.replace('initListeners() {}', '');
-      this.wcString = this.wcString.replace('this.initListeners();', '');
+      this.wcString = this.wcString.replaceAll('this.initListeners();', '');
     }
     if (!this.declaration.attributes.length) {
       this.wcString = this.wcString.replace('initAttributes() {}', '');

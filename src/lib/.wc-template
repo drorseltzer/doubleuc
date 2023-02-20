@@ -2,6 +2,7 @@ class {{CLASS_NAME}} extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.isRendered = false;
   }
 
   static get observedAttributes() {
@@ -23,7 +24,7 @@ class {{CLASS_NAME}} extends HTMLElement {
   connectedCallback() {
     this.initAttributes();
     {{CONNECTED_CALLBACKS}}
-    this.render();
+    this.firstRender();
   }
 
   disconnectedCallback() {
@@ -35,15 +36,24 @@ class {{CLASS_NAME}} extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue) this.render();
+    if (newValue !== oldValue && this.isRendered) this.render();
     {{ATTRIBUTE_CHANGED_CALLBACKS}}
   }
 
-  render() {
+  firstRender() {
     this.shadowRoot.innerHTML = `
       <style>{{STYLE}}</style>
-      {{TEMPLATE_HTML}}
+      <div class="ref">
+        {{TEMPLATE_HTML}}
+      </div>
     `.trim();
+    this.initListeners();
+    this.isRendered = true;
+  }
+
+  render() {
+    const ref = this.shadowRoot.querySelector('.ref');
+    ref.innerHTML = `{{TEMPLATE_HTML}}`;
     this.initListeners();
   }
 }
