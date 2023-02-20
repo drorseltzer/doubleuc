@@ -36,6 +36,7 @@ modern framework should manage components state, but why waste time on pieces of
 - Styling Templating - WIP.
 - Slots - WIP.
 - Attribute auto initiation and observing.
+- Typed Attributes - string | number | boolean | array | json.
 - Event Listening auto binding.
 - Lifecycle Hooks - connected, disconnected, adopted, attributeChanged
 - Pretty code - prettier.
@@ -87,7 +88,8 @@ const dwc: DeclarativeWebComponent = {
     {
       name: 'world', // attribute name
       initValue: 'world', // initiated value
-      observed: true // observe changes
+      observed: true, // observe changes
+      type: 'string' // attribute type - string | number | boolean | array | json
     }
   ],
   methods: { // private methods to call from all over the wc flow - must be a function scope - optional
@@ -140,12 +142,12 @@ module.exports = {
   tagName: 'mock-counter',
   templateFile: './mocks/mock-counter/mock.html',
   styleFile: './mocks/mock-counter/mock.scss',
-  attributes: [{ name: 'counter', initValue: '0', observed: true }],
+  attributes: [{ name: 'counter', initValue: '0', observed: true, type: 'number' }],
   methods: {
     count: function() {
       this.setAttribute(
         'counter',
-        Number(this.getAttribute('counter')) + 1
+        this.counter + 1
       );
     },
     reset: function() {
@@ -170,8 +172,14 @@ class MockCounter extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
+  get counter() {
+    return this.hasAttribute("counter")
+      ? +this.getAttribute("counter")
+      : undefined;
+  }
+
   count() {
-    this.setAttribute("counter", Number(this.getAttribute("counter")) + 1);
+    this.setAttribute("counter", this.counter + 1);
   }
 
   reset() {
@@ -213,7 +221,7 @@ class MockCounter extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>h1{font-size:2rem}</style>
       <div>
-        <p>Counter: ${this.getAttribute("counter")}</p>
+        <p>Counter: ${this.counter}</p>
         <button id="count">count</button>
         <button id="reset">reset</button>
       </div>
@@ -223,5 +231,4 @@ class MockCounter extends HTMLElement {
 }
 
 customElements.define("mock-counter", MockCounter);
-
 ```
