@@ -174,6 +174,10 @@ class MockCounter extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
+  static get observedAttributes() {
+    return ["counter"];
+  }
+
   get counter() {
     return this.hasAttribute("counter")
       ? +this.getAttribute("counter")
@@ -207,10 +211,6 @@ class MockCounter extends HTMLElement {
         this.reset(ev);
       })
     );
-  }
-
-  static get observedAttributes() {
-    return ["counter"];
   }
 
   connectedCallback() {
