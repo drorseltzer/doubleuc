@@ -91,35 +91,44 @@ export class DoubleUCGenerator {
   private replaceGetters() {
     const attributes = this.declaration.attributes;
     if (!attributes.length) {
-      this.wcString = this.wcString.replace('{{GETTERS}}', '');
+      this.wcString = this.wcString.replace('{{GETTERS_SETTERS}}', '');
       return this;
     }
     let attributesGettersString = '';
     for (const attribute of this.declaration.attributes) {
-      let callString;
+      let getterString, setterString;
       switch (attribute.type) {
         case 'number':
-          callString = `this.hasAttribute('${attribute.name}') ? +this.getAttribute('${attribute.name}') : undefined`;
+          getterString = `this.hasAttribute('${attribute.name}') ? +this.getAttribute('${attribute.name}') : undefined`;
+          setterString = `this.setAttribute('${attribute.name}', value.toString());`;
           break;
         case 'boolean':
-          callString = `this.hasAttribute('${attribute.name}') ? this.getAttribute('${attribute.name}') === 'true' : false`;
+          getterString = `this.hasAttribute('${attribute.name}') ? this.getAttribute('${attribute.name}') === 'true' : false`;
+          setterString = `this.setAttribute('${attribute.name}', value === 'true');`;
           break;
         case 'array':
-          callString = `this.hasAttribute('${attribute.name}') ? JSON.parse(this.getAttribute('${attribute.name}')) : []`;
+          getterString = `this.hasAttribute('${attribute.name}') ? JSON.parse(this.getAttribute('${attribute.name}')) : []`;
+          setterString = `this.setAttribute('${attribute.name}', JSON.stringify(value));`;
           break;
         case 'json':
-          callString = `this.hasAttribute('${attribute.name}') ? JSON.parse(this.getAttribute('${attribute.name}')) : {}`;
+          getterString = `this.hasAttribute('${attribute.name}') ? JSON.parse(this.getAttribute('${attribute.name}')) : {}`;
+          setterString = `this.setAttribute('${attribute.name}', JSON.stringify(value));`;
           break;
         default:
-          callString = `this.getAttribute('${attribute.name}')`;
+          getterString = `this.getAttribute('${attribute.name}')`;
+          setterString = `this.setAttribute('${attribute.name}', value);`;
       }
       attributesGettersString += `
         get ${attribute.name}() {
-          return ${callString};
+          return ${getterString};
+        }
+        
+        set ${attribute.name}(value) {
+          ${setterString};
         }
       `;
     }
-    this.wcString = this.wcString.replace('{{GETTERS}}', attributesGettersString);
+    this.wcString = this.wcString.replace('{{GETTERS_SETTERS}}', attributesGettersString);
 
     return this;
   }
