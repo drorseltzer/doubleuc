@@ -150,13 +150,10 @@ module.exports = {
   attributes: [{ name: 'counter', initValue: '0', observed: true, type: 'number' }],
   methods: {
     count: function() {
-      this.setAttribute(
-        'counter',
-        this.counter + 1
-      );
+      this.counter++;
     },
     reset: function() {
-      this.setAttribute('counter', '0');
+      this.counter = 0;
     }
   },
   listeners: [
@@ -183,12 +180,16 @@ class MockCounter extends HTMLElement {
       : undefined;
   }
 
+  set counter(value) {
+    this.setAttribute("counter", value.toString());
+  }
+
   count() {
-    this.setAttribute("counter", this.counter + 1);
+    this.counter++;
   }
 
   reset() {
-    this.setAttribute("counter", "0");
+    this.counter = 0;
   }
 
   initAttributes() {
