@@ -140,7 +140,12 @@ const dwc: DeclarativeWebComponent = {
 ```typescript
 module.exports = {
   tagName: 'mock-counter',
-  templateHtml: `<div><p>Counter: {{counter}}</p><button id="count">count</button><button id="reset">reset</button></div>`,
+  templateHtml: `
+    <div>
+      <p>Counter: {{counter}}</p>
+      <button id="count">count</button>
+      <button id="reset">reset</button>
+    </div>`,
   style: 'p {font-size: 2rem}',
   attributes: [{ name: 'counter', initValue: '0', observed: true, type: 'number' }],
   methods: {
