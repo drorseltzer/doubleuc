@@ -27,6 +27,7 @@ export class DoubleUCGenerator {
         .replaceTagName()
         .replaceTemplateHtml()
         .replaceStyle()
+        .replaceGetters()
         .replaceMethods()
         .replaceAttributesInits()
         .replaceListenersInits()
@@ -87,6 +88,42 @@ export class DoubleUCGenerator {
     return this;
   }
 
+  private replaceGetters() {
+    const attributes = this.declaration.attributes;
+    if (!attributes.length) {
+      this.wcString = this.wcString.replace('{{GETTERS}}', '');
+      return this;
+    }
+    let attributesGettersString = '';
+    for (const attribute of this.declaration.attributes) {
+      let callString;
+      switch (attribute.type) {
+        case 'number':
+          callString = `this.hasAttribute('${attribute.name}') ? +this.getAttribute('${attribute.name}') : undefined`;
+          break;
+        case 'boolean':
+          callString = `this.hasAttribute('${attribute.name}') ? this.getAttribute('${attribute.name}') === 'true' : false`;
+          break;
+        case 'array':
+          callString = `this.hasAttribute('${attribute.name}') ? JSON.parse(this.getAttribute('${attribute.name}')) : []`;
+          break;
+        case 'json':
+          callString = `this.hasAttribute('${attribute.name}') ? JSON.parse(this.getAttribute('${attribute.name}')) : {}`;
+          break;
+        default:
+          callString = `this.getAttribute('${attribute.name}')`;
+      }
+      attributesGettersString += `
+        get ${attribute.name}() {
+          return ${callString};
+        }
+      `;
+    }
+    this.wcString = this.wcString.replace('{{GETTERS}}', attributesGettersString);
+
+    return this;
+  }
+
   private replaceTemplateHtmlLiterals(html: string) {
     const regex = new RegExp(/{{(.*?)}}/g);
     const literals = html.match(regex);
@@ -104,10 +141,7 @@ export class DoubleUCGenerator {
         attribute => attribute.name === stripped
       );
       if (!findAttribute) continue;
-      replacedTemplateHtml = replacedTemplateHtml.replace(
-        literal,
-        `\${this.getAttribute('${stripped}')}`
-      );
+      replacedTemplateHtml = replacedTemplateHtml.replace(literal, `\${this.${stripped}}`);
     }
     return replacedTemplateHtml;
   }

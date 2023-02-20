@@ -15,6 +15,7 @@ export type DeclarativeWebComponent = {
 
 export type DeclarativeWebComponentAttribute = {
   name: string;
+  type: 'string' | 'number' | 'boolean' | 'array' | 'json';
   observed?: boolean;
   initValue?: string;
 };

@@ -4,6 +4,8 @@ class {{CLASS_NAME}} extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
+  {{GETTERS}}
+
   {{METHODS}}
 
   initAttributes() {
