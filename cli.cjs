@@ -7,7 +7,7 @@ const path = require("path");
 const { DoubleUCComponentGenerator } = require("./dist/lib/double-u-c-component-generator.js");
 
 yargs
-  .command(["generate [path]", "gen [path]", "g [path]"], "Generate Web Component", (yargs) => {
+  .command(["build [path]", "b [path]"], "Build Web Component", (yargs) => {
     return yargs
       .positional("path", {
         describe: "Path to declaration file/directory",

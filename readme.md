@@ -42,7 +42,7 @@ modern framework should manage components state, but why waste time on pieces of
 - Pretty code - prettier.
 - minification - terser.
 - Tree Shaking.
-- CLI - generate components and declaration, - TODO: init project.
+- CLI - build components / generate declaration files, - TODO: init project.
 - npm - WIP.
 
 ## How To Use
@@ -64,13 +64,11 @@ npx doubleuc new test-component
 **Generate component from declaration file:**
 
 ```
-npx doubleuc generate -p ./components
-npx doubleuc gen -p ./components
-npx doubleuc g -p ./components
+npx doubleuc build -p ./components
+npx doubleuc b -p ./components
 // OR
-npx doubleuc generate -p ./components/comnponent.js
-npx doubleuc gen -p ./components/comnponent.js
-npx doubleuc g -p ./components/comnponent.js
+npx doubleuc build -p ./components/comnponent.js
+npx doubleuc b -p ./components/comnponent.js
 ```
 ### API
 
