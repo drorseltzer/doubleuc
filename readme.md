@@ -42,7 +42,7 @@ modern framework should manage components state, but why waste time on pieces of
 - Pretty code - prettier.
 - minification - terser.
 - Tree Shaking.
-- CLI - currently only generate components - TODO: init project.
+- CLI - generate components and declaration, - TODO: init project.
 - npm - WIP.
 
 ## How To Use
@@ -52,9 +52,17 @@ modern framework should manage components state, but why waste time on pieces of
 ```
 npm i doubleuc
 ```
+
 ### CLI
 
+**Generate new component declaration file:**
+
+```
+npx doubleuc new test-component
+```
+
 **Generate component from declaration file:**
+
 ```
 npx doubleuc generate -p ./components
 npx doubleuc gen -p ./components
