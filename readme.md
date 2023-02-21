@@ -33,7 +33,7 @@ modern framework should manage components state, but why waste time on pieces of
 - Compatible with all modern frontend frameworks: React, Vue, Angular, Svelte and any other u can think of.
 - Templating with auto attribute/method binding - inline or html file.
 - Styling - CSS/SASS, inline or file.
-- Styling Templating - WIP.
+- Styling Templating - ability to dynamically change css with css vars.
 - Slot auto inject.
 - Attribute auto initiation and observing.
 - Typed Attributes - string | number | boolean | array | json.
@@ -222,18 +222,23 @@ class MockCounter extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue && this.isRendered) this.render();
+    if (newValue !== oldValue && this.isRendered) {
+      if (name.startsWith("style-")) {
+        this.renderCss();
+      } else {
+        this.render();
+      }
+    }
   }
 
   firstRender() {
     this.shadowRoot.innerHTML = `
-      <style>h1{font-size:2rem}</style>
-      <div class="ref">
-        <div>
-          <p>Counter: ${this.counter}</p>
-          <button id="count">count</button>
-          <button id="reset">reset</button>
-        </div>
+      <style class="vars">:host {  }</style>
+      <style class="style">p{font-size:2rem}</style>
+            <div class="ref">
+        <p>Counter: ${this.counter}</p>
+        <button id="count">count</button>
+        <button id="reset">reset</button>
       </div>
     `.trim();
     this.initListeners();
@@ -242,14 +247,18 @@ class MockCounter extends HTMLElement {
 
   render() {
     const ref = this.shadowRoot.querySelector(".ref");
-    ref.innerHTML = `<div>
-      <p>Counter: ${this.counter}</p>
-      <button id="count">count</button>
-      <button id="reset">reset</button>
-    </div>`;
+    ref.innerHTML = `<p>Counter: ${this.counter}</p>
+        <button id="count">count</button>
+        <button id="reset">reset</button>`;
     this.initListeners();
+  }
+
+  renderCss() {
+    const vars = this.shadowRoot.querySelector(".vars");
+    vars.innerText = `:host {  }`;
   }
 }
 
 customElements.define("mock-counter", MockCounter);
+
 ```
