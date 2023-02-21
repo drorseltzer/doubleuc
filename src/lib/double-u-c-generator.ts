@@ -67,7 +67,7 @@ export class DoubleUCGenerator {
   private replaceTemplateHtml() {
     const html = this.getHtmlFile() || this.declaration.templateHtml;
     const replacedTemplateHtml = html ? this.replaceTemplateHtmlLiterals(html) : '';
-    this.wcString = this.wcString.replaceAll("{{TEMPLATE_HTML}}", replacedTemplateHtml || "");
+    this.wcString = this.wcString.replaceAll('{{TEMPLATE_HTML}}', replacedTemplateHtml || '');
 
     return this;
   }
@@ -88,7 +88,7 @@ export class DoubleUCGenerator {
     if (!literals) return css;
     let replacedTemplateCss = css.toString();
     for (const literal of literals) {
-      const stripped = literal.replaceAll(/({{|}})/g, "");
+      const stripped = literal.replaceAll(/({{|}})/g, '');
       const findAttribute = this.declaration.attributes.find(
         attribute => attribute.name === stripped
       );
@@ -105,12 +105,12 @@ export class DoubleUCGenerator {
     const regex = new RegExp(/{{(.*?)}}/g);
     const literals = css.match(regex);
     if (!literals) {
-      this.wcString = this.wcString.replaceAll("{{CSS_VARS}}", "");
+      this.wcString = this.wcString.replaceAll('{{CSS_VARS}}', '');
       return this;
     }
-    let replacedCssVars = "";
+    let replacedCssVars = '';
     for (const literal of literals) {
-      const stripped = literal.replaceAll(/({{|}})/g, "");
+      const stripped = literal.replaceAll(/({{|}})/g, '');
       const findAttribute = this.declaration.attributes.find(
         attribute => attribute.name === stripped
       );
@@ -118,20 +118,20 @@ export class DoubleUCGenerator {
       replacedCssVars += `--${pascalToKebab(stripped)}: \${this.${stripped}};`;
     }
 
-    this.wcString = this.wcString.replaceAll("{{CSS_VARS}}", replacedCssVars);
+    this.wcString = this.wcString.replaceAll('{{CSS_VARS}}', replacedCssVars);
 
     return this;
   }
 
   private replaceStyle() {
     const style = this.loadStyleFile() || this.declaration.style;
-    const styleString = style ? this.replaceTemplateCssLiterals(style) : "";
+    const styleString = style ? this.replaceTemplateCssLiterals(style) : '';
     const compiledStyle = styleString
-      ? sass.compileString(styleString, { style: "compressed" }).css
-      : "";
-    this.wcString = this.wcString.replaceAll("{{STYLE}}", compiledStyle);
+      ? sass.compileString(styleString, { style: 'compressed' }).css
+      : '';
+    this.wcString = this.wcString.replaceAll('{{STYLE}}', compiledStyle);
 
-    return this.replaceCssVars(style || "");
+    return this.replaceCssVars(style || '');
   }
 
   private replaceGetters() {
