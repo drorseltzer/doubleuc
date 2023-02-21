@@ -34,7 +34,7 @@ modern framework should manage components state, but why waste time on pieces of
 - Templating with auto attribute/method binding - inline or html file.
 - Styling - CSS/SASS, inline or file.
 - Styling Templating - WIP.
-- Slots - WIP.
+- Slot auto inject.
 - Attribute auto initiation and observing.
 - Typed Attributes - string | number | boolean | array | json.
 - Event Listening auto binding.
@@ -122,6 +122,7 @@ const dwc: DeclarativeWebComponent = {
       methods: ['clicked'] // cbs are the methods names to call
     },
   ],
+  slotted: false, // inject slot element
   config: { // generator config - optional
     outputDir: './output', // output directory - optional
     outputFilename: 'example-component', // output file name - optional
