@@ -4,6 +4,7 @@ const yargs = require("yargs");
 const { DoubleUCGenerator } = require("./dist/index.js");
 const fs = require("fs");
 const path = require("path");
+const { DoubleUCComponentGenerator } = require("./dist/lib/double-u-c-component-generator.js");
 
 yargs
   .command(["generate [path]", "gen [path]", "g [path]"], "Generate Web Component", (yargs) => {
@@ -20,6 +21,15 @@ yargs
       generateFiles(fileList).then(() => console.log("Done!")).catch((err) => console.error(err));
     }
   })
+  .command(["new [name]"], "Generate Web Component", (yargs) => {
+    return yargs
+      .positional("name", {
+        describe: "component name",
+        demandOption: true
+      });
+  }, (argv) => {
+    generateComponentFiles(argv.name);
+  })
   .parse();
 
 async function generateFiles(filesPaths) {
@@ -33,6 +43,12 @@ async function generateFile(path) {
   const generator = new DoubleUCGenerator(declaration);
   const file = await generator.generateWebComponent();
   console.log(`Generated ${file}`);
+}
+
+function generateComponentFiles(name) {
+  const generator = new DoubleUCComponentGenerator(name);
+  const files = generator.generateComponentDeclarationFiles();
+  console.log(`Generated ${files}`);
 }
 
 function getAllFilesWithExtension(dirPath, ext, filesList = []) {

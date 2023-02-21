@@ -1,0 +1,11 @@
+module.exports = {
+  tagName: '{{COMPONENT_TAG_NAME}}',
+  templateFile: '{{TEMPLATE_FILE_PATH}}',
+  styleFile: '{{STYLE_FILE_PATH}}',
+  attributes: [],
+  slotted: false,
+  methods: {},
+  listeners: [],
+  hooks: {},
+  config: {}
+};
