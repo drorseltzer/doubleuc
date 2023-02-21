@@ -2,7 +2,7 @@ import { DeclarativeWebComponent, DeclarativeWebComponentOutputType } from '../t
 import path from 'path';
 import fs from 'fs';
 import prettier from 'prettier';
-import { kebabToPascal } from './utils.js';
+import { kebabToPascal, pascalToKebab } from './utils.js';
 import sass from 'sass';
 import { minify } from 'terser';
 
@@ -67,7 +67,7 @@ export class DoubleUCGenerator {
   private replaceTemplateHtml() {
     const html = this.getHtmlFile() || this.declaration.templateHtml;
     const replacedTemplateHtml = html ? this.replaceTemplateHtmlLiterals(html) : '';
-    this.wcString = this.wcString.replaceAll('{{TEMPLATE_HTML}}', replacedTemplateHtml || '');
+    this.wcString = this.wcString.replaceAll("{{TEMPLATE_HTML}}", replacedTemplateHtml || "");
 
     return this;
   }
@@ -77,15 +77,61 @@ export class DoubleUCGenerator {
     return fs.readFileSync(this.declaration.templateFile).toString();
   }
 
-  private replaceStyle() {
-    const style = this.declaration.styleFile
-      ? sass.compile(this.declaration.styleFile, { style: 'compressed' }).css
-      : this.declaration.style
-      ? sass.compileString(this.declaration.style, { style: 'compressed' }).css
-      : '';
-    this.wcString = this.wcString.replaceAll('{{STYLE}}', style);
+  private loadStyleFile() {
+    if (!this.declaration.styleFile) return;
+    return fs.readFileSync(this.declaration.styleFile).toString();
+  }
+
+  private replaceTemplateCssLiterals(css: string) {
+    const regex = new RegExp(/{{(.*?)}}/g);
+    const literals = css.match(regex);
+    if (!literals) return css;
+    let replacedTemplateCss = css.toString();
+    for (const literal of literals) {
+      const stripped = literal.replaceAll(/({{|}})/g, "");
+      const findAttribute = this.declaration.attributes.find(
+        attribute => attribute.name === stripped
+      );
+      if (!findAttribute) continue;
+      replacedTemplateCss = replacedTemplateCss.replace(
+        literal,
+        `var(--${pascalToKebab(stripped)});`
+      );
+    }
+    return replacedTemplateCss;
+  }
+
+  private replaceCssVars(css: string) {
+    const regex = new RegExp(/{{(.*?)}}/g);
+    const literals = css.match(regex);
+    if (!literals) {
+      this.wcString = this.wcString.replaceAll("{{CSS_VARS}}", "");
+      return this;
+    }
+    let replacedCssVars = "";
+    for (const literal of literals) {
+      const stripped = literal.replaceAll(/({{|}})/g, "");
+      const findAttribute = this.declaration.attributes.find(
+        attribute => attribute.name === stripped
+      );
+      if (!findAttribute) continue;
+      replacedCssVars += `--${pascalToKebab(stripped)}: \${this.${stripped}};`;
+    }
+
+    this.wcString = this.wcString.replaceAll("{{CSS_VARS}}", replacedCssVars);
 
     return this;
+  }
+
+  private replaceStyle() {
+    const style = this.loadStyleFile() || this.declaration.style;
+    const styleString = style ? this.replaceTemplateCssLiterals(style) : "";
+    const compiledStyle = styleString
+      ? sass.compileString(styleString, { style: "compressed" }).css
+      : "";
+    this.wcString = this.wcString.replaceAll("{{STYLE}}", compiledStyle);
+
+    return this.replaceCssVars(style || "");
   }
 
   private replaceGetters() {
@@ -99,24 +145,36 @@ export class DoubleUCGenerator {
       let getterString, setterString;
       switch (attribute.type) {
         case 'number':
-          getterString = `this.hasAttribute('${attribute.name}') ? +this.getAttribute('${attribute.name}') : undefined`;
-          setterString = `this.setAttribute('${attribute.name}', value.toString());`;
+          getterString = `this.hasAttribute('${pascalToKebab(
+            attribute.name
+          )}') ? +this.getAttribute('${pascalToKebab(attribute.name)}') : undefined`;
+          setterString = `this.setAttribute('${pascalToKebab(attribute.name)}', value.toString());`;
           break;
         case 'boolean':
-          getterString = `this.hasAttribute('${attribute.name}') ? this.getAttribute('${attribute.name}') === 'true' : false`;
-          setterString = `this.setAttribute('${attribute.name}', value === 'true');`;
+          getterString = `this.hasAttribute('${pascalToKebab(
+            attribute.name
+          )}') ? this.getAttribute('${pascalToKebab(attribute.name)}') === 'true' : false`;
+          setterString = `this.setAttribute('${pascalToKebab(attribute.name)}', value === 'true');`;
           break;
         case 'array':
-          getterString = `this.hasAttribute('${attribute.name}') ? JSON.parse(this.getAttribute('${attribute.name}')) : []`;
-          setterString = `this.setAttribute('${attribute.name}', JSON.stringify(value));`;
+          getterString = `this.hasAttribute('${pascalToKebab(
+            attribute.name
+          )}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : []`;
+          setterString = `this.setAttribute('${pascalToKebab(
+            attribute.name
+          )}', JSON.stringify(value));`;
           break;
         case 'json':
-          getterString = `this.hasAttribute('${attribute.name}') ? JSON.parse(this.getAttribute('${attribute.name}')) : {}`;
-          setterString = `this.setAttribute('${attribute.name}', JSON.stringify(value));`;
+          getterString = `this.hasAttribute('${pascalToKebab(
+            attribute.name
+          )}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : {}`;
+          setterString = `this.setAttribute('${pascalToKebab(
+            attribute.name
+          )}', JSON.stringify(value));`;
           break;
         default:
-          getterString = `this.getAttribute('${attribute.name}')`;
-          setterString = `this.setAttribute('${attribute.name}', value);`;
+          getterString = `this.getAttribute('${pascalToKebab(attribute.name)}')`;
+          setterString = `this.setAttribute('${pascalToKebab(attribute.name)}', value);`;
       }
       attributesGettersString += `
         get ${attribute.name}() {
@@ -233,7 +291,7 @@ export class DoubleUCGenerator {
   private replaceObservedAttributes() {
     const attributes = this.declaration.attributes
       .filter(attr => attr.observed)
-      .map(attr => `'${attr.name}'`)
+      .map(attr => `'${pascalToKebab(attr.name)}'`)
       .join(',');
     this.wcString = this.wcString.replace(
       '{{OBSERVED_ATTRIBUTES}}',
@@ -247,7 +305,9 @@ export class DoubleUCGenerator {
     const attributes = this.declaration.attributes.filter(attr => attr.initValue);
     let attributeInitsString = '';
     for (const attribute of attributes) {
-      attributeInitsString += `this.setAttribute('${attribute.name}', '${attribute.initValue}');\n`;
+      attributeInitsString += `this.setAttribute('${pascalToKebab(attribute.name)}', '${
+        attribute.initValue
+      }');\n`;
     }
     this.wcString = this.wcString.replace('{{ATTRIBUTES_INITS}}', attributeInitsString);
 

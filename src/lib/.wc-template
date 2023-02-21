@@ -36,13 +36,20 @@ class {{CLASS_NAME}} extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue && this.isRendered) this.render();
+    if (newValue !== oldValue && this.isRendered) {
+      if (name.startsWith('style-')) {
+        this.renderCss();
+      } else {
+        this.render();
+      }
+    }
     {{ATTRIBUTE_CHANGED_CALLBACKS}}
   }
 
   firstRender() {
     this.shadowRoot.innerHTML = `
-      <style>{{STYLE}}</style>
+      <style class="vars">:host { {{CSS_VARS}} }</style>
+      <style class="style">{{STYLE}}</style>
       <slot></slot>
       <div class="ref">
         {{TEMPLATE_HTML}}
@@ -56,6 +63,11 @@ class {{CLASS_NAME}} extends HTMLElement {
     const ref = this.shadowRoot.querySelector('.ref');
     ref.innerHTML = `{{TEMPLATE_HTML}}`;
     this.initListeners();
+  }
+
+  renderCss() {
+    const vars = this.shadowRoot.querySelector('.vars');
+    vars.innerText = `:host { {{CSS_VARS}} }`;
   }
 }
 
