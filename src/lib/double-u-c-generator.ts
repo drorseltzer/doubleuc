@@ -288,6 +288,9 @@ export class DoubleUCGenerator {
       this.wcString = this.wcString.replace('static get observedAttributes() {}', '');
       this.wcString = this.wcString.replace('this.initAttributes();', '');
     }
+    if (!this.declaration.slotted) {
+      this.wcString = this.wcString.replace('<slot></slot>\n', '');
+    }
 
     return this;
   }

@@ -43,6 +43,7 @@ class {{CLASS_NAME}} extends HTMLElement {
   firstRender() {
     this.shadowRoot.innerHTML = `
       <style>{{STYLE}}</style>
+      <slot></slot>
       <div class="ref">
         {{TEMPLATE_HTML}}
       </div>

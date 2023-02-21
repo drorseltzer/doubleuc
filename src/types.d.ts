@@ -10,6 +10,7 @@ export type DeclarativeWebComponent = {
   hooks?: DeclarativeWebComponentHooks;
   methods?: Record<string, (name?: string, oldValue?: string, newValue?: string) => unknown>;
   listeners?: DeclarativeWebComponentListener[];
+  slotted?: boolean;
   config?: DeclarativeWebComponentConfig;
 };
 
