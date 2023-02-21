@@ -64,11 +64,11 @@ npx doubleuc new test-component
 **Generate component from declaration file:**
 
 ```
-npx doubleuc build -p ./components
-npx doubleuc b -p ./components
+npx doubleuc build ./components
+npx doubleuc b ./components
 // OR
-npx doubleuc build -p ./components/comnponent.js
-npx doubleuc b -p ./components/comnponent.js
+npx doubleuc build ./components/comnponent.js
+npx doubleuc b ./components/comnponent.js
 ```
 ### API
 
