@@ -1,5 +1,17 @@
 # DoubleUC - Declarative Web Component Generator
 
+ - [Overview](https://github.com/drorseltzer/doubleuc#overview)
+ - [Features](https://github.com/drorseltzer/doubleuc#features)
+ - [How To Use](https://github.com/drorseltzer/doubleuc#how-to-use)
+   - [Install](https://github.com/drorseltzer/doubleuc#install---wip)
+   - [CLI](https://github.com/drorseltzer/doubleuc#cli)
+   - [API](https://github.com/drorseltzer/doubleuc#api)
+ - [Declarative Web Component](https://github.com/drorseltzer/doubleuc#declarative-web-component)
+ - [Templating](https://github.com/drorseltzer/doubleuc#templating)
+   - [HTML Template](https://github.com/drorseltzer/doubleuc#html-template)
+   - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
+ - [Examples](https://github.com/drorseltzer/doubleuc#examples)
+
 ### Overview
 
 `DoubleUC` is a tool to generate web component based on declaration schema.
@@ -156,7 +168,7 @@ First render will occur on connected lifecycle hook.
 
 Rerender (only the html part) will occur each time an observed attribute has changed.
 
-#### CSS Template & Attribute Binding
+#### CSS Template
 Just like any other css, scss, saas file/inline - no restrictions.
 
 In order to use dynamic attribute binding: `{{~Style[ATTRIBUTE_NAME]}}`, the `~Style` prefix is required to only update the css part on attribute change - **u can skip the Style part if updating is not needed**.
