@@ -12,7 +12,7 @@
    - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
  - [Examples](https://github.com/drorseltzer/doubleuc#examples)
 
-### Overview
+## Overview
 
 `DoubleUC` is a tool to generate web component based on declaration schema.
 
@@ -20,7 +20,7 @@ It's doing all the heavy lifting and boiler plates code that WC APIs has.
 
 It's purpose it to simplify & make it easier to create a small web building block to use anywhere.
 
-##### Small Web Building Block?
+#### Small Web Building Block?
 well in my perspective, web components hasn't lifted as it should have been.
 
 one of the reasons is that it's easy to do all in any frontend modern framework.
@@ -93,7 +93,7 @@ const stringComponent = await generateWebComponent(DeclarativeWebComponentOutput
 await generateWebComponent(); // File
 ```
 
-### Declarative Web Component
+## Declarative Web Component
 
 ```typescript
 const dwc: DeclarativeWebComponent = {
@@ -152,9 +152,9 @@ const dwc: DeclarativeWebComponent = {
 };
 ```
 
-### Templating
+## Templating
 
-#### HTML Template
+### HTML Template
 Just like any other html file/inline - no restrictions.
 
 In order to use dynamic attribute binding: `{{[ATTRIBUTE_OR_METHOD_NAME]}}` - *it's not supposed to be populated with much logic or conditioning*.
@@ -168,7 +168,7 @@ First render will occur on connected lifecycle hook.
 
 Rerender (only the html part) will occur each time an observed attribute has changed.
 
-#### CSS Template
+### CSS Template
 Just like any other css, scss, saas file/inline - no restrictions.
 
 In order to use dynamic attribute binding: `{{~Style[ATTRIBUTE_NAME]}}`, the `~Style` prefix is required to only update the css part on attribute change - **u can skip the Style part if updating is not needed**.
@@ -195,9 +195,9 @@ The CSS rendering is divided to two parts:
 
 Rerender (only the variables values part) will occur each time an observed attribute has changed.
 
-### Examples
+## Examples
 
-#### Counter Component:
+### Counter Component:
 
 ```typescript
 module.exports = {
