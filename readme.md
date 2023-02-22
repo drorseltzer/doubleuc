@@ -159,7 +159,7 @@ Rerender (only the html part) will occur each time an observed attribute has cha
 #### CSS Template & Attribute Binding
 Just like any other css, scss, saas file/inline - no restrictions.
 
-In order to use dynamic attribute binding: `{{~Style[ATTRIBUTE_NAME]}}`, the `~Style` prefix is required to only update the css part on attribute change - **only here**.
+In order to use dynamic attribute binding: `{{~Style[ATTRIBUTE_NAME]}}`, the `~Style` prefix is required to only update the css part on attribute change - **u can skip the Style part if updating is not needed**.
 
 For Example:
 ```scss
