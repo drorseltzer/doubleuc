@@ -2,7 +2,7 @@ import { DeclarativeWebComponent, DeclarativeWebComponentOutputType } from '../t
 import path from 'path';
 import fs from 'fs';
 import prettier from 'prettier';
-import { kebabToPascal, pascalToKebab } from './utils.js';
+import { fileExist, kebabToPascal, pascalToKebab } from './utils.js';
 import sass from 'sass';
 import { minify } from 'terser';
 
@@ -21,30 +21,38 @@ export class DoubleUCGenerator {
     const { tagName } = this.declaration;
     this.className = kebabToPascal(tagName);
 
-    return (
-      await this.getTemplateFile()
-        .replaceClassName()
-        .replaceTagName()
-        .replaceTemplateHtml()
-        .replaceStyle()
-        .replaceGetters()
-        .replaceMethods()
-        .replaceAttributesInits()
-        .replaceListenersInits()
-        .replaceObservedAttributes()
-        .replaceConnectedCallback()
-        .replaceDisconnectedCallback()
-        .replaceAdoptedCallback()
-        .replaceAttributeChangedCallback()
-        .format()
-        .treeShaking()
-        .format()
-        .minify()
-    ).output(outputType);
+    try {
+      return (
+        await this.getTemplateFile()
+          .replaceClassName()
+          .replaceTagName()
+          .replaceTemplateHtml()
+          .replaceStyle()
+          .replaceGetters()
+          .replaceMethods()
+          .replaceAttributesInits()
+          .replaceListenersInits()
+          .replaceObservedAttributes()
+          .replaceConnectedCallback()
+          .replaceDisconnectedCallback()
+          .replaceAdoptedCallback()
+          .replaceAttributeChangedCallback()
+          .format()
+          .treeShaking()
+          .format()
+          .minify()
+      ).output(outputType);
+    } catch (e) {
+      throw new Error(
+        `\n [${this.className}] - failed to build component ${tagName} ${(e as Error).message}`
+      );
+    }
   }
 
   private getTemplateFile() {
     const filePath = path.join(__dirname, '../../src/lib', '.wc-template');
+    if (!fileExist(filePath))
+      throw new Error(`\n [${this.className}] - cannot find template file at ${filePath}`);
     const file = fs.readFileSync(filePath);
     this.wcString = file.toString();
 
@@ -52,13 +60,18 @@ export class DoubleUCGenerator {
   }
 
   private replaceClassName() {
-    if (!this.className) return this;
+    if (!this.className)
+      throw new Error(
+        `\n [${this.className}] - cannot parse class name for tag ${this.declaration.tagName}`
+      );
     this.wcString = this.wcString.replaceAll('{{CLASS_NAME}}', this.className);
 
     return this;
   }
 
   private replaceTagName() {
+    if (!this.declaration.tagName)
+      throw new Error(`\n [${this.className}] - invalid tag name ${this.declaration.tagName}`);
     this.wcString = this.wcString.replaceAll('{{TAG_NAME}}', this.declaration.tagName);
 
     return this;
@@ -74,25 +87,34 @@ export class DoubleUCGenerator {
 
   private getHtmlFile() {
     if (!this.declaration.templateFile) return;
+    if (!fileExist(this.declaration.templateFile))
+      throw new Error(
+        `\n component html template file not exists ${this.declaration.templateFile}`
+      );
     return fs.readFileSync(this.declaration.templateFile).toString();
   }
 
   private loadStyleFile() {
     if (!this.declaration.styleFile) return;
+    if (!fileExist(this.declaration.styleFile))
+      throw new Error(
+        `\n [${this.className}] - component style template file not exists ${this.declaration.styleFile}`
+      );
     return fs.readFileSync(this.declaration.styleFile).toString();
   }
 
   private replaceTemplateCssLiterals(css: string) {
-    const regex = new RegExp(/{{(.*?)}}/g);
+    const regex = new RegExp(/{{~(.*?)}}/g);
     const literals = css.match(regex);
     if (!literals) return css;
     let replacedTemplateCss = css.toString();
     for (const literal of literals) {
-      const stripped = literal.replaceAll(/({{|}})/g, '');
+      const stripped = literal.replaceAll(/({{~|}})/g, '');
       const findAttribute = this.declaration.attributes.find(
         attribute => attribute.name === stripped
       );
-      if (!findAttribute) continue;
+      if (!findAttribute)
+        throw new Error(`\n [${this.className}] - css template attribute not found ${stripped}`);
       replacedTemplateCss = replacedTemplateCss.replace(
         literal,
         `var(--${pascalToKebab(stripped)});`
@@ -102,7 +124,7 @@ export class DoubleUCGenerator {
   }
 
   private replaceCssVars(css: string) {
-    const regex = new RegExp(/{{(.*?)}}/g);
+    const regex = new RegExp(/{{~(.*?)}}/g);
     const literals = css.match(regex);
     if (!literals) {
       this.wcString = this.wcString.replaceAll('{{CSS_VARS}}', '');
@@ -110,11 +132,12 @@ export class DoubleUCGenerator {
     }
     let replacedCssVars = '';
     for (const literal of literals) {
-      const stripped = literal.replaceAll(/({{|}})/g, '');
+      const stripped = literal.replaceAll(/({{~|}})/g, '');
       const findAttribute = this.declaration.attributes.find(
         attribute => attribute.name === stripped
       );
-      if (!findAttribute) continue;
+      if (!findAttribute)
+        throw new Error(`\n [${this.className}] - css template attribute not found ${stripped}`);
       replacedCssVars += `--${pascalToKebab(stripped)}: \${this.${stripped}};`;
     }
 
@@ -124,14 +147,18 @@ export class DoubleUCGenerator {
   }
 
   private replaceStyle() {
-    const style = this.loadStyleFile() || this.declaration.style;
-    const styleString = style ? this.replaceTemplateCssLiterals(style) : '';
-    const compiledStyle = styleString
-      ? sass.compileString(styleString, { style: 'compressed' }).css
-      : '';
-    this.wcString = this.wcString.replaceAll('{{STYLE}}', compiledStyle);
+    try {
+      const style = this.loadStyleFile() || this.declaration.style;
+      const styleString = style ? this.replaceTemplateCssLiterals(style) : '';
+      const compiledStyle = styleString
+        ? sass.compileString(styleString, { style: 'compressed' }).css
+        : '';
+      this.wcString = this.wcString.replaceAll('{{STYLE}}', compiledStyle);
 
-    return this.replaceCssVars(style || '');
+      return this.replaceCssVars(style || '');
+    } catch (e) {
+      throw new Error(`\n [${this.className}] - failed to replace style ${(e as Error).message}`);
+    }
   }
 
   private replaceGetters() {
@@ -207,7 +234,8 @@ export class DoubleUCGenerator {
       const findAttribute = this.declaration.attributes.find(
         attribute => attribute.name === stripped
       );
-      if (!findAttribute) continue;
+      if (!findAttribute)
+        throw new Error(`\n [${this.className}] - template attribute not found ${stripped}`);
       replacedTemplateHtml = replacedTemplateHtml.replace(literal, `\${this.${stripped}}`);
     }
     return replacedTemplateHtml;
@@ -356,17 +384,24 @@ export class DoubleUCGenerator {
   }
 
   private format() {
-    this.wcString = prettier.format(this.wcString, { parser: 'babel' });
-
-    return this;
+    try {
+      this.wcString = prettier.format(this.wcString, { parser: 'babel' });
+      return this;
+    } catch (e) {
+      throw new Error(`\n [${this.className}] - failed to format ${(e as Error).message}`);
+    }
   }
 
   private async minify() {
     if (!this.declaration.config?.minify?.enabled) return this;
-    this.wcString =
-      (await minify(this.wcString, this.declaration.config?.minify?.config)).code || this.wcString;
-
-    return this;
+    try {
+      this.wcString =
+        (await minify(this.wcString, this.declaration.config?.minify?.config)).code ||
+        this.wcString;
+      return this;
+    } catch (e) {
+      throw new Error(`\n [${this.className}] - failed to minify ${(e as Error).message}`);
+    }
   }
 
   private output(outputType: DeclarativeWebComponentOutputType) {
@@ -379,15 +414,18 @@ export class DoubleUCGenerator {
   }
 
   private outputFile() {
-    const filePath =
-      this.declaration.config?.outputDir ||
-      path.join(
-        process.cwd(),
-        'output',
-        (this.declaration.config?.outputFilename || this.declaration.tagName) + '.js'
-      );
-    fs.writeFileSync(filePath, Buffer.from(this.wcString));
-
-    return filePath;
+    try {
+      const filePath =
+        this.declaration.config?.outputDir ||
+        path.join(
+          process.cwd(),
+          'output',
+          (this.declaration.config?.outputFilename || this.declaration.tagName) + '.js'
+        );
+      fs.writeFileSync(filePath, Buffer.from(this.wcString));
+      return filePath;
+    } catch (e) {
+      throw new Error(`\n [${this.className}] - failed to output file ${(e as Error).message}`);
+    }
   }
 }
