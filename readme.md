@@ -152,6 +152,63 @@ const dwc: DeclarativeWebComponent = {
 };
 ```
 
+## Attributes
+Each declared attribute will be set on the web component element with its `initValue` - *should be a string no matter the real type*.
+
+If the attribute is `observed`, it will trigger a rerender flow.
+
+Getter function will return the attribute value with its corresponding type - *part of the build flow*.
+
+`name`: unique name for the component scope - *camelCased*.
+
+`initValue (optional)`: initiated value on connected lifecycle hook - *string*.
+
+`observed (optional)`: rerender on attribute updates - *default: false*
+
+`type`: string | number | boolean | array | json - *array|json is using the JSON.parse method*.
+
+## Methods
+Scoped functions that would be called from different parts of the component.
+
+Methods can call other methods by simply use the `this.` prefix, for example:
+```javascript
+...
+methods: { // private methods to call from all over the wc flow - must be a function scope - optional
+ logSomething: function(something) {
+   console.log(something);
+ },
+ clicked: function() {
+   this.logSomething('clicked!')
+ }
+},
+...
+```
+
+## Event Listeners
+Will trigger methods when target selector match with event type - *persistence also after re-rendering*
+
+`target`: valid html selector.
+
+`event`: any event name.
+
+`methods`: array of methods names to call when triggered.
+
+## Lifecycle Hooks
+ - `connected` - invoked each time the component is injected into the dom.
+ - `disconnected` - invoked each time the component is removed from the dom.
+ - `adopted` - invoked each time the component is moved to a new dom
+ - `attributeChanged` - invoked each time an observed component's attribute has changed.
+
+Array of methods names to call, for example:
+
+```javascript
+...
+hooks: {
+   connected: ['initSomething']
+}
+...
+```
+
 ## Templating
 
 ### HTML Template
