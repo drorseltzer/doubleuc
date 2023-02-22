@@ -269,8 +269,11 @@ module.exports = {
       <button id="count">count</button>
       <button id="reset">reset</button>
     </div>`,
-  style: 'p {font-size: 2rem}',
-  attributes: [{ name: 'counter', initValue: '0', observed: true, type: 'number' }],
+  style: 'p { font-size: {{~StyleFontSize}} }',
+   attributes: [
+      { name: 'counter', initValue: '0', observed: true, type: 'number' },
+      { name: 'StyleFontSize', initValue: '14px', observed: true, type: 'string' }
+   ],
   methods: {
     count: function() {
       this.counter++;
@@ -292,95 +295,103 @@ Will produce this file:
 // mock-counter.js
 
 class MockCounter extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.isRendered = false;
-  }
+   constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+      this.isRendered = false;
+   }
 
-  static get observedAttributes() {
-    return ["counter"];
-  }
+   static get observedAttributes() {
+      return ["counter", "style-font-size"];
+   }
 
-  get counter() {
-    return this.hasAttribute("counter")
-      ? +this.getAttribute("counter")
-      : undefined;
-  }
+   get counter() {
+      return this.hasAttribute("counter")
+           ? +this.getAttribute("counter")
+           : undefined;
+   }
 
-  set counter(value) {
-    this.setAttribute("counter", value.toString());
-  }
+   set counter(value) {
+      this.setAttribute("counter", value.toString());
+   }
 
-  count() {
-    this.counter++;
-  }
+   get StyleFontSize() {
+      return this.getAttribute("style-font-size");
+   }
 
-  reset() {
-    this.counter = 0;
-  }
+   set StyleFontSize(value) {
+      this.setAttribute("style-font-size", value);
+   }
 
-  initAttributes() {
-    this.setAttribute("counter", "0");
-  }
+   count() {
+      this.counter++;
+   }
 
-  initListeners() {
-    this.shadowRoot.querySelectorAll("#count").forEach((ele) =>
-      ele.addEventListener("click", (ev) => {
-        this.count(ev);
-      })
-    );
-    this.shadowRoot.querySelectorAll("#reset").forEach((ele) =>
-      ele.addEventListener("click", (ev) => {
-        this.reset(ev);
-      })
-    );
-  }
+   reset() {
+      this.counter = 0;
+   }
 
-  connectedCallback() {
-    this.initAttributes();
+   initAttributes() {
+      this.setAttribute("counter", "0");
+      this.setAttribute("style-font-size", "14px");
+   }
 
-    this.firstRender();
-  }
+   initListeners() {
+      this.shadowRoot.querySelectorAll("#count").forEach((ele) =>
+        ele.addEventListener("click", (ev) => {
+           this.count(ev);
+        })
+      );
+      this.shadowRoot.querySelectorAll("#reset").forEach((ele) =>
+        ele.addEventListener("click", (ev) => {
+           this.reset(ev);
+        })
+      );
+   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue && this.isRendered) {
-      if (name.startsWith("style-")) {
-        this.renderCss();
-      } else {
-        this.render();
+   connectedCallback() {
+      this.initAttributes();
+      this.firstRender();
+   }
+
+   attributeChangedCallback(name, oldValue, newValue) {
+      if (newValue !== oldValue && this.isRendered) {
+        if (name.startsWith("style-")) {
+          this.renderCss();
+        } else {
+            this.render();
+        }
       }
-    }
-  }
+   }
 
-  firstRender() {
-    this.shadowRoot.innerHTML = `
-      <style class="vars">:host {  }</style>
-      <style class="style">p{font-size:2rem}</style>
-            <div class="ref">
+   firstRender() {
+      this.shadowRoot.innerHTML = `
+      <style class="vars">:host { --style-font-size: ${this.StyleFontSize}; }</style>
+      <style class="style">p{font-size:var(--style-font-size)}</style>
+      <div class="ref">
         <p>Counter: ${this.counter}</p>
         <button id="count">count</button>
         <button id="reset">reset</button>
       </div>
     `.trim();
-    this.initListeners();
-    this.isRendered = true;
-  }
+      this.initListeners();
+      this.isRendered = true;
+   }
 
-  render() {
-    const ref = this.shadowRoot.querySelector(".ref");
-    ref.innerHTML = `<p>Counter: ${this.counter}</p>
+   render() {
+      const ref = this.shadowRoot.querySelector(".ref");
+      ref.innerHTML = `
+        <p>Counter: ${this.counter}</p>
         <button id="count">count</button>
         <button id="reset">reset</button>`;
-    this.initListeners();
-  }
-
-  renderCss() {
-    const vars = this.shadowRoot.querySelector(".vars");
-    vars.innerText = `:host {  }`;
-  }
+      this.initListeners();
+   }
+   
+   renderCss() {
+      const vars = this.shadowRoot.querySelector(".vars");
+      vars.innerText = `:host { --style-font-size: ${this.StyleFontSize}; }`;
+   }
 }
 
 customElements.define("mock-counter", MockCounter);
-
 ```
