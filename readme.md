@@ -143,14 +143,11 @@ const dwc: DeclarativeWebComponent = {
 ### Templating
 
 #### HTML Template
-
 Just like any other html file/inline - no restrictions.
 
-In order to use dynamic attribute binding: `{{[ATTRIBUTE_OR_METHOD_NAME]}}` - *it's not supposed to be populated with
-much logic or conditioning*.
+In order to use dynamic attribute binding: `{{[ATTRIBUTE_OR_METHOD_NAME]}}` - *it's not supposed to be populated with much logic or conditioning*.
 
 For Example:
-
 ```html
 <p>Hello {{name}}}</p>
 ```
@@ -160,39 +157,29 @@ First render will occur on connected lifecycle hook.
 Rerender (only the html part) will occur each time an observed attribute has changed.
 
 #### CSS Template & Attribute Binding
-
 Just like any other css, scss, saas file/inline - no restrictions.
 
-In order to use dynamic attribute binding: `{{~Style[ATTRIBUTE_NAME]}}`, the `~Style` prefix is required to only update
-the css part on attribute change - **only here**.
+In order to use dynamic attribute binding: `{{~Style[ATTRIBUTE_NAME]}}`, the `~Style` prefix is required to only update the css part on attribute change - **only here**.
 
 For Example:
-
 ```scss
 // style.scss
 
 p {
-  font-size: {
-  {
-  ~ StyleFontSize
-  }
-  };
+  font-size: {{~StyleFontSize}};
 }
 ```
-
 Will build to:
-
 ```javascript
-<style class="vars">:host {--style - font - size: ${this.StyleFontSize};}</style>
-<style class="style">p {font - size: var(--style-font-size)}</style>
+<style class="vars">:host { --style-font-size: ${this.StyleFontSize}; }</style>
+<style class="style">p { font-size: var(--style-font-size) }</style>
 ```
 
 First render will occur on connected lifecycle hook.
 
 The CSS rendering is divided to two parts:
-
-- generated variables based on attributes.
-- static css that bundled with the replaced generated attributes variables.
+ - generated variables based on attributes.
+ - static css that bundled with the replaced generated attributes variables.
 
 Rerender (only the variables values part) will occur each time an observed attribute has changed.
 
