@@ -48,8 +48,6 @@ export type DeclarativeWebComponentConfig = {
   };
 };
 
-export type ThisComponentElement = unknown & HTMLElement;
-
 export declare class DoubleUCGenerator {
   private wcString;
   private readonly declaration;
