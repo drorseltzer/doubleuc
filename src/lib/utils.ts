@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-export function k(str: string) {
+export function kebabToPascal(str: string) {
   try {
     return str
       .split('-')
