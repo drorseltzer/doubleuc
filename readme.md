@@ -295,6 +295,88 @@ export = {
 } as DeclarativeWebComponent;
 ```
 
+`npm run build:duc`:
+```javascript
+// ./output/button-component.js
+
+class ButtonComponent extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  static get observedAttributes() {
+    return ["label"];
+  }
+
+  get label() {
+    return this.getAttribute("label");
+  }
+
+  set label(value) {
+    this.setAttribute("label", value);
+  }
+
+  clickEvent() {
+    console.log("clicked!");
+  }
+
+  initAttributes() {
+    this.setAttribute("label", "Click");
+  }
+
+  initListeners() {
+    this.shadowRoot.querySelectorAll(".click").forEach((ele) =>
+      ele.addEventListener("click", (ev) => {
+        this.clickEvent(ev);
+      })
+    );
+  }
+
+  connectedCallback() {
+    this.initAttributes();
+
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      if (name.startsWith("style-")) {
+        this.renderCss();
+      } else {
+        this.render();
+      }
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = `
+      <style class="vars">:host {  }</style>
+      <style class="style">button{font-size:1em}</style>
+            <div class="ref">
+        <button class="click">${this.label}</button>
+      </div>
+    `.trim();
+    this.initListeners();
+    this.isRendered = true;
+  }
+
+  render() {
+    const ref = this.shadowRoot.querySelector(".ref");
+    ref.innerHTML = `<button class="click">${this.label}</button>`;
+    this.initListeners();
+  }
+
+  renderCss() {
+    const vars = this.shadowRoot.querySelector(".vars");
+    vars.innerText = `:host {  }`;
+  }
+}
+
+customElements.define("button-component", ButtonComponent);
+```
+
 ## Examples
 
 ### Counter Component:
