@@ -14,6 +14,7 @@
  - [Templating](https://github.com/drorseltzer/doubleuc#templating)
    - [HTML Template](https://github.com/drorseltzer/doubleuc#html-template)
    - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
+ - [Typescript](https://github.com/drorseltzer/doubleuc#typescript)
  - [Examples](https://github.com/drorseltzer/doubleuc#examples)
 
 ## Overview
@@ -255,6 +256,44 @@ The CSS rendering is divided to two parts:
  - static css that bundled with the replaced generated attributes variables.
 
 Rerender (only the variables values part) will occur each time an observed attribute has changed.
+
+## Typescript
+DUC is written mostly in typescript, all types are exported.
+in order to use in a typescript project:
+```json
+{
+   "compilerOptions": {
+      "target": "es2016",
+      "module": "commonjs",
+      "rootDir": "./components",
+      "outDir": ".duc"
+   },
+   "exclude": [".duc"]
+}
+```
+add a build command to `package.json`: `"build:duc": "tsc && npx doubleuc b .duc"`
+
+```typescript
+// ./components/button/button.ts
+
+import { DeclarativeWebComponent } from 'doubleuc';
+
+export = {
+  tagName: 'button-component',
+  templateFile: './components/button/button.html',
+  styleFile: './components/button/button.scss',
+  attributes: [{ name: 'label', type: 'string', initValue: 'Click', observed: true }],
+  slotted: false,
+  methods: {
+    clickEvent: function () {
+      console.log('clicked!');
+    }
+  },
+  listeners: [{ target: '.click', event: 'click', methods: ['clickEvent'] }],
+  hooks: {},
+  config: {}
+} as DeclarativeWebComponent;
+```
 
 ## Examples
 
