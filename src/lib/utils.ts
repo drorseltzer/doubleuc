@@ -1,14 +1,22 @@
 import fs from 'fs';
 
-export function kebabToPascal(str: string) {
-  return str
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join('');
+export function k(str: string) {
+  try {
+    return str
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('');
+  } catch (e) {
+    throw new Error(`\n [kebabToPascal] - cannot kebabToPascal ${str}`);
+  }
 }
 
 export function pascalToKebab(str: string) {
-  return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  try {
+    return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  } catch (e) {
+    throw new Error(`\n [pascalToKebab] - cannot pascalToKebab ${str}`);
+  }
 }
 
 export function fileExist(filePath: string) {
