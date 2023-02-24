@@ -279,19 +279,27 @@ add a build command to `package.json`: `"build:duc": "tsc && npx doubleuc b .duc
 import { DeclarativeWebComponent } from 'doubleuc';
 
 export = {
-  tagName: 'button-component',
-  templateFile: './components/button/button.html',
-  styleFile: './components/button/button.scss',
-  attributes: [{ name: 'label', type: 'string', initValue: 'Click', observed: true }],
-  slotted: false,
-  methods: {
-    clickEvent: function () {
-      console.log('clicked!');
-    }
-  },
-  listeners: [{ target: '.click', event: 'click', methods: ['clickEvent'] }],
-  hooks: {},
-  config: {}
+   tagName: 'button-component',
+   templateFile: './components/button/button.html',
+   styleFile: './components/button/button.scss',
+   attributes: [
+      { name: 'label', type: 'string', initValue: 'Click', observed: true },
+      { name: 'disabled', type: 'boolean', initValue: 'false', observed: true }
+   ],
+   slotted: false,
+   methods: {
+      clickEvent: function () {
+         console.log('clicked!');
+         const thisElement = this as unknown as HTMLElement;
+         thisElement.dispatchEvent(new Event('clicked', { bubbles: true }));
+      },
+      isDisabled: function () {
+         return this.disabled ? 'disabled' : '';
+      }
+   },
+   listeners: [{ target: '.click', event: 'click', methods: ['clickEvent'] }],
+   hooks: {},
+   config: {}
 } as DeclarativeWebComponent;
 ```
 
@@ -300,78 +308,97 @@ export = {
 // ./output/button-component.js
 
 class ButtonComponent extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.isRendered = false;
-  }
+   constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+      this.isRendered = false;
+   }
 
-  static get observedAttributes() {
-    return ["label"];
-  }
+   static get observedAttributes() {
+      return ["label", "disabled"];
+   }
 
-  get label() {
-    return this.getAttribute("label");
-  }
+   get label() {
+      return this.getAttribute("label");
+   }
 
-  set label(value) {
-    this.setAttribute("label", value);
-  }
+   set label(value) {
+      this.setAttribute("label", value);
+   }
 
-  clickEvent() {
-    console.log("clicked!");
-  }
+   get disabled() {
+      return this.hasAttribute("disabled")
+              ? this.getAttribute("disabled") === "true"
+              : false;
+   }
 
-  initAttributes() {
-    this.setAttribute("label", "Click");
-  }
+   set disabled(value) {
+      this.setAttribute("disabled", value === "true");
+   }
 
-  initListeners() {
-    this.shadowRoot.querySelectorAll(".click").forEach((ele) =>
-      ele.addEventListener("click", (ev) => {
-        this.clickEvent(ev);
-      })
-    );
-  }
+   clickEvent() {
+      console.log("clicked!");
+      const thisElement = this;
+      thisElement.dispatchEvent(new Event("clicked", { bubbles: true }));
+   }
 
-  connectedCallback() {
-    this.initAttributes();
+   isDisabled() {
+      return this.disabled ? "disabled" : "";
+   }
 
-    this.firstRender();
-  }
+   initAttributes() {
+      this.setAttribute("label", "Click");
+      this.setAttribute("disabled", "false");
+   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue && this.isRendered) {
-      if (name.startsWith("style-")) {
-        this.renderCss();
-      } else {
-        this.render();
+   initListeners() {
+      this.shadowRoot.querySelectorAll(".click").forEach((ele) =>
+              ele.addEventListener("click", (ev) => {
+                 this.clickEvent(ev);
+              })
+      );
+   }
+
+   connectedCallback() {
+      this.initAttributes();
+
+      this.firstRender();
+   }
+
+   attributeChangedCallback(name, oldValue, newValue) {
+      if (newValue !== oldValue && this.isRendered) {
+         if (name.startsWith("style-")) {
+            this.renderCss();
+         } else {
+            this.render();
+         }
       }
-    }
-  }
+   }
 
-  firstRender() {
-    this.shadowRoot.innerHTML = `
+   firstRender() {
+      this.shadowRoot.innerHTML = `
       <style class="vars">:host {  }</style>
       <style class="style">button{font-size:1em}</style>
             <div class="ref">
-        <button class="click">${this.label}</button>
+        <button class="click" ${this.isDisabled()}>${this.label}</button>
       </div>
     `.trim();
-    this.initListeners();
-    this.isRendered = true;
-  }
+      this.initListeners();
+      this.isRendered = true;
+   }
 
-  render() {
-    const ref = this.shadowRoot.querySelector(".ref");
-    ref.innerHTML = `<button class="click">${this.label}</button>`;
-    this.initListeners();
-  }
+   render() {
+      const ref = this.shadowRoot.querySelector(".ref");
+      ref.innerHTML = `<button class="click" ${this.isDisabled()}>${
+              this.label
+      }</button>`;
+      this.initListeners();
+   }
 
-  renderCss() {
-    const vars = this.shadowRoot.querySelector(".vars");
-    vars.innerText = `:host {  }`;
-  }
+   renderCss() {
+      const vars = this.shadowRoot.querySelector(".vars");
+      vars.innerText = `:host {  }`;
+   }
 }
 
 customElements.define("button-component", ButtonComponent);
