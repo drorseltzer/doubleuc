@@ -14,6 +14,7 @@
  - [Templating](https://github.com/drorseltzer/doubleuc#templating)
    - [HTML Template](https://github.com/drorseltzer/doubleuc#html-template)
    - [HTML Template Event Listener](https://github.com/drorseltzer/doubleuc#html-template-event-listener)
+   - [Nesting Components](https://github.com/drorseltzer/doubleuc#nesting-components)
    - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
  - [Typescript](https://github.com/drorseltzer/doubleuc#typescript)
  - [Examples](https://github.com/drorseltzer/doubleuc#examples)
@@ -239,6 +240,18 @@ Rerender (only the html part) will occur each time an observed attribute has cha
 
 u can also use the declarative way as demonstrated in the [Event Listeners](https://github.com/drorseltzer/doubleuc#event-listeners) section.
 
+### Nesting Components
+***THIS IS HIGHLY EXPERIMENTAL AND NOT OPTIMIZE FOR PERFORMANCE***
+```html
+<hello-world name="{{name}}"></hello-world>
+```
+Each time the `name` attribute has changed, the component will preserve it's current attributes state.
+
+**This is the not optimized for performance part**: basically, it creates a document fragment and copy all the template html inside, then it maps all the custom elements in the current form and same for the future form, after doing that it appends the current custom element before the future one and deletes the future one.
+
+As a result the custom element is re-connected - I'm curious to check the performance of this behavior.
+
+
 ### CSS Template
 Just like any other css, scss, saas file/inline - no restrictions.
 
@@ -312,107 +325,6 @@ export = {
 } as DeclarativeWebComponent;
 ```
 
-`npm run build:duc`:
-```javascript
-// ./output/button-component.js
-
-class ButtonComponent extends HTMLElement {
-   constructor() {
-      super();
-      this.attachShadow({ mode: "open" });
-      this.isRendered = false;
-   }
-
-   static get observedAttributes() {
-      return ["label", "disabled"];
-   }
-
-   get label() {
-      return this.getAttribute("label");
-   }
-
-   set label(value) {
-      this.setAttribute("label", value);
-   }
-
-   get disabled() {
-      return this.hasAttribute("disabled")
-              ? this.getAttribute("disabled") === "true"
-              : false;
-   }
-
-   set disabled(value) {
-      this.setAttribute("disabled", value === "true");
-   }
-
-   clickEvent() {
-      console.log("clicked!");
-      const thisElement = this;
-      thisElement.dispatchEvent(new Event("clicked", { bubbles: true }));
-   }
-
-   isDisabled() {
-      return this.disabled ? "disabled" : "";
-   }
-
-   initAttributes() {
-      this.setAttribute("label", "Click");
-      this.setAttribute("disabled", "false");
-   }
-
-   initListeners() {
-      this.shadowRoot.querySelectorAll(".click").forEach((ele) =>
-              ele.addEventListener("click", (ev) => {
-                 this.clickEvent(ev);
-              })
-      );
-   }
-
-   connectedCallback() {
-      this.initAttributes();
-
-      this.firstRender();
-   }
-
-   attributeChangedCallback(name, oldValue, newValue) {
-      if (newValue !== oldValue && this.isRendered) {
-         if (name.startsWith("style-")) {
-            this.renderCss();
-         } else {
-            this.render();
-         }
-      }
-   }
-
-   firstRender() {
-      this.shadowRoot.innerHTML = `
-      <style class="vars">:host {  }</style>
-      <style class="style">button{font-size:1em}</style>
-            <div class="ref">
-        <button class="click" ${this.isDisabled()}>${this.label}</button>
-      </div>
-    `.trim();
-      this.initListeners();
-      this.isRendered = true;
-   }
-
-   render() {
-      const ref = this.shadowRoot.querySelector(".ref");
-      ref.innerHTML = `<button class="click" ${this.isDisabled()}>${
-              this.label
-      }</button>`;
-      this.initListeners();
-   }
-
-   renderCss() {
-      const vars = this.shadowRoot.querySelector(".vars");
-      vars.innerText = `:host {  }`;
-   }
-}
-
-customElements.define("button-component", ButtonComponent);
-```
-
 ## Examples
 
 ### Counter Component:
@@ -439,112 +351,4 @@ module.exports = {
     }
   },
 };
-```
-
-Will produce this file:
-
-```javascript
-// mock-counter.js
-
-class MockCounter extends HTMLElement {
-   constructor() {
-      super();
-      this.attachShadow({ mode: "open" });
-      this.isRendered = false;
-   }
-
-   static get observedAttributes() {
-      return ["counter", "style-font-size"];
-   }
-
-   get counter() {
-      return this.hasAttribute("counter")
-           ? +this.getAttribute("counter")
-           : undefined;
-   }
-
-   set counter(value) {
-      this.setAttribute("counter", value.toString());
-   }
-
-   get StyleFontSize() {
-      return this.getAttribute("style-font-size");
-   }
-
-   set StyleFontSize(value) {
-      this.setAttribute("style-font-size", value);
-   }
-
-   count() {
-      this.counter++;
-   }
-
-   reset() {
-      this.counter = 0;
-   }
-
-   initAttributes() {
-      this.setAttribute("counter", "0");
-      this.setAttribute("style-font-size", "14px");
-   }
-
-   initListeners() {
-      this.shadowRoot.querySelectorAll("#count").forEach((ele) =>
-        ele.addEventListener("click", (ev) => {
-           this.count(ev);
-        })
-      );
-      this.shadowRoot.querySelectorAll("#reset").forEach((ele) =>
-        ele.addEventListener("click", (ev) => {
-           this.reset(ev);
-        })
-      );
-   }
-
-   connectedCallback() {
-      this.initAttributes();
-      this.firstRender();
-   }
-
-   attributeChangedCallback(name, oldValue, newValue) {
-      if (newValue !== oldValue && this.isRendered) {
-         if (name.startsWith("style-")) {
-           this.renderCss();
-         } else {
-           this.render();
-         }
-      }
-   }
-
-   firstRender() {
-      this.shadowRoot.innerHTML = `
-      <style class="vars">:host { --style-font-size: ${this.StyleFontSize}; }</style>
-      <style class="style">p{font-size:var(--style-font-size)}</style>
-      <div class="ref">
-        <p>Counter: ${this.counter}</p>
-         <button id="count">count</button>
-         <button id="reset">reset</button>
-      </div>
-     `.trim();
-      this.initListeners();
-      this.isRendered = true;
-   }
-
-   render() {
-      const ref = this.shadowRoot.querySelector(".ref");
-      ref.innerHTML = `
-         <p>Counter: ${this.counter}</p>
-         <button id="count">count</button>
-         <button id="reset">reset</button>
-      `;
-      this.initListeners();
-   }
-
-   renderCss() {
-      const vars = this.shadowRoot.querySelector(".vars");
-      vars.innerText = `:host { --style-font-size: ${this.StyleFontSize}; }`;
-   }
-}
-
-customElements.define("mock-counter", MockCounter);
 ```
