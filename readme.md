@@ -13,6 +13,7 @@
  - [Lifecycle Hooks](https://github.com/drorseltzer/doubleuc#lifecycle-hooks)
  - [Templating](https://github.com/drorseltzer/doubleuc#templating)
    - [HTML Template](https://github.com/drorseltzer/doubleuc#html-template)
+   - [HTML Template Event Listener](https://github.com/drorseltzer/doubleuc#html-template-event-listener)
    - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
  - [Typescript](https://github.com/drorseltzer/doubleuc#typescript)
  - [Examples](https://github.com/drorseltzer/doubleuc#examples)
@@ -164,13 +165,10 @@ If the attribute is `observed`, it will trigger a rerender flow.
 
 Getter function will return the attribute value with its corresponding type - *part of the build flow*.
 
-`name`: unique name for the component scope - *camelCased*.
-
-`initValue (optional)`: initiated value on connected lifecycle hook - *string*.
-
-`observed (optional)`: rerender on attribute updates - *default: false*
-
-`type`: string | number | boolean | array | json - *array|json is using the JSON.parse method*.
+ - `name`: unique name for the component scope - *camelCased*.
+ - `initValue (optional)`: initiated value on connected lifecycle hook - *string*.
+ - `observed (optional)`: rerender on attribute updates - *default: false*
+ - `type`: string | number | boolean | array | json - *array|json is using the JSON.parse method*.
 
 ## Methods
 Scoped functions that would be called from different parts of the component.
@@ -192,11 +190,11 @@ methods: { // private methods to call from all over the wc flow - must be a func
 ## Event Listeners
 Will trigger methods when target selector match with event type - *persistence also after re-rendering*
 
-`target`: valid html selector.
+ - `target`: valid html selector.
+ - `event`: any event name.
+ - `methods`: array of methods names to call when triggered.
 
-`event`: any event name.
-
-`methods`: array of methods names to call when triggered.
+Another alternative is to use [HTML Template Event Listener](https://github.com/drorseltzer/doubleuc#html-template-event-listener).
 
 ## Lifecycle Hooks
  - `connected` - invoked each time the component is injected into the dom.
@@ -229,6 +227,16 @@ For Example:
 First render will occur on connected lifecycle hook.
 
 Rerender (only the html part) will occur each time an observed attribute has changed.
+
+### HTML Template Event Listener
+```html
+<button id="button-click" ~click="someMethodName">Click</button>
+```
+ - `id` most be present within the element.
+ - `~` represent event listener here - *can be used multiple times.*
+ - `click` represent even name to listen - *can be any valid event name.*
+
+u can also use the declarative way as demonstrated in the [Event Listeners](https://github.com/drorseltzer/doubleuc#event-listeners) section.
 
 ### CSS Template
 Just like any other css, scss, saas file/inline - no restrictions.
@@ -408,15 +416,14 @@ customElements.define("button-component", ButtonComponent);
 
 ### Counter Component:
 
-```typescript
+```javascript
 module.exports = {
   tagName: 'mock-counter',
   templateHtml: `
-    <div>
       <p>Counter: {{counter}}</p>
-      <button id="count">count</button>
-      <button id="reset">reset</button>
-    </div>`,
+      <button id="count" ~click="count">count</button>
+      <button id="reset" ~click="reset">reset</button>
+  `,
   style: 'p { font-size: {{~StyleFontSize}} }',
    attributes: [
       { name: 'counter', initValue: '0', observed: true, type: 'number' },
@@ -430,16 +437,12 @@ module.exports = {
       this.counter = 0;
     }
   },
-  listeners: [
-    { target: '#count', event: 'click', methods: ['count'] },
-    { target: '#reset', event: 'click', methods: ['reset'] }
-  ]
 };
 ```
 
 Will produce this file:
 
-```typescript
+```javascript
 // mock-counter.js
 
 class MockCounter extends HTMLElement {
@@ -504,11 +507,11 @@ class MockCounter extends HTMLElement {
 
    attributeChangedCallback(name, oldValue, newValue) {
       if (newValue !== oldValue && this.isRendered) {
-        if (name.startsWith("style-")) {
-          this.renderCss();
-        } else {
-            this.render();
-        }
+         if (name.startsWith("style-")) {
+           this.renderCss();
+         } else {
+           this.render();
+         }
       }
    }
 
@@ -518,10 +521,10 @@ class MockCounter extends HTMLElement {
       <style class="style">p{font-size:var(--style-font-size)}</style>
       <div class="ref">
         <p>Counter: ${this.counter}</p>
-        <button id="count">count</button>
-        <button id="reset">reset</button>
+         <button id="count">count</button>
+         <button id="reset">reset</button>
       </div>
-    `.trim();
+     `.trim();
       this.initListeners();
       this.isRendered = true;
    }
@@ -529,12 +532,13 @@ class MockCounter extends HTMLElement {
    render() {
       const ref = this.shadowRoot.querySelector(".ref");
       ref.innerHTML = `
-        <p>Counter: ${this.counter}</p>
-        <button id="count">count</button>
-        <button id="reset">reset</button>`;
+         <p>Counter: ${this.counter}</p>
+         <button id="count">count</button>
+         <button id="reset">reset</button>
+      `;
       this.initListeners();
    }
-   
+
    renderCss() {
       const vars = this.shadowRoot.querySelector(".vars");
       vars.innerText = `:host { --style-font-size: ${this.StyleFontSize}; }`;
