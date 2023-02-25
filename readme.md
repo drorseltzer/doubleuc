@@ -46,7 +46,8 @@ modern framework should manage components state, but why waste time on pieces of
 ## Features
 
 - Standard Web Component - based on declarative object.
-- Shipped without any extra code.
+- Shipped without any extra code - invisible footprint.
+- No base class, no imports to bundle.
 - Compatible with all modern browsers - 100% Native.
 - Compatible with all modern frontend frameworks: React, Vue, Angular, Svelte and any other u can think of.
 - Templating with auto attribute/method binding - inline or html file.
