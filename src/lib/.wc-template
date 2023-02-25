@@ -73,22 +73,40 @@ class {{CLASS_NAME}} extends HTMLElement {
   syncCustomElements() {
     const ref = this.shadowRoot.querySelector('.ref');
     const docFrag = new DocumentFragment();
+
     const template = document.createElement('div');
     template.id = 'ref';
     template.innerHTML = `{{TEMPLATE_HTML}}`;
     docFrag.append(template);
+
     const currentChildren = this.getAllChildren(ref);
-    const customElementsChildren = currentChildren.map(ele => !!window.customElements.get(ele.nodeName.toLowerCase()) ? ele : false);
-    if (!customElementsChildren.some(isCustomElement => isCustomElement)) {
-        return docFrag;
+    const customElementsChildren = currentChildren.map(child => {
+      const isCustomElement = !!window.customElements.get(child.nodeName.toLowerCase());
+      return isCustomElement ? child : false;
+    });
+
+    if (!customElementsChildren.some(child => !!child)) {
+      return docFrag;
     }
+
     const futureChildren = this.getAllChildren(docFrag.querySelector('div#ref'))
-    const customElementsFutureChildren = futureChildren.map(ele => !!window.customElements.get(ele.nodeName.toLowerCase()) ? ele : false);
-    for(const customElementsFutureChild in customElementsFutureChildren) {
-        if (!customElementsChildren[customElementsFutureChild]) continue;
-        customElementsFutureChildren[customElementsFutureChild].parentNode.insertBefore(customElementsChildren[customElementsFutureChild], customElementsFutureChildren[customElementsFutureChild]);
-        customElementsFutureChildren[customElementsFutureChild].remove();
+    const customElementsFutureChildren = futureChildren.map(child => {
+      const isCustomElement = !!window.customElements.get(child.nodeName.toLowerCase());
+      return isCustomElement ? child : false;
+    });
+
+    for (let i = 0; i < customElementsFutureChildren.length; i++) {
+      const futureChild = customElementsFutureChildren[i];
+      const currentChild = customElementsChildren[i];
+
+      if (!currentChild) {
+        continue;
+      }
+
+      futureChild.parentNode.insertBefore(currentChild, futureChild);
+      futureChild.remove();
     }
+
     return docFrag;
   }
 
