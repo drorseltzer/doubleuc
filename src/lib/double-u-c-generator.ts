@@ -79,7 +79,10 @@ export class DoubleUCGenerator {
 
   private replaceTemplateHtml() {
     const html = this.getHtmlFile() || this.declaration.templateHtml;
-    const replacedTemplateHtml = html ? this.replaceTemplateHtmlLiterals(html) : '';
+    const replacedTemplateHtmlListeners = html ? this.replaceHtmlListeners(html) : '';
+    const replacedTemplateHtml = replacedTemplateHtmlListeners
+      ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlListeners)
+      : '';
     this.wcString = this.wcString.replaceAll('{{TEMPLATE_HTML}}', replacedTemplateHtml || '');
 
     return this;
@@ -216,6 +219,30 @@ export class DoubleUCGenerator {
     this.wcString = this.wcString.replace('{{GETTERS_SETTERS}}', attributesGettersString);
 
     return this;
+  }
+
+  private replaceHtmlListeners(html: string) {
+    const regex = new RegExp(/<[^>]*id\s*=\s*["'][^"']*["'][^>]*\s~[^>]*>/g);
+    const listenersElements = html.matchAll(regex);
+    if (!listenersElements) return html;
+    let replacedTemplateHtml = html.toString();
+    for (const listenersElement of listenersElements) {
+      const [elementOpenTag] = listenersElement;
+      const idRegex = elementOpenTag.match(/id="(.*?)"/);
+      const eventsRegex = elementOpenTag.matchAll(/~(.*?)="(.*?)"/g);
+      if (!idRegex) continue;
+      if (!eventsRegex) continue;
+      const [, id] = idRegex;
+      for (const eventMatch of eventsRegex) {
+        const [fullEventString, eventName, method] = eventMatch;
+        if (!this.declaration.listeners) {
+          this.declaration.listeners = [];
+        }
+        this.declaration.listeners.push({ target: `#${id}`, event: eventName, methods: [method] });
+        replacedTemplateHtml = replacedTemplateHtml.replace(` ${fullEventString}`, '');
+      }
+    }
+    return replacedTemplateHtml;
   }
 
   private replaceTemplateHtmlLiterals(html: string) {
