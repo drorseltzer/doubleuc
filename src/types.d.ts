@@ -39,6 +39,11 @@ export declare const enum DeclarativeWebComponentOutputType {
   STRING = 1
 }
 
+export declare const enum DeclarativeWebComponentGeneratorOutputType {
+  JS = 0,
+  TS = 1
+}
+
 export type DeclarativeWebComponentConfig = {
   outputDir?: string;
   outputFilename?: string;

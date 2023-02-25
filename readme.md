@@ -78,7 +78,7 @@ npm i doubleuc
 **Generate new component declaration file:**
 
 ```
-npx doubleuc new test-component
+npx doubleuc new [component-name] [target: ts|js]
 ```
 
 **Generate component from declaration file:**

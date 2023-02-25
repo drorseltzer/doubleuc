@@ -21,14 +21,19 @@ yargs
       generateFiles(fileList).then(() => console.log("Done!")).catch((err) => console.error(err));
     }
   })
-  .command(["new [name]"], "Generate Web Component", (yargs) => {
+  .command(["new [name] [target]"], "Generate Web Component", (yargs) => {
     return yargs
       .positional("name", {
         describe: "component name",
         demandOption: true
+      })
+      .positional("target", {
+        describe: "js or ts",
+        default: "ts",
+        demandOption: true
       });
   }, (argv) => {
-    generateComponentFiles(argv.name);
+    generateComponentFiles(argv.name, argv.target);
   })
   .parse();
 
@@ -45,8 +50,9 @@ async function generateFile(path) {
   console.log(`Generated ${file}`);
 }
 
-function generateComponentFiles(name) {
-  const generator = new DoubleUCComponentGenerator(name);
+function generateComponentFiles(name, target) {
+  const targetNum = target === 'ts' ? 1 : 0;
+  const generator = new DoubleUCComponentGenerator(name, targetNum);
   const files = generator.generateComponentDeclarationFiles();
   console.log(`Generated ${files}`);
 }
