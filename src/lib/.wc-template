@@ -41,7 +41,7 @@ class {{CLASS_NAME}} extends HTMLElement {
         this.renderCss();
       } else {
         this.render();
-        this.initListeners();
+        // this.initListeners();
       }
     }
     {{ATTRIBUTE_CHANGED_CALLBACKS}}
@@ -60,61 +60,71 @@ class {{CLASS_NAME}} extends HTMLElement {
     this.isRendered = true;
   }
 
-  getAllChildren(element) {
-    let children = Array.from(element.children);
-    if (!children.length) {
-      return [];
-    }
-    return children.concat(
-      children.flatMap(child => this.getAllChildren(child))
-    );
-  }
+  updateHtmlNode(node1, node2) {
+    const isCustom1 = window.customElements.get(node1.tagName.toLowerCase()) !== undefined;
+    const isCustom2 = window.customElements.get(node2.tagName.toLowerCase()) !== undefined;
 
-  syncCustomElements() {
-    const ref = this.shadowRoot.querySelector('.ref');
-    const docFrag = new DocumentFragment();
+    if (isCustom1 || isCustom2) {
+     const attributes1 = node1.attributes;
+     const attributes2 = node2.attributes;
 
-    const template = document.createElement('div');
-    template.id = 'ref';
-    template.innerHTML = `{{TEMPLATE_HTML}}`;
-    docFrag.append(template);
+     for (let i = 0; i < attributes2.length; i++) {
+       const attribute2 = attributes2[i];
+       const attribute1 = attributes1.getNamedItem(attribute2.name);
 
-    const currentChildren = this.getAllChildren(ref);
-    const customElementsChildren = currentChildren.map(child => {
-      const isCustomElement = !!window.customElements.get(child.nodeName.toLowerCase());
-      return isCustomElement ? child : false;
-    });
-
-    if (!customElementsChildren.some(child => !!child)) {
-      return docFrag;
+       if (!attribute1 || attribute1.value !== attribute2.value) {
+         node1.setAttribute(attribute2.name, attribute2.value);
+       }
+     }
+      return;
     }
 
-    const futureChildren = this.getAllChildren(docFrag.querySelector('div#ref'))
-    const customElementsFutureChildren = futureChildren.map(child => {
-      const isCustomElement = !!window.customElements.get(child.nodeName.toLowerCase());
-      return isCustomElement ? child : false;
-    });
+    const attributes1 = node1.attributes;
+    const attributes2 = node2.attributes;
 
-    for (let i = 0; i < customElementsFutureChildren.length; i++) {
-      const futureChild = customElementsFutureChildren[i];
-      const currentChild = customElementsChildren[i];
+    for (let i = 0; i < attributes2.length; i++) {
+      const attribute2 = attributes2[i];
+      const attribute1 = attributes1.getNamedItem(attribute2.name);
 
-      if (!currentChild) {
-        continue;
+      if (!attribute1 || attribute1.value !== attribute2.value) {
+        node1.setAttribute(attribute2.name, attribute2.value);
       }
-
-      futureChild.parentNode.insertBefore(currentChild, futureChild);
-      futureChild.remove();
     }
 
-    return docFrag;
+    for (let i = 0; i < attributes1.length; i++) {
+      const attribute1 = attributes1[i];
+      const attribute2 = attributes2.getNamedItem(attribute1.name);
+
+      if (!attribute2) {
+        node1.removeAttribute(attribute1.name);
+      }
+    }
+
+    const children1 = Array.from(node1.childNodes).filter(child => child.nodeType !== Node.TEXT_NODE);
+    const children2 = Array.from(node2.childNodes).filter(child => child.nodeType !== Node.TEXT_NODE);
+
+    for (let i = 0; i < children2.length; i++) {
+      const child1 = children1[i];
+      const child2 = children2[i];
+
+      if (!child1) {
+        node1.appendChild(child2.cloneNode(true));
+      } else if (child2.nodeType === Node.ELEMENT_NODE) {
+        this.updateHtmlNode(child1, child2);
+      }
+    }
+
+    if (!children2.length && node1.innerHTML !== node2.innerHTML) {
+      node1.innerHTML = node2.innerHTML;
+    }
   }
 
   render() {
     const ref = this.shadowRoot.querySelector('.ref');
-    const newRef = this.syncCustomElements();
-    ref.replaceChildren();
-    Array.from(newRef.querySelector('div#ref').children).forEach(ele => ref.appendChild(ele));
+    const template = document.createElement('div');
+    template.className = 'ref';
+    template.innerHTML = `{{TEMPLATE_HTML}}`;
+    this.updateHtmlNode(ref, template);
   }
 
   renderCss() {

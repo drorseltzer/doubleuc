@@ -228,7 +228,7 @@ For Example:
 
 First render will occur on connected lifecycle hook.
 
-Rerender (only the html part) will occur each time an observed attribute has changed.
+Rerender (only the changed parts) will occur each time an observed attribute has changed.
 
 ### HTML Template Event Listener
 ```html
@@ -241,16 +241,10 @@ Rerender (only the html part) will occur each time an observed attribute has cha
 u can also use the declarative way as demonstrated in the [Event Listeners](https://github.com/drorseltzer/doubleuc#event-listeners) section.
 
 ### Nesting Components
-***THIS IS HIGHLY EXPERIMENTAL AND NOT OPTIMIZE FOR PERFORMANCE***
 ```html
 <hello-world name="{{name}}"></hello-world>
 ```
-Each time the `name` attribute has changed, the component will preserve it's current attributes state.
-
-**This is the not optimized for performance part**: basically, it creates a document fragment and copy all the template html inside, then it maps all the custom elements in the current form and same for the future form, after doing that it appends the current custom element before the future one and deletes the future one.
-
-As a result the custom element is re-connected - I'm curious to check the performance of this behavior.
-
+**Take into consideration that the parent attribute value will override the component internal attribute on change.**
 
 ### CSS Template
 Just like any other css, scss, saas file/inline - no restrictions.
