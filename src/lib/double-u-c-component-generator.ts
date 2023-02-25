@@ -42,14 +42,14 @@ export class DoubleUCComponentGenerator {
 
   private replaceTemplateFilePath() {
     const htmlFilePath = path.join(process.cwd(), this.tagName, this.tagName + '.html');
-    this.componentString = this.componentString.replaceAll('{{STYLE_FILE_PATH}}', htmlFilePath);
+    this.componentString = this.componentString.replaceAll('{{TEMPLATE_FILE_PATH}}', htmlFilePath);
 
     return this;
   }
 
   private replaceStyleFilePath() {
     const scssFilePath = path.join(process.cwd(), this.tagName, this.tagName + '.scss');
-    this.componentString = this.componentString.replaceAll('{{TEMPLATE_FILE_PATH}}', scssFilePath);
+    this.componentString = this.componentString.replaceAll('{{STYLE_FILE_PATH}}', scssFilePath);
 
     return this;
   }

@@ -41,6 +41,7 @@ class {{CLASS_NAME}} extends HTMLElement {
         this.renderCss();
       } else {
         this.render();
+        this.initListeners();
       }
     }
     {{ATTRIBUTE_CHANGED_CALLBACKS}}
@@ -59,10 +60,43 @@ class {{CLASS_NAME}} extends HTMLElement {
     this.isRendered = true;
   }
 
+  getAllChildren(element) {
+    let children = Array.from(element.children);
+    if (!children.length) {
+      return [];
+    }
+    return children.concat(
+      children.flatMap(child => this.getAllChildren(child))
+    );
+  }
+
+  syncCustomElements() {
+    const ref = this.shadowRoot.querySelector('.ref');
+    const docFrag = new DocumentFragment();
+    const template = document.createElement('div');
+    template.id = 'ref';
+    template.innerHTML = `{{TEMPLATE_HTML}}`;
+    docFrag.append(template);
+    const currentChildren = this.getAllChildren(ref);
+    const customElementsChildren = currentChildren.map(ele => !!window.customElements.get(ele.nodeName.toLowerCase()) ? ele : false);
+    if (!customElementsChildren.some(isCustomElement => isCustomElement)) {
+        return docFrag;
+    }
+    const futureChildren = this.getAllChildren(docFrag.querySelector('div#ref'))
+    const customElementsFutureChildren = futureChildren.map(ele => !!window.customElements.get(ele.nodeName.toLowerCase()) ? ele : false);
+    for(const customElementsFutureChild in customElementsFutureChildren) {
+        if (!customElementsChildren[customElementsFutureChild]) continue;
+        customElementsFutureChildren[customElementsFutureChild].parentNode.insertBefore(customElementsChildren[customElementsFutureChild], customElementsFutureChildren[customElementsFutureChild]);
+        customElementsFutureChildren[customElementsFutureChild].remove();
+    }
+    return docFrag;
+  }
+
   render() {
     const ref = this.shadowRoot.querySelector('.ref');
-    ref.innerHTML = `{{TEMPLATE_HTML}}`;
-    this.initListeners();
+    const newRef = this.syncCustomElements();
+    ref.replaceChildren();
+    Array.from(newRef.querySelector('div#ref').children).forEach(ele => ref.appendChild(ele));
   }
 
   renderCss() {

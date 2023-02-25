@@ -152,7 +152,7 @@ export class DoubleUCGenerator {
   private replaceStyle() {
     try {
       const style = this.loadStyleFile() || this.declaration.style;
-      const styleString = style ? this.replaceTemplateCssLiterals(style) : '';
+      const styleString = style && style.length ? this.replaceTemplateCssLiterals(style) : '';
       const compiledStyle = styleString
         ? sass.compileString(styleString, { style: 'compressed' }).css
         : '';
@@ -248,7 +248,7 @@ export class DoubleUCGenerator {
   private replaceTemplateHtmlLiterals(html: string) {
     const regex = new RegExp(/{{(.*?)}}/g);
     const literals = html.match(regex);
-    if (!literals) return this.declaration.templateHtml;
+    if (!literals) return html;
     let replacedTemplateHtml = html.toString();
     for (const literal of literals) {
       const stripped = literal.replaceAll(/({{|}})/g, '');
@@ -360,9 +360,9 @@ export class DoubleUCGenerator {
     const attributes = this.declaration.attributes.filter(attr => attr.initValue);
     let attributeInitsString = '';
     for (const attribute of attributes) {
-      attributeInitsString += `this.setAttribute('${pascalToKebab(attribute.name)}', '${
-        attribute.initValue
-      }');\n`;
+      attributeInitsString += `!this.${attribute.name} && this.setAttribute('${pascalToKebab(
+        attribute.name
+      )}', '${attribute.initValue}');\n`;
     }
     this.wcString = this.wcString.replace('{{ATTRIBUTES_INITS}}', attributeInitsString);
 
