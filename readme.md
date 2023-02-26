@@ -13,7 +13,7 @@
  - [Lifecycle Hooks](https://github.com/drorseltzer/doubleuc#lifecycle-hooks)
  - [Templating](https://github.com/drorseltzer/doubleuc#templating)
    - [HTML Template](https://github.com/drorseltzer/doubleuc#html-template)
-   - [HTML Template Event Listener](https://github.com/drorseltzer/doubleuc#html-template-event-listener)
+   - [Template Event Listener](https://github.com/drorseltzer/doubleuc#template-event-listener)
    - [Nesting Components](https://github.com/drorseltzer/doubleuc#nesting-components)
    - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
  - [Typescript](https://github.com/drorseltzer/doubleuc#typescript)
@@ -196,7 +196,7 @@ Will trigger methods when target selector match with event type - *persistence a
  - `event`: any event name.
  - `methods`: array of methods names to call when triggered.
 
-Another alternative is to use [HTML Template Event Listener](https://github.com/drorseltzer/doubleuc#html-template-event-listener).
+Another alternative is to use [Template Event Listener](https://github.com/drorseltzer/doubleuc#template-event-listener).
 
 ## Lifecycle Hooks
  - `connected` - invoked each time the component is injected into the dom.
@@ -230,13 +230,13 @@ First render will occur on connected lifecycle hook.
 
 Rerender (only the changed parts) will occur each time an observed attribute has changed.
 
-### HTML Template Event Listener
+### Template Event Listener
 ```html
 <button id="button-click" ~click="someMethodName">Click</button>
 ```
  - `id` most be present within the element.
  - `~` represent event listener here - *can be used multiple times.*
- - `click` represent even name to listen - *can be any valid event name.*
+ - `click` represent event name to listen - *can be any valid event name.*
 
 u can also use the declarative way as demonstrated in the [Event Listeners](https://github.com/drorseltzer/doubleuc#event-listeners) section.
 
