@@ -246,7 +246,7 @@ Rerender (only the changed parts) will occur each time an observed attribute has
 
 ### Template Properties
 ```html
-<button ~prop-disbaled="attributeNameOrMethodCall">Click</button>
+<button ~prop-disbaled="BooleanAttributeNameOrMethodCall">Click</button>
 ```
  - `~prop-` prefix for dynamic properties.
  - `disbaled` represent property name.
