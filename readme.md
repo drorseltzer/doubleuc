@@ -238,6 +238,11 @@ Rerender (only the changed parts) will occur each time an observed attribute has
  - `~attr-` prefix for dynamic attributes.
  - `disbaled` represent attribute name.
 
+**This is not allowed and will break the code:**
+```html
+<button disbaled="{{attributeNameOrMethodCall}}">Click</button>
+```
+
 ### Template Event Listener
 ```html
 <button id="button-click" ~ev-click="someMethodName">Click</button>
