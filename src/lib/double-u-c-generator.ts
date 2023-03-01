@@ -80,11 +80,14 @@ export class DoubleUCGenerator {
   private replaceTemplateHtml() {
     const html = this.getHtmlFile() || this.declaration.templateHtml;
     const replacedTemplateHtmlListeners = html ? this.replaceHtmlListeners(html) : '';
-    const replacedTemplateHtmlClasses = replacedTemplateHtmlListeners
+    const replacedTemplateHtmlRefAttributes = replacedTemplateHtmlListeners
       ? this.replaceHtmlRefAttributes(replacedTemplateHtmlListeners)
       : '';
-    const replacedTemplateHtml = replacedTemplateHtmlClasses
-      ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlClasses)
+    const replacedTemplateHtmlProps = replacedTemplateHtmlRefAttributes
+      ? this.replaceHtmlRefProps(replacedTemplateHtmlRefAttributes)
+      : '';
+    const replacedTemplateHtml = replacedTemplateHtmlProps
+      ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlProps)
       : '';
     this.wcString = this.wcString.replaceAll('{{TEMPLATE_HTML}}', replacedTemplateHtml || '');
 
@@ -250,17 +253,35 @@ export class DoubleUCGenerator {
 
   private replaceHtmlRefAttributes(html: string) {
     const regex = new RegExp(/<[^>]*\s~attr-[^>]*>/g);
-    const classElements = html.matchAll(regex);
-    if (!classElements) return html;
+    const attrsElements = html.matchAll(regex);
+    if (!attrsElements) return html;
     let replacedTemplateHtml = html.toString();
-    for (const classElement of classElements) {
-      const [elementOpenTag] = classElement;
-      const classesRegex = elementOpenTag.matchAll(/~attr-(.*?)="(.*?)"/g);
-      if (!classesRegex) continue;
-      for (const classRegex of classesRegex) {
-        const [full, attribute, value] = classRegex;
+    for (const attrsElement of attrsElements) {
+      const [elementOpenTag] = attrsElement;
+      const attrsRegex = elementOpenTag.matchAll(/~attr-(.*?)="(.*?)"/g);
+      if (!attrsRegex) continue;
+      for (const attrRegex of attrsRegex) {
+        const [full, attribute, value] = attrRegex;
         const classString = `${attribute}="\${this.${value}}"`;
         replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${classString}`);
+      }
+    }
+    return replacedTemplateHtml;
+  }
+
+  private replaceHtmlRefProps(html: string) {
+    const regex = new RegExp(/<[^>]*\s~prop-[^>]*>/g);
+    const propsElements = html.matchAll(regex);
+    if (!propsElements) return html;
+    let replacedTemplateHtml = html.toString();
+    for (const propsElement of propsElements) {
+      const [elementOpenTag] = propsElement;
+      const propsRegex = elementOpenTag.matchAll(/~prop-(.*?)="(.*?)"/g);
+      if (!propsRegex) continue;
+      for (const propRegex of propsRegex) {
+        const [full, prop, value] = propRegex;
+        const propString = `\${this.${value} ? '${prop}' : ''}`;
+        replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${propString}`);
       }
     }
     return replacedTemplateHtml;
