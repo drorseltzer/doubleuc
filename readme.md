@@ -249,7 +249,7 @@ Rerender (only the changed parts) will occur each time an observed attribute has
 <button ~prop-disbaled="attributeNameOrMethodCall">Click</button>
 ```
  - `~prop-` prefix for dynamic properties.
- - `disbaled` represent attribute name.
+ - `disbaled` represent property name.
 
 **This is not allowed and will break the code:**
 ```html
