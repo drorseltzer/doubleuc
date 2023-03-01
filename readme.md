@@ -13,6 +13,7 @@
  - [Lifecycle Hooks](https://github.com/drorseltzer/doubleuc#lifecycle-hooks)
  - [Templating](https://github.com/drorseltzer/doubleuc#templating)
    - [HTML Template](https://github.com/drorseltzer/doubleuc#html-template)
+   - [Template Attributes](https://github.com/drorseltzer/doubleuc#template-attributes)
    - [Template Event Listener](https://github.com/drorseltzer/doubleuc#template-event-listener)
    - [Nesting Components](https://github.com/drorseltzer/doubleuc#nesting-components)
    - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
@@ -230,19 +231,26 @@ First render will occur on connected lifecycle hook.
 
 Rerender (only the changed parts) will occur each time an observed attribute has changed.
 
+### Template Attributes
+```html
+<button ~attr-disbaled="attributeNameOrMethodCall">Click</button>
+```
+ - `~attr-` prefix for dynamic attributes.
+ - `disbaled` represent attribute name.
+
 ### Template Event Listener
 ```html
-<button id="button-click" ~click="someMethodName">Click</button>
+<button id="button-click" ~ev-click="someMethodName">Click</button>
 ```
  - `id` most be present within the element.
- - `~` represent event listener here - *can be used multiple times.*
+ - `~ev-` represent event listener here - *can be used multiple times.*
  - `click` represent event name to listen - *can be any valid event name.*
 
 u can also use the declarative way as demonstrated in the [Event Listeners](https://github.com/drorseltzer/doubleuc#event-listeners) section.
 
 ### Nesting Components
 ```html
-<hello-world name="{{name}}"></hello-world>
+<hello-world ~attr-name="name"></hello-world>
 ```
 **Take into consideration that the parent attribute value will override the component internal attribute on change.**
 
