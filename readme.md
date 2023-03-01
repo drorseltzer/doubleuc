@@ -253,7 +253,7 @@ Rerender (only the changed parts) will occur each time an observed attribute has
 
 **This is not allowed and will break the code:**
 ```html
-<button disbaled="{{attributeNameOrMethodCall}}">Click</button>
+<button disbaled="{{BooleanAttributeNameOrMethodCall}}">Click</button>
 ```
 
 ### Template Event Listener
