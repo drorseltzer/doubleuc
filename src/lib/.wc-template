@@ -25,6 +25,7 @@ class {{CLASS_NAME}} extends HTMLElement {
     this.initAttributes();
     {{CONNECTED_CALLBACKS}}
     this.firstRender();
+    this.initListeners();
   }
 
   disconnectedCallback() {
@@ -37,12 +38,7 @@ class {{CLASS_NAME}} extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
-      if (name.startsWith('style-')) {
-        this.renderCss();
-      } else {
-        this.render();
-        // this.initListeners();
-      }
+      this.render(name);
     }
     {{ATTRIBUTE_CHANGED_CALLBACKS}}
   }
@@ -56,75 +52,51 @@ class {{CLASS_NAME}} extends HTMLElement {
         {{TEMPLATE_HTML}}
       </div>
     `.trim();
-    this.initListeners();
     this.isRendered = true;
   }
 
-  updateHtmlNode(node1, node2) {
-    const isCustom1 = window.customElements.get(node1.tagName.toLowerCase()) !== undefined;
-    const isCustom2 = window.customElements.get(node2.tagName.toLowerCase()) !== undefined;
-
-    if (isCustom1 || isCustom2) {
-     const attributes1 = node1.attributes;
-     const attributes2 = node2.attributes;
-
-     for (let i = 0; i < attributes2.length; i++) {
-       const attribute2 = attributes2[i];
-       const attribute1 = attributes1.getNamedItem(attribute2.name);
-
-       if (!attribute1 || attribute1.value !== attribute2.value) {
-         node1.setAttribute(attribute2.name, attribute2.value);
-       }
-     }
-      return;
+  render(attribute) {
+    if (attribute.startsWith('style-')) {
+      this.renderCss();
     }
-
-    const attributes1 = node1.attributes;
-    const attributes2 = node2.attributes;
-
-    for (let i = 0; i < attributes2.length; i++) {
-      const attribute2 = attributes2[i];
-      const attribute1 = attributes1.getNamedItem(attribute2.name);
-
-      if (!attribute1 || attribute1.value !== attribute2.value) {
-        node1.setAttribute(attribute2.name, attribute2.value);
-      }
-    }
-
-    for (let i = 0; i < attributes1.length; i++) {
-      const attribute1 = attributes1[i];
-      const attribute2 = attributes2.getNamedItem(attribute1.name);
-
-      if (!attribute2) {
-        node1.removeAttribute(attribute1.name);
-      }
-    }
-
-    const children1 = Array.from(node1.childNodes).filter(child => child.nodeType !== Node.TEXT_NODE);
-    const children2 = Array.from(node2.childNodes).filter(child => child.nodeType !== Node.TEXT_NODE);
-
-    for (let i = 0; i < children2.length; i++) {
-      const child1 = children1[i];
-      const child2 = children2[i];
-
-      if (!child1) {
-        node1.appendChild(child2.cloneNode(true));
-      } else if (child2.nodeType === Node.ELEMENT_NODE) {
-        this.updateHtmlNode(child1, child2);
-      }
-    }
-
-    if (!children2.length && node1.innerHTML !== node2.innerHTML) {
-      node1.innerHTML = node2.innerHTML;
-    }
-  }
-
-  render() {
-    const ref = this.shadowRoot.querySelector('.ref');
     const template = document.createElement('div');
     template.className = 'ref';
     template.innerHTML = `{{TEMPLATE_HTML}}`;
-    this.updateHtmlNode(ref, template);
+    const refs = this.shadowRoot.querySelectorAll(`.ref-${attribute}`);
+    const futureRefs = template.querySelectorAll(`.ref-${attribute}`);
+    const refsAttributes = this.shadowRoot.querySelectorAll(`[ref-attribute]`);
+    const futureRefsAttributes = template.querySelectorAll(`[ref-attribute]`);
+    const methods = this.shadowRoot.querySelectorAll('.ref-method');
+
+    for(let i = 0; i < refsAttributes.length; i++){
+      for (let attr of futureRefsAttributes[i].attributes) {
+        if (refsAttributes[i].hasAttribute(attr.name)) {
+          refsAttributes[i].setAttribute(attr.name, attr.value);
+        }
+        else {
+          refsAttributes[i].setAttribute(attr.name, attr.value);
+        }
+      }
+      for (let attr of refsAttributes[i].attributes) {
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refsAttributes[i].removeAttribute(attr.name);
+        }
+      }
+    }
+
+    for(let i = 0; i < refs.length; i++){
+        if (refs[i] && futureRefs[i]) {
+          refs[i].innerHTML = futureRefs[i].innerHTML;
+        } else if(refs[i] && !futureRefs[i] ) {
+          refs[i].remove();
+        } else if(!refs[i] && futureRefs[i] ) {
+        }
+    }
+
+    for(const method of methods) {
+      const methodName = Array.from(method.classList.values()).filter(className => className.startsWith('ref-method-'))?.at(0).replace('ref-method-','');
+      method.innerHTML = `${this[methodName]()}`;
+    }
   }
 
   renderCss() {

@@ -80,8 +80,11 @@ export class DoubleUCGenerator {
   private replaceTemplateHtml() {
     const html = this.getHtmlFile() || this.declaration.templateHtml;
     const replacedTemplateHtmlListeners = html ? this.replaceHtmlListeners(html) : '';
-    const replacedTemplateHtml = replacedTemplateHtmlListeners
-      ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlListeners)
+    const replacedTemplateHtmlClasses = replacedTemplateHtmlListeners
+      ? this.replaceHtmlRefAttributes(replacedTemplateHtmlListeners)
+      : '';
+    const replacedTemplateHtml = replacedTemplateHtmlClasses
+      ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlClasses)
       : '';
     this.wcString = this.wcString.replaceAll('{{TEMPLATE_HTML}}', replacedTemplateHtml || '');
 
@@ -189,7 +192,7 @@ export class DoubleUCGenerator {
         case 'array':
           getterString = `this.hasAttribute('${pascalToKebab(
             attribute.name
-          )}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : []`;
+          )}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : undefined`;
           setterString = `this.setAttribute('${pascalToKebab(
             attribute.name
           )}', JSON.stringify(value));`;
@@ -197,7 +200,7 @@ export class DoubleUCGenerator {
         case 'json':
           getterString = `this.hasAttribute('${pascalToKebab(
             attribute.name
-          )}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : {}`;
+          )}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : undefined`;
           setterString = `this.setAttribute('${pascalToKebab(
             attribute.name
           )}', JSON.stringify(value));`;
@@ -222,14 +225,14 @@ export class DoubleUCGenerator {
   }
 
   private replaceHtmlListeners(html: string) {
-    const regex = new RegExp(/<[^>]*id\s*=\s*["'][^"']*["'][^>]*\s~[^>]*>/g);
+    const regex = new RegExp(/<[^>]*id\s*=\s*["'][^"']*["'][^>]*\s~ev-[^>]*>/g);
     const listenersElements = html.matchAll(regex);
     if (!listenersElements) return html;
     let replacedTemplateHtml = html.toString();
     for (const listenersElement of listenersElements) {
       const [elementOpenTag] = listenersElement;
       const idRegex = elementOpenTag.match(/id="(.*?)"/);
-      const eventsRegex = elementOpenTag.matchAll(/~(.*?)="(.*?)"/g);
+      const eventsRegex = elementOpenTag.matchAll(/~ev-(.*?)="(.*?)"/g);
       if (!idRegex) continue;
       if (!eventsRegex) continue;
       const [, id] = idRegex;
@@ -239,7 +242,25 @@ export class DoubleUCGenerator {
           this.declaration.listeners = [];
         }
         this.declaration.listeners.push({ target: `#${id}`, event: eventName, methods: [method] });
-        replacedTemplateHtml = replacedTemplateHtml.replace(` ${fullEventString}`, '');
+        replacedTemplateHtml = replacedTemplateHtml.replace(`${fullEventString}`, '');
+      }
+    }
+    return replacedTemplateHtml;
+  }
+
+  private replaceHtmlRefAttributes(html: string) {
+    const regex = new RegExp(/<[^>]*\s~attr-[^>]*>/g);
+    const classElements = html.matchAll(regex);
+    if (!classElements) return html;
+    let replacedTemplateHtml = html.toString();
+    for (const classElement of classElements) {
+      const [elementOpenTag] = classElement;
+      const classesRegex = elementOpenTag.matchAll(/~attr-(.*?)="(.*?)"/g);
+      if (!classesRegex) continue;
+      for (const classRegex of classesRegex) {
+        const [full, attribute, value] = classRegex;
+        const classString = `${attribute}="\${this.${value}}"`;
+        replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${classString}`);
       }
     }
     return replacedTemplateHtml;
@@ -254,7 +275,13 @@ export class DoubleUCGenerator {
       const stripped = literal.replaceAll(/({{|}})/g, '');
       const isFunction = stripped.includes('(');
       if (isFunction) {
-        replacedTemplateHtml = replacedTemplateHtml.replace(literal, `\${this.${stripped}}`);
+        replacedTemplateHtml = replacedTemplateHtml.replace(
+          literal,
+          `<span class="ref-method ref-method-${stripped.replace(
+            /\(.*?\)/g,
+            ''
+          )}">\${this.${stripped}}</span>`
+        );
         continue;
       }
 
@@ -263,7 +290,12 @@ export class DoubleUCGenerator {
       );
       if (!findAttribute)
         throw new Error(`\n [${this.className}] - template attribute not found ${stripped}`);
-      replacedTemplateHtml = replacedTemplateHtml.replace(literal, `\${this.${stripped}}`);
+      replacedTemplateHtml = replacedTemplateHtml.replace(
+        literal,
+        `<span class="ref-${
+          stripped.startsWith('Style') ? pascalToKebab(stripped) : stripped
+        }">\${this.${stripped}}</span>`
+      );
     }
     return replacedTemplateHtml;
   }
