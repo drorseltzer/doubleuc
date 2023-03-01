@@ -14,6 +14,7 @@
  - [Templating](https://github.com/drorseltzer/doubleuc#templating)
    - [HTML Template](https://github.com/drorseltzer/doubleuc#html-template)
    - [Template Attributes](https://github.com/drorseltzer/doubleuc#template-attributes)
+   - [Template Properties](https://github.com/drorseltzer/doubleuc#template-properties)
    - [Template Event Listener](https://github.com/drorseltzer/doubleuc#template-event-listener)
    - [Nesting Components](https://github.com/drorseltzer/doubleuc#nesting-components)
    - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
@@ -233,9 +234,21 @@ Rerender (only the changed parts) will occur each time an observed attribute has
 
 ### Template Attributes
 ```html
-<button ~attr-disbaled="attributeNameOrMethodCall">Click</button>
+<a ~attr-href="attributeNameOrMethodCall">Click</a>
 ```
  - `~attr-` prefix for dynamic attributes.
+ - `disbaled` represent attribute name.
+
+**This is not allowed and will break the code:**
+```html
+<a href="{{attributeNameOrMethodCall}}">Click</a>
+```
+
+### Template Properties
+```html
+<button ~prop-disbaled="attributeNameOrMethodCall">Click</button>
+```
+ - `~prop-` prefix for dynamic properties.
  - `disbaled` represent attribute name.
 
 **This is not allowed and will break the code:**
