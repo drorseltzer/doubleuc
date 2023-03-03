@@ -318,7 +318,6 @@ export class DoubleUCGenerator {
     let replacedTemplateHtml = html.toString();
     for (const listsElement of listsElements) {
       const [fullElementHTML] = listsElement;
-      console.log(fullElementHTML);
       const html = fullElementHTML.toString();
       const listsRegex = fullElementHTML.matchAll(/~list="(.*?)"/g);
       if (!listsRegex) continue;
