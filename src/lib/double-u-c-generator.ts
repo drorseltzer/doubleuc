@@ -326,7 +326,7 @@ export class DoubleUCGenerator {
         const isOfOrIn = expression.includes('of') ? 'of' : expression.includes('in') ? 'in' : 'of';
         const [index, refAttribute] = expression.split(/ of | in /);
         const litteralString = `\${(() => {
-          const listString = '${html.replace(`${full}`, ``)}';
+          const listString = \`${html.replace(`${full}`, ``)}\`;
           let listHtml = '';
           for (const ${index} ${isOfOrIn} this.${refAttribute}){
             listHtml += listString.replaceAll('{${index}}', ${index});
