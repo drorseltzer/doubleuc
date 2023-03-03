@@ -82,6 +82,11 @@ class {{CLASS_NAME}} extends HTMLElement {
     const futureRefsIfs = template.querySelectorAll(`[ref-if]`);
     const methods = this.shadowRoot.querySelectorAll('.ref-method');
 
+    for (let i=0; i < refsIfs.length; i++){
+      if (refsIfs[i].getAttribute('ref-if') === 'false' && futureRefsIfs[i].getAttribute('ref-if') === 'false') continue;
+      if (refsIfs[i].innerHTML !== futureRefsIfs[i].innerHTML) refsIfs[i].innerHTML = futureRefsIfs[i].innerHTML;
+    }
+
     for(let i = 0; i < refsAttributes.length; i++){
       for (let attr of futureRefsAttributes[i].attributes) {
         if (refsAttributes[i].hasAttribute(attr.name)) {
@@ -130,10 +135,6 @@ class {{CLASS_NAME}} extends HTMLElement {
             parent.appendChild(child);
           });
         }
-    }
-
-    for (let i=0; i < refsIfs.length; i++){
-      if (refsIfs[i].innerHTML !== futureRefsIfs[i].innerHTML) refsIfs[i].innerHTML = futureRefsIfs[i].innerHTML;
     }
 
     for(const method of methods) {
