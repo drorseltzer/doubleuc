@@ -39,6 +39,7 @@ class {{CLASS_NAME}} extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
       this.render(name);
+      this.initListeners();
     }
     {{ATTRIBUTE_CHANGED_CALLBACKS}}
   }
@@ -91,18 +92,43 @@ class {{CLASS_NAME}} extends HTMLElement {
         }
       }
       for (let attr of refsAttributes[i].attributes) {
+        if (attr.name === 'ref-ev-set') continue;
         if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
           refsAttributes[i].removeAttribute(attr.name);
         }
       }
     }
 
-    for(let i = 0; i < refs.length; i++){
+    for(let i = 0; i < Math.max(refs.length, futureRefs.length); i++){
+        const elementsToRemove = [];
+        const elementsToAppend = [];
         if (refs[i] && futureRefs[i]) {
-          refs[i].innerHTML = futureRefs[i].innerHTML;
+          if (refs[i].hasAttribute('ref-list') && futureRefs[i].hasAttribute('ref-list') && refs[i].getAttribute('ref-list') === attribute && futureRefs[i].getAttribute('ref-list') === attribute) {
+            for(let j = 0; j < Math.max(refs[i].children.length, futureRefs[i].children.length); j++){
+              if (refs[i].children[j] && futureRefs[i].children[j]) {
+                if (refs[i].children[j].innerHTML !== futureRefs[i].children[j].innerHTML) refs[i].children[j].innerHTML = futureRefs[i].children[j].innerHTML;
+              } else if (refs[i].children[j] && !futureRefs[i].children[j]) {
+                elementsToRemove.push(refs[i].children[j]);
+              } else if (!refs[i].children[j] && futureRefs[i].children[j]) {
+                elementsToAppend.push([refs[i], futureRefs[i].children[j]]);
+              }
+            }
+          } else {
+            refs[i].innerHTML = futureRefs[i].innerHTML;
+          }
         } else if(refs[i] && !futureRefs[i] ) {
-          refs[i].remove();
-        } else if(!refs[i] && futureRefs[i] ) {
+          elementsToRemove.push(refs[i]);
+        }
+
+        if (elementsToRemove.length) {
+          elementsToRemove.forEach(el => el.remove());
+        }
+
+        if (elementsToAppend.length) {
+          elementsToAppend.forEach(union => {
+            const [parent, child] = union;
+            parent.appendChild(child);
+          });
         }
     }
 

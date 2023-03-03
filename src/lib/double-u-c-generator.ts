@@ -80,8 +80,11 @@ export class DoubleUCGenerator {
   private replaceTemplateHtml() {
     const html = this.getHtmlFile() || this.declaration.templateHtml;
     const replacedTemplateHtmlListeners = html ? this.replaceHtmlListeners(html) : '';
-    const replacedTemplateHtmlRefAttributes = replacedTemplateHtmlListeners
-      ? this.replaceHtmlRefAttributes(replacedTemplateHtmlListeners)
+    const replacedTemplateHtmlRefLists = replacedTemplateHtmlListeners
+      ? this.replaceHtmlRefLists(replacedTemplateHtmlListeners)
+      : '';
+    const replacedTemplateHtmlRefAttributes = replacedTemplateHtmlRefLists
+      ? this.replaceHtmlRefAttributes(replacedTemplateHtmlRefLists)
       : '';
     const replacedTemplateHtmlProps = replacedTemplateHtmlRefAttributes
       ? this.replaceHtmlRefProps(replacedTemplateHtmlRefAttributes)
@@ -308,6 +311,40 @@ export class DoubleUCGenerator {
     return replacedTemplateHtml;
   }
 
+  private replaceHtmlRefLists(html: string) {
+    const regex = new RegExp(/<[^>]*\s~list[^>]*>(.*?)<\/[^>]*>/gs);
+    const listsElements = html.matchAll(regex);
+    if (!listsElements) return html;
+    let replacedTemplateHtml = html.toString();
+    for (const listsElement of listsElements) {
+      const [fullElementHTML] = listsElement;
+      console.log(fullElementHTML);
+      const html = fullElementHTML.toString();
+      const listsRegex = fullElementHTML.matchAll(/~list="(.*?)"/g);
+      if (!listsRegex) continue;
+      for (const listRegex of listsRegex) {
+        const [full, expression] = listRegex;
+        const isOfOrIn = expression.includes('of') ? 'of' : expression.includes('in') ? 'in' : 'of';
+        const [index, refAttribute] = expression.split(/ of | in /);
+        const litteralString = `\${(() => {
+          const listString = '${html.replace(`${full}`, ``)}';
+          let listHtml = '';
+          for (const ${index} ${isOfOrIn} this.${refAttribute}){
+            listHtml += listString.replaceAll('{${index}}', ${index});
+          }
+          return listHtml;
+        })()}`;
+        replacedTemplateHtml = replacedTemplateHtml.replace(
+          fullElementHTML,
+          `<span ref-list="${pascalToKebab(refAttribute)}" class="ref-${pascalToKebab(
+            refAttribute
+          )}">${litteralString}</span>`
+        );
+      }
+    }
+    return replacedTemplateHtml;
+  }
+
   private replaceTemplateHtmlLiterals(html: string) {
     const regex = new RegExp(/{{(.*?)}}/g);
     const literals = html.match(regex);
@@ -450,11 +487,20 @@ export class DoubleUCGenerator {
       return this;
     }
     let listenersString = '';
+    let index = 1;
     for (const listener of listeners) {
       const { target, event, methods } = listener;
       for (const method of methods) {
-        listenersString += `this.shadowRoot.querySelectorAll('${target}').forEach(ele => ele.addEventListener('${event}', ev => {this.${method}(ev)}));\n`;
+        const name = `this.${target.replace(/[^a-zA-Z0-9]+/g, '')}${event}${index}Handler`;
+        const handler = `if(!${name}) ${name} = (ev) => {this.${method}(ev)};\n`;
+        listenersString += `${handler}this.shadowRoot.querySelectorAll('${target}').forEach(ele => {
+          if (ele.hasAttribute('ref-ev-set')) return;
+          ele.removeEventListener('${event}', ${name});
+          ele.addEventListener('${event}', ${name});
+          ele.setAttribute('ref-ev-set','');
+        });\n`;
       }
+      index++;
     }
     this.wcString = this.wcString.replace('{{LISTENERS_INITS}}', listenersString);
 

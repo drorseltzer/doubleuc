@@ -17,6 +17,7 @@
    - [Template Attributes](https://github.com/drorseltzer/doubleuc#template-attributes)
    - [Template Properties](https://github.com/drorseltzer/doubleuc#template-properties)
    - [Template Event Listener](https://github.com/drorseltzer/doubleuc#template-event-listener)
+   - [Template Lists](https://github.com/drorseltzer/doubleuc#template-lists)
    - [Nesting Components](https://github.com/drorseltzer/doubleuc#nesting-components)
    - [CSS Template](https://github.com/drorseltzer/doubleuc#css-template--attribute-binding)
  - [Typescript](https://github.com/drorseltzer/doubleuc#typescript)
@@ -276,6 +277,21 @@ The mechanism here is simply commenting the node content.
  - `click` represent event name to listen - *can be any valid event name.*
 
 u can also use the declarative way as demonstrated in the [Event Listeners](https://github.com/drorseltzer/doubleuc#event-listeners) section.
+
+### Template Lists
+**This is EXPERIMENTAL**
+```html
+<ul>
+   <li ~list="item of items">{item}</li>
+</ul>
+```
+ - `~list-` represent list iterator.
+
+*Notice that nested list item is wrapped with single `{}`.*
+
+Known Bugs:
+ - nesting elements not working.
+ - multiline is not working.
 
 ### Nesting Components
 ```html
