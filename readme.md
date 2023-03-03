@@ -13,6 +13,7 @@
  - [Lifecycle Hooks](https://github.com/drorseltzer/doubleuc#lifecycle-hooks)
  - [Templating](https://github.com/drorseltzer/doubleuc#templating)
    - [HTML Template](https://github.com/drorseltzer/doubleuc#html-template)
+   - [Conditional Rendering](https://github.com/drorseltzer/doubleuc#conditional-rendering)
    - [Template Attributes](https://github.com/drorseltzer/doubleuc#template-attributes)
    - [Template Properties](https://github.com/drorseltzer/doubleuc#template-properties)
    - [Template Event Listener](https://github.com/drorseltzer/doubleuc#template-event-listener)
@@ -49,7 +50,7 @@ modern framework should manage components state, but why waste time on pieces of
 ## Features
 
 - Standard Web Component - based on declarative object.
-- Shipped without any extra code - invisible footprint.
+- Shipped without any extra code - almost invisible footprint.
 - No base class, no imports to bundle.
 - Compatible with all modern browsers - 100% Native.
 - Compatible with all modern frontend frameworks: React, Vue, Angular, Svelte and any other u can think of.
@@ -231,6 +232,16 @@ For Example:
 First render will occur on connected lifecycle hook.
 
 Rerender (only the changed parts) will occur each time an observed attribute has changed.
+
+### Conditional Rendering
+```html
+<div ~if="BooleanAttributeNameOrMethodCall">...</div>
+```
+ - `~if-` prefix for conditional rendering.
+
+The mechanism here is simply commenting the node content.
+
+**Note that the node including the ~if statement will remain as is and the commenting will only be applied on its content.**
 
 ### Template Attributes
 ```html

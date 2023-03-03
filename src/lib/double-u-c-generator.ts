@@ -86,8 +86,11 @@ export class DoubleUCGenerator {
     const replacedTemplateHtmlProps = replacedTemplateHtmlRefAttributes
       ? this.replaceHtmlRefProps(replacedTemplateHtmlRefAttributes)
       : '';
-    const replacedTemplateHtml = replacedTemplateHtmlProps
-      ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlProps)
+    const replacedTemplateHtmlIfs = replacedTemplateHtmlProps
+      ? this.replaceHtmlRefIfs(replacedTemplateHtmlProps)
+      : '';
+    const replacedTemplateHtml = replacedTemplateHtmlIfs
+      ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlIfs)
       : '';
     this.wcString = this.wcString.replaceAll('{{TEMPLATE_HTML}}', replacedTemplateHtml || '');
 
@@ -282,6 +285,24 @@ export class DoubleUCGenerator {
         const [full, prop, value] = propRegex;
         const propString = `\${this.${value} ? '${prop}' : ''}`;
         replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${propString}`);
+      }
+    }
+    return replacedTemplateHtml;
+  }
+
+  private replaceHtmlRefIfs(html: string) {
+    const regex = new RegExp(/<[^>]*\s~if[^>]*>/g);
+    const ifsElements = html.matchAll(regex);
+    if (!ifsElements) return html;
+    let replacedTemplateHtml = html.toString();
+    for (const ifElement of ifsElements) {
+      const [elementOpenTag] = ifElement;
+      const ifsRegex = elementOpenTag.matchAll(/~if="(.*?)"/g);
+      if (!ifsRegex) continue;
+      for (const ifRegex of ifsRegex) {
+        const [full, attribute, value] = ifRegex;
+        const ifString = `ref-if="\${this.${attribute}}"`;
+        replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${ifString}`);
       }
     }
     return replacedTemplateHtml;

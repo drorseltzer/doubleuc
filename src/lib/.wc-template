@@ -43,6 +43,15 @@ class {{CLASS_NAME}} extends HTMLElement {
     {{ATTRIBUTE_CHANGED_CALLBACKS}}
   }
 
+  checkIfs(node) {
+    const ifsElements = node.querySelectorAll('[ref-if]');
+    for(const ifElement of ifsElements){
+      if (ifElement.getAttribute('ref-if') === 'false') {
+        ifElement.innerHTML = `<!-- ${ifElement.innerHTML} //-->`;
+      }
+    }
+  }
+
   firstRender() {
     this.shadowRoot.innerHTML = `
       <style class="vars">:host { {{CSS_VARS}} }</style>
@@ -52,6 +61,7 @@ class {{CLASS_NAME}} extends HTMLElement {
         {{TEMPLATE_HTML}}
       </div>
     `.trim();
+    this.checkIfs(this.shadowRoot);
     this.isRendered = true;
   }
 
@@ -62,10 +72,13 @@ class {{CLASS_NAME}} extends HTMLElement {
     const template = document.createElement('div');
     template.className = 'ref';
     template.innerHTML = `{{TEMPLATE_HTML}}`;
+    this.checkIfs(template);
     const refs = this.shadowRoot.querySelectorAll(`.ref-${attribute}`);
     const futureRefs = template.querySelectorAll(`.ref-${attribute}`);
     const refsAttributes = this.shadowRoot.querySelectorAll(`[ref-attribute]`);
     const futureRefsAttributes = template.querySelectorAll(`[ref-attribute]`);
+    const refsIfs = this.shadowRoot.querySelectorAll(`[ref-if]`);
+    const futureRefsIfs = template.querySelectorAll(`[ref-if]`);
     const methods = this.shadowRoot.querySelectorAll('.ref-method');
 
     for(let i = 0; i < refsAttributes.length; i++){
@@ -93,10 +106,17 @@ class {{CLASS_NAME}} extends HTMLElement {
         }
     }
 
+    for (let i=0; i < refsIfs.length; i++){
+      if (refsIfs[i].innerHTML !== futureRefsIfs[i].innerHTML) refsIfs[i].innerHTML = futureRefsIfs[i].innerHTML;
+    }
+
     for(const method of methods) {
       const methodName = Array.from(method.classList.values()).filter(className => className.startsWith('ref-method-'))?.at(0).replace('ref-method-','');
       method.innerHTML = `${this[methodName]()}`;
     }
+
+    template.replaceChildren();
+    template.remove();
   }
 
   renderCss() {
