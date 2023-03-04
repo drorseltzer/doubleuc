@@ -304,7 +304,18 @@ export class DoubleUCGenerator {
       if (!ifsRegex) continue;
       for (const ifRegex of ifsRegex) {
         const [full, attribute, value] = ifRegex;
-        const ifString = `ref-if="\${this.${attribute}}"`;
+        const isNotOrBooleanExpression = attribute.startsWith('!')
+          ? attribute.startsWith('!!')
+            ? attribute.startsWith('!!!')
+              ? 3
+              : 2
+            : 1
+          : false;
+        const ifString = `ref-if="\${${
+          isNotOrBooleanExpression ? '!'.repeat(isNotOrBooleanExpression) : ''
+        }this.${
+          isNotOrBooleanExpression ? attribute.substring(isNotOrBooleanExpression) : attribute
+        }}"`;
         replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${ifString}`);
       }
     }
@@ -312,7 +323,7 @@ export class DoubleUCGenerator {
   }
 
   private replaceHtmlRefLists(html: string) {
-    const regex = new RegExp(/<[^>]*\s~list[^>]*>(.*?)<\/[^>]*>/gs);
+    const regex = new RegExp(/<[^>]*\s~list[^>]*>(.*?)<\/[^>]*>/g);
     const listsElements = html.matchAll(regex);
     if (!listsElements) return html;
     let replacedTemplateHtml = html.toString();
@@ -326,18 +337,31 @@ export class DoubleUCGenerator {
         const isOfOrIn = expression.includes('of') ? 'of' : expression.includes('in') ? 'in' : 'of';
         const [index, refAttribute] = expression.split(/ of | in /);
         const litteralString = `\${(() => {
+          if (!this.${refAttribute}) return;
           const listString = \`${html.replace(`${full}`, ``)}\`;
-          let listHtml = '';
+          let listHtml = listString.toString();
           for (const ${index} ${isOfOrIn} this.${refAttribute}){
-            listHtml += listString.replaceAll('{${index}}', ${index});
+            const regex = new RegExp(\`{${index}(.*?)}\`, 'g');
+            const matches = listString.matchAll(regex);
+            if (!matches) continue;
+            for(const match of matches) {
+              const [full, additions] = match;
+              if (additions) {
+                const prop = additions.startsWith('.') ? additions.substring(1).replaceAll('.','][') : additions.replaceAll('.','][');
+                const finalProp = prop.startsWith(']') ? prop.substring(1) : prop;
+                listHtml = listHtml.replace(full, ${index}[\`\${finalProp}\`]);
+              } else {
+                listHtml = listHtml.replace(full, ${index});
+              }
+            }
           }
           return listHtml;
         })()}`;
         replacedTemplateHtml = replacedTemplateHtml.replace(
           fullElementHTML,
-          `<span ref-list="${pascalToKebab(refAttribute)}" class="ref-${pascalToKebab(
-            refAttribute
-          )}">${litteralString}</span>`
+          `<span ref-list="${pascalToKebab(refAttribute) || ''}" class="ref-${
+            pascalToKebab(refAttribute) || ''
+          }">${litteralString}</span>`
         );
       }
     }
@@ -351,8 +375,17 @@ export class DoubleUCGenerator {
     let replacedTemplateHtml = html.toString();
     for (const literal of literals) {
       const stripped = literal.replaceAll(/({{|}})/g, '');
-      const isFunction = stripped.includes('(');
-      if (isFunction) {
+      if (!stripped) continue;
+      const isMethod = stripped.includes('(');
+      const findMethod =
+        isMethod && this.declaration.methods
+          ? Object.keys(this.declaration.methods).find(method => method === stripped)
+          : null;
+      const findAttribute = this.declaration.attributes.find(
+        attribute => attribute.name === stripped
+      );
+
+      if (findMethod) {
         replacedTemplateHtml = replacedTemplateHtml.replace(
           literal,
           `<span class="ref-method ref-method-${stripped.replace(
@@ -363,11 +396,11 @@ export class DoubleUCGenerator {
         continue;
       }
 
-      const findAttribute = this.declaration.attributes.find(
-        attribute => attribute.name === stripped
-      );
-      if (!findAttribute)
-        throw new Error(`\n [${this.className}] - template attribute not found ${stripped}`);
+      if (!findAttribute || (isMethod && !findMethod)) {
+        replacedTemplateHtml = replacedTemplateHtml.replace(literal, `\${this.${stripped}}`);
+        continue;
+      }
+
       replacedTemplateHtml = replacedTemplateHtml.replace(
         literal,
         `<span class="ref-${
