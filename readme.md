@@ -279,10 +279,9 @@ The mechanism here is simply commenting the node content.
 u can also use the declarative way as demonstrated in the [Event Listeners](https://github.com/drorseltzer/doubleuc#event-listeners) section.
 
 ### Template Lists
-**This is EXPERIMENTAL**
 ```html
-<ul>
-   <li ~list="item of items">{item}</li>
+<ul ~if="!!items">
+   <a ~list="item of items" ~attr-href="{item.link}">{item.title}</a>
 </ul>
 ```
  - `~list-` represent list iterator.
