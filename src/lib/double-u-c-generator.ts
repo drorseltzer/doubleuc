@@ -258,17 +258,27 @@ export class DoubleUCGenerator {
   }
 
   private replaceHtmlRefAttributes(html: string) {
-    const regex = new RegExp(/<[^>]*\s~attr-[^>]*>/g);
+    const regex = new RegExp(/<[^>]*\s~attr-[^>]*>/gs);
     const attrsElements = html.matchAll(regex);
     if (!attrsElements) return html;
     let replacedTemplateHtml = html.toString();
     for (const attrsElement of attrsElements) {
       const [elementOpenTag] = attrsElement;
-      const attrsRegex = elementOpenTag.matchAll(/~attr-(.*?)="(.*?)"/g);
+      const attrsRegex = elementOpenTag.matchAll(/~attr-(.*?)="(.*?)"/gs);
       if (!attrsRegex) continue;
       for (const attrRegex of attrsRegex) {
         const [full, attribute, value] = attrRegex;
-        const classString = `${attribute}="\${this.${value}}"`;
+        let classString = `${attribute}="\${this.${value}}"`;
+        const isMethod = value.includes('(');
+        const findMethod =
+          isMethod && this.declaration.methods
+            ? Object.keys(this.declaration.methods).includes(value.replace(/\(.*?\)/g, ''))
+            : null;
+        const findAttribute = this.declaration.attributes.find(attr => attr.name === value);
+
+        if (!findAttribute && !findMethod) {
+          classString = `${attribute}="${value}"`;
+        }
         replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${classString}`);
       }
     }
@@ -276,13 +286,13 @@ export class DoubleUCGenerator {
   }
 
   private replaceHtmlRefProps(html: string) {
-    const regex = new RegExp(/<[^>]*\s~prop-[^>]*>/g);
+    const regex = new RegExp(/<[^>]*\s~prop-[^>]*>/gs);
     const propsElements = html.matchAll(regex);
     if (!propsElements) return html;
     let replacedTemplateHtml = html.toString();
     for (const propsElement of propsElements) {
       const [elementOpenTag] = propsElement;
-      const propsRegex = elementOpenTag.matchAll(/~prop-(.*?)="(.*?)"/g);
+      const propsRegex = elementOpenTag.matchAll(/~prop-(.*?)="(.*?)"/gs);
       if (!propsRegex) continue;
       for (const propRegex of propsRegex) {
         const [full, prop, value] = propRegex;
@@ -323,27 +333,27 @@ export class DoubleUCGenerator {
   }
 
   private replaceHtmlRefLists(html: string) {
-    const regex = new RegExp(/<[^>]*\s~list[^>]*>(.*?)<\/[^>]*>/g);
+    const regex = new RegExp(/<([-_\w]+)\s[^>]*~list[^>]*>([\s\S]*?)<\/\1\s*>/gs);
     const listsElements = html.matchAll(regex);
     if (!listsElements) return html;
     let replacedTemplateHtml = html.toString();
     for (const listsElement of listsElements) {
       const [fullElementHTML] = listsElement;
       const html = fullElementHTML.toString();
-      const listsRegex = fullElementHTML.matchAll(/~list="(.*?)"/g);
+      const listsRegex = fullElementHTML.matchAll(/~list="(.*?)"/gs);
       if (!listsRegex) continue;
       for (const listRegex of listsRegex) {
         const [full, expression] = listRegex;
         const isOfOrIn = expression.includes('of') ? 'of' : expression.includes('in') ? 'in' : 'of';
         const [index, refAttribute] = expression.split(/ of | in /);
+        const listString = html.replace(`${full}`, ``);
         const litteralString = `\${(() => {
           if (!this.${refAttribute}) return;
-          const listString = \`${html.replace(`${full}`, ``)}\`;
-          let listHtml = listString.toString();
+          const listString = \`${listString}\`;
+          let listHtml = listString.repeat(this.${refAttribute}.length);
           for (const ${index} ${isOfOrIn} this.${refAttribute}){
-            const regex = new RegExp(\`{${index}(.*?)}\`, 'g');
+            const regex = new RegExp(\`{${index}(.*?)}\`, 'gs');
             const matches = listString.matchAll(regex);
-            if (!matches) continue;
             for(const match of matches) {
               const [full, additions] = match;
               if (additions) {
@@ -361,7 +371,7 @@ export class DoubleUCGenerator {
           fullElementHTML,
           `<span ref-list="${pascalToKebab(refAttribute) || ''}" class="ref-${
             pascalToKebab(refAttribute) || ''
-          }">${litteralString}</span>`
+          }">${litteralString || ''}</span>`
         );
       }
     }
