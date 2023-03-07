@@ -1,13 +1,24 @@
-import { DeclarativeWebComponent } from 'doubleuc';
+import { DeclarativeWebComponent, DeclarativeWebComponentInterface } from 'doubleuc';
+
+interface {{COMPONENT_CLASS_NAME}} extends DeclarativeWebComponentInterface {
+  helloAttr: string;
+  init: () => void;
+}
 
 export = {
   tagName: '{{COMPONENT_TAG_NAME}}',
   templateFile: '{{TEMPLATE_FILE_PATH}}',
   styleFile: '{{STYLE_FILE_PATH}}',
-  attributes: [],
-  slotted: false,
-  methods: {},
+  attributes: [{ name: 'helloAttr', type: 'string', initValue: 'hello from {{COMPONENT_TAG_NAME}}', observed: true }],
+  methods: {
+    init: function() {
+      console.log(this.helloAttr);
+    }
+  },
   listeners: [],
-  hooks: {},
+  hooks: {
+    connected: ['init']
+  },
+  slotted: false,
   config: {}
-} as DeclarativeWebComponent;
+} as DeclarativeWebComponent<{{COMPONENT_CLASS_NAME}}>;

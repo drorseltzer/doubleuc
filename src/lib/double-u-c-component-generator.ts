@@ -30,6 +30,7 @@ export class DoubleUCComponentGenerator {
   generateComponentDeclarationFiles() {
     return this.getTemplateFile()
       .replaceTagName()
+      .replaceClassName()
       .replaceTemplateFilePath()
       .replaceStyleFilePath()
       .createDir()
@@ -50,6 +51,15 @@ export class DoubleUCComponentGenerator {
 
   private replaceTagName() {
     this.componentString = this.componentString.replaceAll('{{COMPONENT_TAG_NAME}}', this.tagName);
+
+    return this;
+  }
+
+  private replaceClassName() {
+    this.componentString = this.componentString.replaceAll(
+      '{{COMPONENT_CLASS_NAME}}',
+      kebabToPascal(this.tagName)
+    );
 
     return this;
   }
