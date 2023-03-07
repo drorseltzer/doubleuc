@@ -582,7 +582,7 @@ export class DoubleUCGenerator {
   }
 
   private async minify() {
-    if (!this.declaration.config?.minify?.enabled) return this;
+    if (this.declaration.config?.minify?.enabled === false) return this;
     try {
       this.wcString =
         (await minify(this.wcString, this.declaration.config?.minify?.config)).code ||
