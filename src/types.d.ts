@@ -1,6 +1,6 @@
 import { MinifyOptions } from 'terser';
 
-export type DeclarativeWebComponent<T> = {
+export type DeclarativeWebComponent<T = unknown> = {
   tagName: string;
   attributes: DeclarativeWebComponentAttribute[];
   templateHtml?: string;
