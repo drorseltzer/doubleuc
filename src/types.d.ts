@@ -1,6 +1,6 @@
 import { MinifyOptions } from 'terser';
 
-export type DeclarativeWebComponent = {
+export type DeclarativeWebComponent<T> = {
   tagName: string;
   attributes: DeclarativeWebComponentAttribute[];
   templateHtml?: string;
@@ -8,7 +8,10 @@ export type DeclarativeWebComponent = {
   style?: string;
   styleFile?: string;
   hooks?: DeclarativeWebComponentHooks;
-  methods?: Record<string, (name?: string, oldValue?: string, newValue?: string) => unknown>;
+  methods?: Record<
+    string,
+    (this: T, name?: string, oldValue?: string, newValue?: string) => unknown
+  >;
   listeners?: DeclarativeWebComponentListener[];
   slotted?: boolean;
   config?: DeclarativeWebComponentConfig;
@@ -52,6 +55,8 @@ export type DeclarativeWebComponentConfig = {
     config?: MinifyOptions;
   };
 };
+
+export type DeclarativeWebComponentInterface = Record<string, unknown>;
 
 export declare class DoubleUCGenerator {
   private wcString;

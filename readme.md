@@ -288,10 +288,6 @@ u can also use the declarative way as demonstrated in the [Event Listeners](http
 
 *Notice that nested list item is wrapped with single `{}`.*
 
-Known Bugs:
- - nesting elements not working.
- - multiline is not working.
-
 ### Nesting Components
 ```html
 <hello-world ~attr-name="name"></hello-world>
@@ -331,7 +327,7 @@ in order to use in a typescript project:
 ```json
 {
    "compilerOptions": {
-      "target": "es2016",
+      "target": "esnext",
       "module": "commonjs",
       "rootDir": "./components",
       "outDir": ".duc"
@@ -344,7 +340,14 @@ add a build command to `package.json`: `"build:duc": "tsc && npx doubleuc b .duc
 ```typescript
 // ./components/button/button.ts
 
-import { DeclarativeWebComponent } from 'doubleuc';
+import { DeclarativeWebComponent, DeclarativeWebComponentInterface } from 'doubleuc';
+
+interface Button extends DeclarativeWebComponentInterface {
+   name: string;
+   disabled: boolean;
+   clickEvent: () => void;
+   isDisabled: () => string;
+}
 
 export = {
    tagName: 'button-component',
@@ -368,7 +371,7 @@ export = {
    listeners: [{ target: '.click', event: 'click', methods: ['clickEvent'] }],
    hooks: {},
    config: {}
-} as DeclarativeWebComponent;
+} as DeclarativeWebComponent<Button>;
 ```
 
 ## Examples
