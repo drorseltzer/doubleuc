@@ -66,85 +66,103 @@ class {{CLASS_NAME}} extends HTMLElement {
     this.isRendered = true;
   }
 
-  render(attribute) {
-    if (attribute.startsWith('style-')) {
-      this.renderCss();
-    }
-    const template = document.createElement('div');
-    template.className = 'ref';
-    template.innerHTML = `{{TEMPLATE_HTML}}`;
-    this.checkIfs(template);
-    const refs = this.shadowRoot.querySelectorAll(`.ref-${attribute}`);
-    const futureRefs = template.querySelectorAll(`.ref-${attribute}`);
-    const refsAttributes = this.shadowRoot.querySelectorAll(`[ref-attribute]`);
-    const futureRefsAttributes = template.querySelectorAll(`[ref-attribute]`);
-    const refsIfs = this.shadowRoot.querySelectorAll(`[ref-if]`);
-    const futureRefsIfs = template.querySelectorAll(`[ref-if]`);
-    const methods = this.shadowRoot.querySelectorAll('.ref-method');
-
-    for (let i=0; i < refsIfs.length; i++){
-      if (refsIfs[i].getAttribute('ref-if') === 'false' && futureRefsIfs[i].getAttribute('ref-if') === 'false') continue;
-      if (refsIfs[i].innerHTML !== futureRefsIfs[i].innerHTML) refsIfs[i].innerHTML = futureRefsIfs[i].innerHTML;
-    }
-
-    for(let i = 0; i < refsAttributes.length; i++){
-      for (let attr of futureRefsAttributes[i].attributes) {
-        if (refsAttributes[i].hasAttribute(attr.name)) {
-          refsAttributes[i].setAttribute(attr.name, attr.value);
-        }
-        else {
-          refsAttributes[i].setAttribute(attr.name, attr.value);
-        }
+    render(attribute) {
+      if (attribute.startsWith('style-')) {
+        this.renderCss();
       }
-      for (let attr of refsAttributes[i].attributes) {
-        if (attr.name === 'ref-ev-set') continue;
-        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
-          refsAttributes[i].removeAttribute(attr.name);
-        }
-      }
+
+      const template = document.createElement('div');
+      template.className = 'ref';
+      template.innerHTML = `{{TEMPLATE_HTML}}`;
+      this.checkIfs(template);
+
+      this.updateRefsIfs(attribute, template);
+      this.updateRefsAttributes(template);
+      this.updateRefs(attribute, template);
+      this.updateMethods();
+
+      this.applyChanges(template);
     }
 
-    for(let i = 0; i < Math.max(refs.length, futureRefs.length); i++){
+    updateRefsIfs(attribute, template) {
+      const refsIfs = this.shadowRoot.querySelectorAll(`[ref-if]`);
+      const futureRefsIfs = template.querySelectorAll(`[ref-if]`);
+
+      refsIfs.forEach((refIf, i) => {
+        if (refIf.getAttribute('ref-if') === 'false' && futureRefsIfs[i].getAttribute('ref-if') === 'false') {
+          return;
+        }
+        if (refIf.innerHTML !== futureRefsIfs[i].innerHTML) {
+          refIf.innerHTML = futureRefsIfs[i].innerHTML;
+        }
+      });
+    }
+
+    updateRefsAttributes(template) {
+      const refsAttributes = this.shadowRoot.querySelectorAll(`[ref-attribute]`);
+      const futureRefsAttributes = template.querySelectorAll(`[ref-attribute]`);
+
+      refsAttributes.forEach((refAttribute, i) => {
+        Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+          if (refAttribute.hasAttribute(attr.name)) {
+            refAttribute.setAttribute(attr.name, attr.value);
+          } else {
+            refAttribute.setAttribute(attr.name, attr.value);
+          }
+        });
+        Array.from(refAttribute.attributes).forEach((attr) => {
+          if (attr.name === 'ref-ev-set') {
+            return;
+          }
+          if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+            refAttribute.removeAttribute(attr.name);
+          }
+        });
+      });
+    }
+
+    updateRefs(attribute, template) {
+      const refs = this.shadowRoot.querySelectorAll(`.ref-${attribute}`);
+      const futureRefs = template.querySelectorAll(`.ref-${attribute}`);
+
+      refs.forEach((ref, i) => {
         const elementsToRemove = [];
         const elementsToAppend = [];
-        if (refs[i] && futureRefs[i]) {
-          if (refs[i].hasAttribute('ref-list') && futureRefs[i].hasAttribute('ref-list') && refs[i].getAttribute('ref-list') === attribute && futureRefs[i].getAttribute('ref-list') === attribute) {
-            for(let j = 0; j < Math.max(refs[i].children.length, futureRefs[i].children.length); j++){
-              if (refs[i].children[j] && futureRefs[i].children[j]) {
-                if (refs[i].children[j].innerHTML !== futureRefs[i].children[j].innerHTML) refs[i].children[j].innerHTML = futureRefs[i].children[j].innerHTML;
-              } else if (refs[i].children[j] && !futureRefs[i].children[j]) {
-                elementsToRemove.push(refs[i].children[j]);
-              } else if (!refs[i].children[j] && futureRefs[i].children[j]) {
-                elementsToAppend.push([refs[i], futureRefs[i].children[j]]);
+        if (ref && futureRefs[i]) {
+          if (ref.hasAttribute('ref-list') && futureRefs[i].hasAttribute('ref-list') && ref.getAttribute('ref-list') === attribute && futureRefs[i].getAttribute('ref-list') === attribute) {
+            ref.querySelectorAll('*').forEach((child, j) => {
+              if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+                child.innerHTML = futureRefs[i].children[j]?.innerHTML || '';
               }
-            }
+            });
+            futureRefs[i].querySelectorAll('*').forEach((child, j) => {
+              if (!ref.children[j]) {
+                elementsToAppend.push(child);
+              }
+            });
           } else {
-            refs[i].innerHTML = futureRefs[i].innerHTML;
+            ref.innerHTML = futureRefs[i].innerHTML;
           }
-        } else if(refs[i] && !futureRefs[i] ) {
-          elementsToRemove.push(refs[i]);
+        } else if (ref && !futureRefs[i]) {
+          elementsToRemove.push(ref);
         }
-
-        if (elementsToRemove.length) {
-          elementsToRemove.forEach(el => el.remove());
-        }
-
-        if (elementsToAppend.length) {
-          elementsToAppend.forEach(union => {
-            const [parent, child] = union;
-            parent.appendChild(child);
-          });
-        }
+        elementsToRemove.forEach((el) => el.remove());
+        elementsToAppend.forEach((el) => ref.appendChild(el));
+      });
     }
 
-    for(const method of methods) {
-      const methodName = Array.from(method.classList.values()).filter(className => className.startsWith('ref-method-'))?.at(0).replace('ref-method-','');
-      method.innerHTML = `${this[methodName]()}`;
+    updateMethods() {
+      const methods = this.shadowRoot.querySelectorAll('.ref-method');
+      methods.forEach((method) => {
+        const methodName = Array.from(method.classList.values()).find((className) => className.startsWith('ref-method-'))?.replace('ref-method-', '');
+        method.innerHTML = `${this[methodName]()}`;
+      });
     }
 
-    template.replaceChildren();
-    template.remove();
-  }
+    applyChanges(template) {
+      template.replaceChildren(...Array.from(template.childNodes));
+      template.remove();
+    }
 
   renderCss() {
     const vars = this.shadowRoot.querySelector('.vars');
