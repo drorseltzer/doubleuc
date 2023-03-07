@@ -378,26 +378,38 @@ export = {
 
 ### Counter Component:
 
-```javascript
-module.exports = {
-  tagName: 'mock-counter',
+```typescript
+import { DeclarativeWebComponent, DeclarativeWebComponentInterface } from 'doubleuc';
+
+interface Counter extends DeclarativeWebComponentInterface {
+   counter: number;
+   count: () => void;
+   reset: () => void;
+   counterResetDisabled: () => string;
+}
+
+export =  {
+  tagName: 'counter-component',
   templateHtml: `
-      <p>Counter: {{counter}}</p>
-      <button id="count" ~click="count">count</button>
-      <button id="reset" ~click="reset">reset</button>
+      <div class="counter">
+        <p>Counter: {{counter}}</p>
+        <button id="count" ~ev-click="count">Count!</button>
+        <button id="rest" ~ev-click="reset" ~prop-disabled="counterResetDisabled()">Reset</button>
+      </div>
   `,
-  style: 'p { font-size: {{~StyleFontSize}} }',
-   attributes: [
-      { name: 'counter', initValue: '0', observed: true, type: 'number' },
-      { name: 'StyleFontSize', initValue: '14px', observed: true, type: 'string' }
-   ],
-  methods: {
-    count: function() {
-      this.counter++;
-    },
-    reset: function() {
-      this.counter = 0;
-    }
-  },
-};
+   attributes: [{ name: 'counter', type: 'number', observed: true, initValue: '0' }],
+   methods: {
+      count: function() {
+         this.counter++;
+      },
+      reset: function() {
+         this.counter = 0;
+      },
+      counterResetDisabled: function() {
+         return this.counter > 0 ? '' : 'disabled';
+      }
+   }
+}as DeclarativeWebComponent<Counter>;
 ```
+
+Will build into `counter-component.js` `~ 4.4 kb` - no dependencies, ready to use web component.
