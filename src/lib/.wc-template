@@ -94,7 +94,7 @@ class {{CLASS_NAME}} extends HTMLElement {
       const futureRefsIfs = template.querySelectorAll(`[ref-if]`);
 
       refsIfs.forEach((refIf, i) => {
-        if (refIf.getAttribute('ref-if') === 'false' && futureRefsIfs[i].getAttribute('ref-if') === 'false') {
+        if ((refIf.getAttribute('ref-if') === 'false' && futureRefsIfs[i].getAttribute('ref-if') === 'false') || refIf.getAttribute('ref-if') === futureRefsIfs[i].getAttribute('ref-if')) {
           return;
         }
         if (refIf.innerHTML !== futureRefsIfs[i].innerHTML) {

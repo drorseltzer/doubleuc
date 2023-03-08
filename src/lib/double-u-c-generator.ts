@@ -200,7 +200,9 @@ export class DoubleUCGenerator {
           getterString = `this.hasAttribute('${pascalToKebab(
             attribute.name
           )}') ? this.getAttribute('${pascalToKebab(attribute.name)}') === 'true' : false`;
-          setterString = `this.setAttribute('${pascalToKebab(attribute.name)}', value === 'true');`;
+          setterString = `this.setAttribute('${pascalToKebab(
+            attribute.name
+          )}', !!value ? 'true' : 'false');`;
           break;
         case 'array':
           getterString = `this.hasAttribute('${pascalToKebab(
@@ -417,9 +419,7 @@ export class DoubleUCGenerator {
 
       replacedTemplateHtml = replacedTemplateHtml.replace(
         literal,
-        `<span class="ref-${
-          stripped.startsWith('Style') ? pascalToKebab(stripped) : stripped
-        }">\${this.${stripped}}</span>`
+        `<span class="ref-${pascalToKebab(stripped)}">\${this.${stripped}}</span>`
       );
     }
     return replacedTemplateHtml;
