@@ -54,6 +54,7 @@ class {{CLASS_NAME}} extends HTMLElement {
   }
 
   firstRender() {
+    this.beforeFirstRender();
     this.shadowRoot.innerHTML = `
       <style class="vars">:host { {{CSS_VARS}} }</style>
       <style class="style">{{STYLE}}</style>
@@ -64,9 +65,11 @@ class {{CLASS_NAME}} extends HTMLElement {
     `.trim();
     this.checkIfs(this.shadowRoot);
     this.isRendered = true;
+    this.afterFirstRender();
   }
 
     render(attribute) {
+      this.beforeRender();
       if (attribute.startsWith('style-')) {
         this.renderCss();
       }
@@ -82,6 +85,8 @@ class {{CLASS_NAME}} extends HTMLElement {
       this.updateMethods();
 
       this.applyChanges(template);
+
+      this.afterRender();
     }
 
     updateRefsIfs(attribute, template) {
@@ -167,6 +172,23 @@ class {{CLASS_NAME}} extends HTMLElement {
   renderCss() {
     const vars = this.shadowRoot.querySelector('.vars');
     vars.innerText = `:host { {{CSS_VARS}} }`;
+  }
+
+  beforeFirstRender() {
+    {{BEFORE_FIRST_RENDER_HOOK}}
+  }
+
+
+  afterFirstRender() {
+    {{AFTER_FIRST_RENDER_HOOK}}
+  }
+
+  beforeRender() {
+    {{BEFORE_RENDER_HOOK}}
+  }
+
+  afterRender() {
+    {{AFTER_RENDER_HOOK}}
   }
 }
 

@@ -29,6 +29,10 @@ export type DeclarativeWebComponentHooks = {
   connected?: string[];
   disconnected?: string[];
   attributeChanged?: string[];
+  beforeFirstRendered?: string[];
+  firstRendered?: string[];
+  beforeRendered?: string[];
+  rendered?: string[];
 };
 
 export type DeclarativeWebComponentListener = {

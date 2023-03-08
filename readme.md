@@ -143,7 +143,11 @@ const dwc: DeclarativeWebComponent = {
     connected: ['connected'], // on wc connect - cbs are the methods names to call - optional
     disconnected: ['disconnected'], // on wc disconnect - cbs are the methods names to call - optional
     adopted: ['adopted'], // on wc adopted - cbs are the methods names to call - optional
-    attributeChanged: ['attributeChanged'] // on wc attribute change - cbs are the methods names to call - optional
+    attributeChanged: ['attributeChanged'], // on wc attribute change - cbs are the methods names to call - optional
+    beforeFirstRender: [], // before first render - cbs are the methods names to call - optional
+    firstRender: [], // after first render - cbs are the methods names to call - optional
+    beforeRendered: [], // before (second and beyond) rendered - cbs are the methods names to call - optional
+    rendered: [], // after (second and beyond) rendered - cbs are the methods names to call - optional
   },
   listeners: [ // event listeners - initiated after every render - optional
     {
@@ -207,6 +211,10 @@ Another alternative is to use [Template Event Listener](https://github.com/drors
  - `disconnected` - invoked each time the component is removed from the dom.
  - `adopted` - invoked each time the component is moved to a new dom
  - `attributeChanged` - invoked each time an observed component's attribute has changed.
+ - `beforeFirstRendered` - invoked once before the component's first renders.
+ - `firstRendered` - invoked once at the component's first renders.
+ - `beforeRendered` - invoked each time (after the first time) before the component's re-renders.
+ - `rendered` - invoked each time (after the first time) after the component's re-renders.
 
 Array of methods names to call, for example:
 

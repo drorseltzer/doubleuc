@@ -37,6 +37,10 @@ export class DoubleUCGenerator {
           .replaceDisconnectedCallback()
           .replaceAdoptedCallback()
           .replaceAttributeChangedCallback()
+          .replaceBeforeFirstRenderHook()
+          .replaceAfterFirstRenderHook()
+          .replaceBeforeRenderHook()
+          .replaceAfterRenderHook()
           .format()
           .treeShaking()
           .format()
@@ -496,6 +500,66 @@ export class DoubleUCGenerator {
     return this;
   }
 
+  private replaceAfterFirstRenderHook() {
+    const callbacks = this.declaration.hooks?.firstRendered;
+    if (!callbacks) {
+      this.wcString = this.wcString.replace('{{AFTER_FIRST_RENDER_HOOK}}', '');
+      return this;
+    }
+    let callString = '';
+    for (const callback of callbacks) {
+      callString += `this.${callback}();\n`;
+    }
+    this.wcString = this.wcString.replace('{{AFTER_FIRST_RENDER_HOOK}}', callString);
+
+    return this;
+  }
+
+  private replaceBeforeFirstRenderHook() {
+    const callbacks = this.declaration.hooks?.beforeFirstRendered;
+    if (!callbacks) {
+      this.wcString = this.wcString.replace('{{BEFORE_FIRST_RENDER_HOOK}}', '');
+      return this;
+    }
+    let callString = '';
+    for (const callback of callbacks) {
+      callString += `this.${callback}();\n`;
+    }
+    this.wcString = this.wcString.replace('{{BEFORE_FIRST_RENDER_HOOK}}', callString);
+
+    return this;
+  }
+
+  private replaceAfterRenderHook() {
+    const callbacks = this.declaration.hooks?.rendered;
+    if (!callbacks) {
+      this.wcString = this.wcString.replace('{{AFTER_RENDER_HOOK}}', '');
+      return this;
+    }
+    let callString = '';
+    for (const callback of callbacks) {
+      callString += `this.${callback}();\n`;
+    }
+    this.wcString = this.wcString.replace('{{AFTER_RENDER_HOOK}}', callString);
+
+    return this;
+  }
+
+  private replaceBeforeRenderHook() {
+    const callbacks = this.declaration.hooks?.beforeRendered;
+    if (!callbacks) {
+      this.wcString = this.wcString.replace('{{BEFORE_RENDER_HOOK}}', '');
+      return this;
+    }
+    let callString = '';
+    for (const callback of callbacks) {
+      callString += `this.${callback}();\n`;
+    }
+    this.wcString = this.wcString.replace('{{BEFORE_RENDER_HOOK}}', callString);
+
+    return this;
+  }
+
   private replaceObservedAttributes() {
     const attributes = this.declaration.attributes
       .filter(attr => attr.observed)
@@ -555,6 +619,22 @@ export class DoubleUCGenerator {
     }
     if (!this.declaration.hooks?.adopted) {
       this.wcString = this.wcString.replace('adoptedCallback() {}', '');
+    }
+    if (!this.declaration.hooks?.beforeFirstRendered) {
+      this.wcString = this.wcString.replace('this.beforeFirstRender()', '');
+      this.wcString = this.wcString.replace('beforeFirstRender() {}', '');
+    }
+    if (!this.declaration.hooks?.firstRendered) {
+      this.wcString = this.wcString.replace('this.afterFirstRender()', '');
+      this.wcString = this.wcString.replace('afterFirstRender() {}', '');
+    }
+    if (!this.declaration.hooks?.beforeRendered) {
+      this.wcString = this.wcString.replace('this.beforeRender()', '');
+      this.wcString = this.wcString.replace('beforeRender() {}', '');
+    }
+    if (!this.declaration.hooks?.rendered) {
+      this.wcString = this.wcString.replace('this.afterRender()', '');
+      this.wcString = this.wcString.replace('afterRender() {}', '');
     }
     if (!this.declaration.listeners?.length) {
       this.wcString = this.wcString.replace('initListeners() {}', '');
