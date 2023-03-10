@@ -429,4 +429,4 @@ export =  {
 }as DeclarativeWebComponent<Counter>;
 ```
 
-Will build into `counter-component.js` `~ 4.4 kb` - no dependencies, ready to use web component.
+Will build into `counter-component.js` `~ 3.7 kb` - no dependencies, ready to use web component.
