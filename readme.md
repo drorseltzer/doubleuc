@@ -378,8 +378,7 @@ export = {
    methods: {
       clickEvent: function () {
          console.log('clicked!');
-         const thisElement = this as unknown as HTMLElement;
-         thisElement.dispatchEvent(new Event('clicked', { bubbles: true }));
+         this.dispatchEvent(new Event('clicked', { bubbles: true }));
       },
       isDisabled: function () {
          return this.disabled ? 'disabled' : '';
