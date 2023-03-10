@@ -15,9 +15,7 @@ export class DoubleUCGenerator {
     this.declaration = declaration;
   }
 
-  async generateWebComponent(
-    outputType: DeclarativeWebComponentOutputType = DeclarativeWebComponentOutputType.FILE
-  ) {
+  async generateWebComponent(outputType: DeclarativeWebComponentOutputType = DeclarativeWebComponentOutputType.FILE) {
     const { tagName } = this.declaration;
     this.className = kebabToPascal(tagName);
 
@@ -47,16 +45,13 @@ export class DoubleUCGenerator {
           .minify()
       ).output(outputType);
     } catch (e) {
-      throw new Error(
-        `\n [${this.className}] - failed to build component ${tagName} ${(e as Error).message}`
-      );
+      throw new Error(`\n [${this.className}] - failed to build component ${tagName} ${(e as Error).message}`);
     }
   }
 
   private getTemplateFile() {
     const filePath = path.join(__dirname, '../../src/lib', '.wc-template');
-    if (!fileExist(filePath))
-      throw new Error(`\n [${this.className}] - cannot find template file at ${filePath}`);
+    if (!fileExist(filePath)) throw new Error(`\n [${this.className}] - cannot find template file at ${filePath}`);
     const file = fs.readFileSync(filePath);
     this.wcString = file.toString();
 
@@ -64,18 +59,14 @@ export class DoubleUCGenerator {
   }
 
   private replaceClassName() {
-    if (!this.className)
-      throw new Error(
-        `\n [${this.className}] - cannot parse class name for tag ${this.declaration.tagName}`
-      );
+    if (!this.className) throw new Error(`\n [${this.className}] - cannot parse class name for tag ${this.declaration.tagName}`);
     this.wcString = this.wcString.replaceAll('{{CLASS_NAME}}', this.className);
 
     return this;
   }
 
   private replaceTagName() {
-    if (!this.declaration.tagName)
-      throw new Error(`\n [${this.className}] - invalid tag name ${this.declaration.tagName}`);
+    if (!this.declaration.tagName) throw new Error(`\n [${this.className}] - invalid tag name ${this.declaration.tagName}`);
     this.wcString = this.wcString.replaceAll('{{TAG_NAME}}', this.declaration.tagName);
 
     return this;
@@ -84,21 +75,12 @@ export class DoubleUCGenerator {
   private replaceTemplateHtml() {
     const html = this.getHtmlFile() || this.declaration.templateHtml;
     const replacedTemplateHtmlListeners = html ? this.replaceHtmlListeners(html) : '';
-    const replacedTemplateHtmlRefLists = replacedTemplateHtmlListeners
-      ? this.replaceHtmlRefLists(replacedTemplateHtmlListeners)
-      : '';
-    const replacedTemplateHtmlRefAttributes = replacedTemplateHtmlRefLists
-      ? this.replaceHtmlRefAttributes(replacedTemplateHtmlRefLists)
-      : '';
-    const replacedTemplateHtmlProps = replacedTemplateHtmlRefAttributes
-      ? this.replaceHtmlRefProps(replacedTemplateHtmlRefAttributes)
-      : '';
-    const replacedTemplateHtmlIfs = replacedTemplateHtmlProps
-      ? this.replaceHtmlRefIfs(replacedTemplateHtmlProps)
-      : '';
-    const replacedTemplateHtml = replacedTemplateHtmlIfs
-      ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlIfs)
-      : '';
+    const replacedTemplateHtmlRefLists = replacedTemplateHtmlListeners ? this.replaceHtmlRefLists(replacedTemplateHtmlListeners) : '';
+    const replacedTemplateHtmlRefAttributes = replacedTemplateHtmlRefLists ? this.replaceHtmlRefAttributes(replacedTemplateHtmlRefLists) : '';
+    const replacedTemplateHtmlProps = replacedTemplateHtmlRefAttributes ? this.replaceHtmlRefProps(replacedTemplateHtmlRefAttributes) : '';
+    const replacedTemplateHtmlIfs = replacedTemplateHtmlProps ? this.replaceHtmlRefIfs(replacedTemplateHtmlProps) : '';
+    const replacedTemplateHtmlElse = replacedTemplateHtmlIfs ? this.replaceHtmlRefElse(replacedTemplateHtmlIfs) : '';
+    const replacedTemplateHtml = replacedTemplateHtmlElse ? this.replaceTemplateHtmlLiterals(replacedTemplateHtmlElse) : '';
     this.wcString = this.wcString.replaceAll('{{TEMPLATE_HTML}}', replacedTemplateHtml || '');
 
     return this;
@@ -106,19 +88,13 @@ export class DoubleUCGenerator {
 
   private getHtmlFile() {
     if (!this.declaration.templateFile) return;
-    if (!fileExist(this.declaration.templateFile))
-      throw new Error(
-        `\n component html template file not exists ${this.declaration.templateFile}`
-      );
+    if (!fileExist(this.declaration.templateFile)) throw new Error(`\n component html template file not exists ${this.declaration.templateFile}`);
     return fs.readFileSync(this.declaration.templateFile).toString();
   }
 
   private loadStyleFile() {
     if (!this.declaration.styleFile) return;
-    if (!fileExist(this.declaration.styleFile))
-      throw new Error(
-        `\n [${this.className}] - component style template file not exists ${this.declaration.styleFile}`
-      );
+    if (!fileExist(this.declaration.styleFile)) throw new Error(`\n [${this.className}] - component style template file not exists ${this.declaration.styleFile}`);
     return fs.readFileSync(this.declaration.styleFile).toString();
   }
 
@@ -129,15 +105,9 @@ export class DoubleUCGenerator {
     let replacedTemplateCss = css.toString();
     for (const literal of literals) {
       const stripped = literal.replaceAll(/({{~|}})/g, '');
-      const findAttribute = this.declaration.attributes.find(
-        attribute => attribute.name === stripped
-      );
-      if (!findAttribute)
-        throw new Error(`\n [${this.className}] - css template attribute not found ${stripped}`);
-      replacedTemplateCss = replacedTemplateCss.replace(
-        literal,
-        `var(--${pascalToKebab(stripped)});`
-      );
+      const findAttribute = this.declaration.attributes.find(attribute => attribute.name === stripped);
+      if (!findAttribute) throw new Error(`\n [${this.className}] - css template attribute not found ${stripped}`);
+      replacedTemplateCss = replacedTemplateCss.replace(literal, `var(--${pascalToKebab(stripped)});`);
     }
     return replacedTemplateCss;
   }
@@ -152,11 +122,8 @@ export class DoubleUCGenerator {
     let replacedCssVars = '';
     for (const literal of literals) {
       const stripped = literal.replaceAll(/({{~|}})/g, '');
-      const findAttribute = this.declaration.attributes.find(
-        attribute => attribute.name === stripped
-      );
-      if (!findAttribute)
-        throw new Error(`\n [${this.className}] - css template attribute not found ${stripped}`);
+      const findAttribute = this.declaration.attributes.find(attribute => attribute.name === stripped);
+      if (!findAttribute) throw new Error(`\n [${this.className}] - css template attribute not found ${stripped}`);
       replacedCssVars += `--${pascalToKebab(stripped)}: \${this.${stripped}};`;
     }
 
@@ -169,9 +136,7 @@ export class DoubleUCGenerator {
     try {
       const style = this.loadStyleFile() || this.declaration.style;
       const styleString = style && style.length ? this.replaceTemplateCssLiterals(style) : '';
-      const compiledStyle = styleString
-        ? sass.compileString(styleString, { style: 'compressed' }).css
-        : '';
+      const compiledStyle = styleString ? sass.compileString(styleString, { style: 'compressed' }).css : '';
       this.wcString = this.wcString.replaceAll('{{STYLE}}', compiledStyle);
 
       return this.replaceCssVars(style || '');
@@ -191,34 +156,20 @@ export class DoubleUCGenerator {
       let getterString, setterString;
       switch (attribute.type) {
         case 'number':
-          getterString = `this.hasAttribute('${pascalToKebab(
-            attribute.name
-          )}') ? +this.getAttribute('${pascalToKebab(attribute.name)}') : undefined`;
+          getterString = `this.hasAttribute('${pascalToKebab(attribute.name)}') ? +this.getAttribute('${pascalToKebab(attribute.name)}') : undefined`;
           setterString = `this.setAttribute('${pascalToKebab(attribute.name)}', value.toString());`;
           break;
         case 'boolean':
-          getterString = `this.hasAttribute('${pascalToKebab(
-            attribute.name
-          )}') ? this.getAttribute('${pascalToKebab(attribute.name)}') === 'true' : false`;
-          setterString = `this.setAttribute('${pascalToKebab(
-            attribute.name
-          )}', !!value ? 'true' : 'false');`;
+          getterString = `this.hasAttribute('${pascalToKebab(attribute.name)}') ? this.getAttribute('${pascalToKebab(attribute.name)}') === 'true' : false`;
+          setterString = `this.setAttribute('${pascalToKebab(attribute.name)}', !!value ? 'true' : 'false');`;
           break;
         case 'array':
-          getterString = `this.hasAttribute('${pascalToKebab(
-            attribute.name
-          )}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : undefined`;
-          setterString = `this.setAttribute('${pascalToKebab(
-            attribute.name
-          )}', JSON.stringify(value));`;
+          getterString = `this.hasAttribute('${pascalToKebab(attribute.name)}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : undefined`;
+          setterString = `this.setAttribute('${pascalToKebab(attribute.name)}', JSON.stringify(value));`;
           break;
         case 'json':
-          getterString = `this.hasAttribute('${pascalToKebab(
-            attribute.name
-          )}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : undefined`;
-          setterString = `this.setAttribute('${pascalToKebab(
-            attribute.name
-          )}', JSON.stringify(value));`;
+          getterString = `this.hasAttribute('${pascalToKebab(attribute.name)}') ? JSON.parse(this.getAttribute('${pascalToKebab(attribute.name)}')) : undefined`;
+          setterString = `this.setAttribute('${pascalToKebab(attribute.name)}', JSON.stringify(value));`;
           break;
         default:
           getterString = `this.getAttribute('${pascalToKebab(attribute.name)}')`;
@@ -256,7 +207,11 @@ export class DoubleUCGenerator {
         if (!this.declaration.listeners) {
           this.declaration.listeners = [];
         }
-        this.declaration.listeners.push({ target: `#${id}`, event: eventName, methods: [method] });
+        this.declaration.listeners.push({
+          target: `#${id}`,
+          event: eventName,
+          methods: [method]
+        });
         replacedTemplateHtml = replacedTemplateHtml.replace(`${fullEventString}`, '');
       }
     }
@@ -276,10 +231,7 @@ export class DoubleUCGenerator {
         const [full, attribute, value] = attrRegex;
         let classString = `${attribute}="\${this.${value}}"`;
         const isMethod = value.includes('(');
-        const findMethod =
-          isMethod && this.declaration.methods
-            ? Object.keys(this.declaration.methods).includes(value.replace(/\(.*?\)/g, ''))
-            : null;
+        const findMethod = isMethod && this.declaration.methods ? Object.keys(this.declaration.methods).includes(value.replace(/\(.*?\)/g, '')) : null;
         const findAttribute = this.declaration.attributes.find(attr => attr.name === value);
 
         if (!findAttribute && !findMethod) {
@@ -320,19 +272,28 @@ export class DoubleUCGenerator {
       if (!ifsRegex) continue;
       for (const ifRegex of ifsRegex) {
         const [full, attribute, value] = ifRegex;
-        const isNotOrBooleanExpression = attribute.startsWith('!')
-          ? attribute.startsWith('!!')
-            ? attribute.startsWith('!!!')
-              ? 3
-              : 2
-            : 1
-          : false;
-        const ifString = `ref-if="\${${
-          isNotOrBooleanExpression ? '!'.repeat(isNotOrBooleanExpression) : ''
-        }this.${
+        const isNotOrBooleanExpression = attribute.startsWith('!') ? (attribute.startsWith('!!') ? (attribute.startsWith('!!!') ? 3 : 2) : 1) : false;
+        const ifString = `ref-if="\${${isNotOrBooleanExpression ? '!'.repeat(isNotOrBooleanExpression) : ''}this.${
           isNotOrBooleanExpression ? attribute.substring(isNotOrBooleanExpression) : attribute
         }}"`;
         replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${ifString}`);
+      }
+    }
+    return replacedTemplateHtml;
+  }
+
+  private replaceHtmlRefElse(html: string) {
+    const regex = new RegExp(/<[^>]*\s~else[^>]*>/g);
+    const elseElements = html.matchAll(regex);
+    if (!elseElements) return html;
+    let replacedTemplateHtml = html.toString();
+    for (const elseElement of elseElements) {
+      const [elementOpenTag] = elseElement;
+      const elseRegex = elementOpenTag.matchAll(/~else/g);
+      if (!elseRegex) continue;
+      for (const elseRegex1 of elseRegex) {
+        const [full] = elseRegex1;
+        replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ref-else`);
       }
     }
     return replacedTemplateHtml;
@@ -375,9 +336,7 @@ export class DoubleUCGenerator {
         })()}`;
         replacedTemplateHtml = replacedTemplateHtml.replace(
           fullElementHTML,
-          `<span ref-list="${pascalToKebab(refAttribute) || ''}" class="ref-${
-            pascalToKebab(refAttribute) || ''
-          }">${litteralString || ''}</span>`
+          `<span ref-list="${pascalToKebab(refAttribute) || ''}" class="ref-${pascalToKebab(refAttribute) || ''}">${litteralString || ''}</span>`
         );
       }
     }
@@ -393,22 +352,11 @@ export class DoubleUCGenerator {
       const stripped = literal.replaceAll(/({{|}})/g, '');
       if (!stripped) continue;
       const isMethod = stripped.includes('(');
-      const findMethod =
-        isMethod && this.declaration.methods
-          ? Object.keys(this.declaration.methods).find(method => method === stripped)
-          : null;
-      const findAttribute = this.declaration.attributes.find(
-        attribute => attribute.name === stripped
-      );
+      const findMethod = isMethod && this.declaration.methods ? Object.keys(this.declaration.methods).find(method => method === stripped) : null;
+      const findAttribute = this.declaration.attributes.find(attribute => attribute.name === stripped);
 
       if (findMethod) {
-        replacedTemplateHtml = replacedTemplateHtml.replace(
-          literal,
-          `<span class="ref-method ref-method-${stripped.replace(
-            /\(.*?\)/g,
-            ''
-          )}">\${this.${stripped}}</span>`
-        );
+        replacedTemplateHtml = replacedTemplateHtml.replace(literal, `<span class="ref-method ref-method-${stripped.replace(/\(.*?\)/g, '')}">\${this.${stripped}}</span>`);
         continue;
       }
 
@@ -417,10 +365,7 @@ export class DoubleUCGenerator {
         continue;
       }
 
-      replacedTemplateHtml = replacedTemplateHtml.replace(
-        literal,
-        `<span class="ref-${pascalToKebab(stripped)}">\${this.${stripped}}</span>`
-      );
+      replacedTemplateHtml = replacedTemplateHtml.replace(literal, `<span class="ref-${pascalToKebab(stripped)}">\${this.${stripped}}</span>`);
     }
     return replacedTemplateHtml;
   }
@@ -565,10 +510,7 @@ export class DoubleUCGenerator {
       .filter(attr => attr.observed)
       .map(attr => `'${pascalToKebab(attr.name)}'`)
       .join(',');
-    this.wcString = this.wcString.replace(
-      '{{OBSERVED_ATTRIBUTES}}',
-      attributes ? `return [${attributes}];` : ''
-    );
+    this.wcString = this.wcString.replace('{{OBSERVED_ATTRIBUTES}}', attributes ? `return [${attributes}];` : '');
 
     return this;
   }
@@ -577,9 +519,7 @@ export class DoubleUCGenerator {
     const attributes = this.declaration.attributes.filter(attr => attr.initValue);
     let attributeInitsString = '';
     for (const attribute of attributes) {
-      attributeInitsString += `!this.${attribute.name} && this.setAttribute('${pascalToKebab(
-        attribute.name
-      )}', '${attribute.initValue}');\n`;
+      attributeInitsString += `!this.${attribute.name} && this.setAttribute('${pascalToKebab(attribute.name)}', '${attribute.initValue}');\n`;
     }
     this.wcString = this.wcString.replace('{{ATTRIBUTES_INITS}}', attributeInitsString);
 
@@ -664,9 +604,7 @@ export class DoubleUCGenerator {
   private async minify() {
     if (this.declaration.config?.minify?.enabled === false) return this;
     try {
-      this.wcString =
-        (await minify(this.wcString, this.declaration.config?.minify?.config)).code ||
-        this.wcString;
+      this.wcString = (await minify(this.wcString, this.declaration.config?.minify?.config)).code || this.wcString;
       return this;
     } catch (e) {
       throw new Error(`\n [${this.className}] - failed to minify ${(e as Error).message}`);
@@ -684,13 +622,7 @@ export class DoubleUCGenerator {
 
   private outputFile() {
     try {
-      const filePath =
-        this.declaration.config?.outputDir ||
-        path.join(
-          process.cwd(),
-          'output',
-          (this.declaration.config?.outputFilename || this.declaration.tagName) + '.js'
-        );
+      const filePath = this.declaration.config?.outputDir || path.join(process.cwd(), 'output', (this.declaration.config?.outputFilename || this.declaration.tagName) + '.js');
       fs.writeFileSync(filePath, Buffer.from(this.wcString));
       return filePath;
     } catch (e) {

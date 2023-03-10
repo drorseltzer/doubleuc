@@ -248,6 +248,15 @@ Rerender (only the changed parts) will occur each time an observed attribute has
 ```
  - `~if-` prefix for conditional rendering.
 
+Also, there as `else` option:
+
+```html
+<div ~if="BooleanAttributeNameOrMethodCall">...</div>
+<div ~else>...</div>
+```
+ - `~if-` prefix for conditional rendering.
+ - `~else-` prefix for conditional rendering fallback.
+
 The mechanism here is simply commenting the node content.
 
 **Note that the node including the ~if statement will remain as is and the commenting will only be applied on its content.**
