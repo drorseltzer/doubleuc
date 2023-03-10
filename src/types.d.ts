@@ -8,7 +8,7 @@ export type DeclarativeWebComponent<T = unknown> = {
   style?: string;
   styleFile?: string;
   hooks?: DeclarativeWebComponentHooks;
-  methods?: Record<string, (this: T, args: unknown) => unknown>;
+  methods?: Record<string, (this: T & HTMLElement, args: unknown) => unknown>;
   listeners?: DeclarativeWebComponentListener[];
   slotted?: boolean;
   config?: DeclarativeWebComponentConfig;
