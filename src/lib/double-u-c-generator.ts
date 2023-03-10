@@ -7,6 +7,7 @@ import sass from 'sass';
 import { minify } from 'terser';
 
 export class DoubleUCGenerator {
+  private html = '';
   private wcString = '';
   private readonly declaration: DeclarativeWebComponent;
   private className?: string;
@@ -73,8 +74,8 @@ export class DoubleUCGenerator {
   }
 
   private replaceTemplateHtml() {
-    const html = this.getHtmlFile() || this.declaration.templateHtml;
-    const replacedTemplateHtmlListeners = html ? this.replaceHtmlListeners(html) : '';
+    this.html = this.getHtmlFile() || this.declaration.templateHtml || '';
+    const replacedTemplateHtmlListeners = this.html ? this.replaceHtmlListeners(this.html) : '';
     const replacedTemplateHtmlRefLists = replacedTemplateHtmlListeners ? this.replaceHtmlRefLists(replacedTemplateHtmlListeners) : '';
     const replacedTemplateHtmlRefAttributes = replacedTemplateHtmlRefLists ? this.replaceHtmlRefAttributes(replacedTemplateHtmlRefLists) : '';
     const replacedTemplateHtmlProps = replacedTemplateHtmlRefAttributes ? this.replaceHtmlRefProps(replacedTemplateHtmlRefAttributes) : '';
@@ -587,6 +588,21 @@ export class DoubleUCGenerator {
     }
     if (!this.declaration.slotted) {
       this.wcString = this.wcString.replace('<slot></slot>\n', '');
+    }
+    if (!this.declaration.styleFile && !this.declaration.style) {
+      this.wcString = this.wcString.replace('<style class="vars">:host {  }</style>', '');
+      this.wcString = this.wcString.replace('<style class="style"></style>', '');
+      this.wcString = this.wcString.replace(/renderCss\s*\([^)]*\)\s*\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)}/gs, '');
+      this.wcString = this.wcString.replaceAll(/if\s*\(\s*attribute\.startsWith\s*\(\s*["']style-["']\s*\)\s*\)\s*{\s*this\.renderCss\(\);\s*}/gs, '');
+    }
+
+    const ifRegex = new RegExp(/<[^>]*\s~if[^>]*>/g);
+    const ifsElements = this.html && this.html.matchAll(ifRegex);
+    if (!Array.from(ifsElements || []).length) {
+      this.wcString = this.wcString.replaceAll(/this.checkIfs\(.*?\);/gs, '');
+      this.wcString = this.wcString.replaceAll(/this.updateRefsIfs\(.*?\);/gs, '');
+      this.wcString = this.wcString.replace(/updateRefsIfs\s*\([^)]*\)\s*{(?:[^{}]*|{(?:[^{}]*|{[^{}]*})*})*}/gs, '');
+      this.wcString = this.wcString.replace(/checkIfs\s*\([^)]*\)\s*\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)}/gs, '');
     }
 
     return this;
