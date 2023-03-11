@@ -494,6 +494,8 @@ customElements.define("test-comp", TestComp);
 "
 `;
 
+exports[`snapshot Tree Shaking Minified 1`] = `"class TestComp extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"}),this.isRendered=!1}connectedCallback(){this.firstRender()}firstRender(){this.shadowRoot.innerHTML='\\n      \\n      \\n            <div class="ref">\\n        \\n      </div>\\n    '.trim(),this.isRendered=!0}applyChanges(e){e.replaceChildren(...Array.from(e.childNodes)),e.remove()}}export{TestComp};customElements.define("test-comp",TestComp);"`;
+
 exports[`snapshot basic hello world sanity 1`] = `
 "class TestComp extends HTMLElement {
   constructor() {

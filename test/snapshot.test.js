@@ -224,4 +224,14 @@ describe('snapshot', () => {
     let testComponentString = await duc.generateWebComponent(1);
     expect(testComponentString).toMatchSnapshot();
   });
+
+  it('Tree Shaking Minified', async () => {
+    const declaration = {
+      tagName: 'test-comp',
+      attributes: []
+    };
+    const duc = new DoubleUCGenerator(declaration);
+    let testComponentString = await duc.generateWebComponent(1);
+    expect(testComponentString).toMatchSnapshot();
+  });
 });
