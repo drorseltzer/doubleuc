@@ -272,11 +272,10 @@ export class DoubleUCGenerator {
       const ifsRegex = elementOpenTag.matchAll(/~if="(.*?)"/g);
       if (!ifsRegex) continue;
       for (const ifRegex of ifsRegex) {
-        const [full, attribute, value] = ifRegex;
+        const [full, attribute] = ifRegex;
         const isNotOrBooleanExpression = attribute.startsWith('!') ? (attribute.startsWith('!!') ? (attribute.startsWith('!!!') ? 3 : 2) : 1) : false;
-        const ifString = `ref-if="\${${isNotOrBooleanExpression ? '!'.repeat(isNotOrBooleanExpression) : ''}this.${
-          isNotOrBooleanExpression ? attribute.substring(isNotOrBooleanExpression) : attribute
-        }}"`;
+        const stripped = isNotOrBooleanExpression ? attribute.substring(isNotOrBooleanExpression) : attribute;
+        const ifString = `ref-if="\${${isNotOrBooleanExpression ? '!'.repeat(isNotOrBooleanExpression) : ''}this.${stripped}}"`;
         replacedTemplateHtml = replacedTemplateHtml.replace(full, `ref-attribute ${ifString}`);
       }
     }
