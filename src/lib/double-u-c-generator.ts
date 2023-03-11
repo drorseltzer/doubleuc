@@ -46,7 +46,7 @@ export class DoubleUCGenerator {
           .minify()
       ).output(outputType);
     } catch (e) {
-      throw new Error(`\n [${this.className}] - failed to build component ${tagName} ${(e as Error).message}`);
+      console.error(`\n [${this.className}] - failed to build component ${tagName} ${(e as Error).message}`);
     }
   }
 
@@ -602,6 +602,9 @@ export class DoubleUCGenerator {
       this.wcString = this.wcString.replaceAll(/this.checkIfs\(.*?\);/gs, '');
       this.wcString = this.wcString.replaceAll(/this.updateRefsIfs\(.*?\);/gs, '');
       this.wcString = this.wcString.replace(/updateRefsIfs\s*\([^)]*\)\s*{(?:[^{}]*|{(?:[^{}]*|{[^{}]*})*})*}/gs, '');
+      this.wcString = this.wcString.replace(/checkIfElse\s*\([^)]*\)\s*{(?:[^{}]*|{(?:[^{}]*|{[^{}]*})*})*}/gs, '');
+      this.wcString = this.wcString.replace(/uncommentElement\s*\([^)]*\)\s*{(?:[^{}]*|{(?:[^{}]*|{[^{}]*})*})*}/gs, '');
+      this.wcString = this.wcString.replace(/commentElement\s*\([^)]*\)\s*{(?:[^{}]*|{(?:[^{}]*|{[^{}]*})*})*}/gs, '');
       this.wcString = this.wcString.replace(/checkIfs\s*\([^)]*\)\s*\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)}/gs, '');
     }
 

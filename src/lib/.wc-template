@@ -48,13 +48,25 @@ class {{CLASS_NAME}} extends HTMLElement {
     const ifsElements = node.querySelectorAll('[ref-if]');
     for(const ifElement of ifsElements){
       if (ifElement.getAttribute('ref-if') === 'false') {
-        ifElement.innerHTML = `<!-- ${ifElement.innerHTML} //-->`;
-        if (ifElement.nextElementSibling && ifElement.nextElementSibling.hasAttribute('ref-else') && ifElement.nextElementSibling.innerHTML.startsWith('<!--')) {
-          ifElement.nextElementSibling.innerHTML = ifElement.nextElementSibling.innerHTML.replace(/<!--[\s\S]*?-->/g, '');
-        }
+        this.commentElement(ifElement);
+        this.checkIfElse(ifElement);
       } else if (ifElement.getAttribute('ref-if') === 'true' && ifElement.nextElementSibling && ifElement.nextElementSibling.hasAttribute('ref-else')) {
-        ifElement.nextElementSibling.innerHTML = `<!-- ${ifElement.nextElementSibling.innerHTML} //-->`;
+        this.commentElement(ifElement.nextElementSibling);
       }
+    }
+  }
+
+  commentElement(element) {
+    element.innerHTML = `<!-- ${element.innerHTML} //-->`;
+  }
+
+  uncommentElement(element) {
+    element.innerHTML = element.innerHTML.replace(/<!--[\s\S]*?-->/g, '');
+  }
+
+  checkIfElse(ifElement) {
+    if (ifElement.nextElementSibling && ifElement.nextElementSibling.hasAttribute('ref-else') && ifElement.nextElementSibling.innerHTML.startsWith('<!--')) {
+      this.uncommentElement(ifElement.nextElementSibling);
     }
   }
 
