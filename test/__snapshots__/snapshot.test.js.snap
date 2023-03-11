@@ -1,0 +1,1630 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`snapshot Template Attributes 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  static get observedAttributes() {
+    return ["text", "link"];
+  }
+
+  get text() {
+    return this.getAttribute("text");
+  }
+
+  set text(value) {
+    this.setAttribute("text", value);
+  }
+
+  get link() {
+    return this.getAttribute("link");
+  }
+
+  set link(value) {
+    this.setAttribute("link", value);
+  }
+
+  initAttributes() {
+    !this.text && this.setAttribute("text", "Google");
+    !this.link && this.setAttribute("link", "https://google.com");
+  }
+
+  connectedCallback() {
+    this.initAttributes();
+
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      
+      
+            <div class="ref">
+        <a ref-attribute href="\${this.link}"><span class="ref-text">\${this.text}</span></a>
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<a ref-attribute href="\${this.link}"><span class="ref-text">\${this.text}</span></a>\`;
+
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot Template Lists 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  static get observedAttributes() {
+    return ["items"];
+  }
+
+  get items() {
+    return this.hasAttribute("items")
+      ? JSON.parse(this.getAttribute("items"))
+      : undefined;
+  }
+
+  set items(value) {
+    this.setAttribute("items", JSON.stringify(value));
+  }
+
+  initAttributes() {
+    !this.items && this.setAttribute("items", "[1,2,3,4]");
+  }
+
+  connectedCallback() {
+    this.initAttributes();
+
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      
+      
+            <div class="ref">
+        <span ref-list="items" class="ref-items">\${(() => {
+          if (!this.items) return;
+          const listString = \`<li  ref-attribute data="{item}">{item}</li>\`;
+          let listHtml = listString.repeat(this.items.length);
+          for (const item of this.items) {
+            const regex = new RegExp(\`{item(.*?)}\`, "gs");
+            const matches = listString.matchAll(regex);
+            for (const match of matches) {
+              const [full, additions] = match;
+              if (additions) {
+                const prop = additions.startsWith(".")
+                  ? additions.substring(1).replaceAll(".", "][")
+                  : additions.replaceAll(".", "][");
+                const finalProp = prop.startsWith("]")
+                  ? prop.substring(1)
+                  : prop;
+                listHtml = listHtml.replace(full, item[\`\${finalProp}\`]);
+              } else {
+                listHtml = listHtml.replace(full, item);
+              }
+            }
+          }
+          return listHtml;
+        })()}</span>
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<span ref-list="items" class="ref-items">\${(() => {
+      if (!this.items) return;
+      const listString = \`<li  ref-attribute data="{item}">{item}</li>\`;
+      let listHtml = listString.repeat(this.items.length);
+      for (const item of this.items) {
+        const regex = new RegExp(\`{item(.*?)}\`, "gs");
+        const matches = listString.matchAll(regex);
+        for (const match of matches) {
+          const [full, additions] = match;
+          if (additions) {
+            const prop = additions.startsWith(".")
+              ? additions.substring(1).replaceAll(".", "][")
+              : additions.replaceAll(".", "][");
+            const finalProp = prop.startsWith("]") ? prop.substring(1) : prop;
+            listHtml = listHtml.replace(full, item[\`\${finalProp}\`]);
+          } else {
+            listHtml = listHtml.replace(full, item);
+          }
+        }
+      }
+      return listHtml;
+    })()}</span>\`;
+
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot Template Properties 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  static get observedAttributes() {
+    return ["text", "disabled"];
+  }
+
+  get text() {
+    return this.getAttribute("text");
+  }
+
+  set text(value) {
+    this.setAttribute("text", value);
+  }
+
+  get disabled() {
+    return this.hasAttribute("disabled")
+      ? this.getAttribute("disabled") === "true"
+      : false;
+  }
+
+  set disabled(value) {
+    this.setAttribute("disabled", !!value ? "true" : "false");
+  }
+
+  initAttributes() {
+    !this.text && this.setAttribute("text", "Google");
+    !this.disabled && this.setAttribute("disabled", "true");
+  }
+
+  connectedCallback() {
+    this.initAttributes();
+
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      
+      
+            <div class="ref">
+        <button ref-attribute \${
+          this.disabled ? "disabled" : ""
+        }><span class="ref-text">\${this.text}</span></button>
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<button ref-attribute \${
+      this.disabled ? "disabled" : ""
+    }><span class="ref-text">\${this.text}</span></button>\`;
+
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot basic hello world sanity 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  static get observedAttributes() {
+    return ["name"];
+  }
+
+  get name() {
+    return this.getAttribute("name");
+  }
+
+  set name(value) {
+    this.setAttribute("name", value);
+  }
+
+  initAttributes() {
+    !this.name && this.setAttribute("name", "world");
+  }
+
+  connectedCallback() {
+    this.initAttributes();
+
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      <style class="vars">:host {  }</style>
+      <style class="style">p{font-weight:bold}</style>
+            <div class="ref">
+        <p>Hello <span class="ref-name">\${this.name}</span></p>
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    if (attribute.startsWith("style-")) {
+      this.renderCss();
+    }
+
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<p>Hello <span class="ref-name">\${this.name}</span></p>\`;
+
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+
+  renderCss() {
+    const vars = this.shadowRoot.querySelector(".vars");
+    vars.innerText = \`:host {  }\`;
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot conditional if 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  static get observedAttributes() {
+    return ["name"];
+  }
+
+  get name() {
+    return this.getAttribute("name");
+  }
+
+  set name(value) {
+    this.setAttribute("name", value);
+  }
+
+  initAttributes() {
+    !this.name && this.setAttribute("name", "world");
+  }
+
+  connectedCallback() {
+    this.initAttributes();
+
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+  }
+
+  checkIfs(node) {
+    const ifsElements = node.querySelectorAll("[ref-if]");
+    for (const ifElement of ifsElements) {
+      if (ifElement.getAttribute("ref-if") === "false") {
+        this.commentElement(ifElement);
+        this.checkIfElse(ifElement);
+      } else if (
+        ifElement.getAttribute("ref-if") === "true" &&
+        ifElement.nextElementSibling &&
+        ifElement.nextElementSibling.hasAttribute("ref-else")
+      ) {
+        this.commentElement(ifElement.nextElementSibling);
+      }
+    }
+  }
+
+  commentElement(element) {
+    element.innerHTML = \`<!-- \${element.innerHTML} //-->\`;
+  }
+
+  uncommentElement(element) {
+    element.innerHTML = element.innerHTML.replace(/<!--[\\s\\S]*?-->/g, "");
+  }
+
+  checkIfElse(ifElement) {
+    if (
+      ifElement.nextElementSibling &&
+      ifElement.nextElementSibling.hasAttribute("ref-else") &&
+      ifElement.nextElementSibling.innerHTML.startsWith("<!--")
+    ) {
+      this.uncommentElement(ifElement.nextElementSibling);
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      <style class="vars">:host {  }</style>
+      <style class="style">p{font-weight:bold}</style>
+            <div class="ref">
+        <span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span>
+      </div>
+    \`.trim();
+    this.checkIfs(this.shadowRoot);
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    if (attribute.startsWith("style-")) {
+      this.renderCss();
+    }
+
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span>\`;
+    this.checkIfs(template);
+
+    this.updateRefsIfs(attribute, template);
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsIfs(attribute, template) {
+    const refsIfs = this.shadowRoot.querySelectorAll(\`[ref-if]\`);
+    const futureRefsIfs = template.querySelectorAll(\`[ref-if]\`);
+
+    refsIfs.forEach((refIf, i) => {
+      if (
+        (refIf.getAttribute("ref-if") === "false" &&
+          futureRefsIfs[i].getAttribute("ref-if") === "false") ||
+        refIf.getAttribute("ref-if") === futureRefsIfs[i].getAttribute("ref-if")
+      ) {
+        return;
+      }
+      if (refIf.innerHTML !== futureRefsIfs[i].innerHTML) {
+        refIf.innerHTML = futureRefsIfs[i].innerHTML;
+      }
+      if (
+        refIf.nextElementSibling &&
+        refIf.nextElementSibling.hasAttribute("ref-else") &&
+        futureRefsIfs[i].nextElementSibling &&
+        futureRefsIfs[i].nextElementSibling.hasAttribute("ref-else") &&
+        refIf.nextElementSibling.innerHTML !==
+          futureRefsIfs[i].nextElementSibling.innerHTML
+      ) {
+        refIf.nextElementSibling.innerHTML =
+          futureRefsIfs[i].nextElementSibling.innerHTML;
+      }
+    });
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+
+  renderCss() {
+    const vars = this.shadowRoot.querySelector(".vars");
+    vars.innerText = \`:host {  }\`;
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot conditional if else 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  static get observedAttributes() {
+    return ["name"];
+  }
+
+  get name() {
+    return this.getAttribute("name");
+  }
+
+  set name(value) {
+    this.setAttribute("name", value);
+  }
+
+  initAttributes() {}
+
+  connectedCallback() {
+    this.initAttributes();
+
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+  }
+
+  checkIfs(node) {
+    const ifsElements = node.querySelectorAll("[ref-if]");
+    for (const ifElement of ifsElements) {
+      if (ifElement.getAttribute("ref-if") === "false") {
+        this.commentElement(ifElement);
+        this.checkIfElse(ifElement);
+      } else if (
+        ifElement.getAttribute("ref-if") === "true" &&
+        ifElement.nextElementSibling &&
+        ifElement.nextElementSibling.hasAttribute("ref-else")
+      ) {
+        this.commentElement(ifElement.nextElementSibling);
+      }
+    }
+  }
+
+  commentElement(element) {
+    element.innerHTML = \`<!-- \${element.innerHTML} //-->\`;
+  }
+
+  uncommentElement(element) {
+    element.innerHTML = element.innerHTML.replace(/<!--[\\s\\S]*?-->/g, "");
+  }
+
+  checkIfElse(ifElement) {
+    if (
+      ifElement.nextElementSibling &&
+      ifElement.nextElementSibling.hasAttribute("ref-else") &&
+      ifElement.nextElementSibling.innerHTML.startsWith("<!--")
+    ) {
+      this.uncommentElement(ifElement.nextElementSibling);
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      <style class="vars">:host {  }</style>
+      <style class="style">p{font-weight:bold}</style>
+            <div class="ref">
+        <span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span><span ref-attribute ref-else><p>Hello Anonymous</p></span>
+      </div>
+    \`.trim();
+    this.checkIfs(this.shadowRoot);
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    if (attribute.startsWith("style-")) {
+      this.renderCss();
+    }
+
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span><span ref-attribute ref-else><p>Hello Anonymous</p></span>\`;
+    this.checkIfs(template);
+
+    this.updateRefsIfs(attribute, template);
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsIfs(attribute, template) {
+    const refsIfs = this.shadowRoot.querySelectorAll(\`[ref-if]\`);
+    const futureRefsIfs = template.querySelectorAll(\`[ref-if]\`);
+
+    refsIfs.forEach((refIf, i) => {
+      if (
+        (refIf.getAttribute("ref-if") === "false" &&
+          futureRefsIfs[i].getAttribute("ref-if") === "false") ||
+        refIf.getAttribute("ref-if") === futureRefsIfs[i].getAttribute("ref-if")
+      ) {
+        return;
+      }
+      if (refIf.innerHTML !== futureRefsIfs[i].innerHTML) {
+        refIf.innerHTML = futureRefsIfs[i].innerHTML;
+      }
+      if (
+        refIf.nextElementSibling &&
+        refIf.nextElementSibling.hasAttribute("ref-else") &&
+        futureRefsIfs[i].nextElementSibling &&
+        futureRefsIfs[i].nextElementSibling.hasAttribute("ref-else") &&
+        refIf.nextElementSibling.innerHTML !==
+          futureRefsIfs[i].nextElementSibling.innerHTML
+      ) {
+        refIf.nextElementSibling.innerHTML =
+          futureRefsIfs[i].nextElementSibling.innerHTML;
+      }
+    });
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+
+  renderCss() {
+    const vars = this.shadowRoot.querySelector(".vars");
+    vars.innerText = \`:host {  }\`;
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot event listeners 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  clickMethod() {
+    console.log("clicked");
+  }
+
+  initListeners() {
+    if (!this.clickBtnclick1Handler)
+      this.clickBtnclick1Handler = (ev) => {
+        this.clickMethod(ev);
+      };
+    this.shadowRoot.querySelectorAll("#clickBtn").forEach((ele) => {
+      if (ele.hasAttribute("ref-ev-set")) return;
+      ele.removeEventListener("click", this.clickBtnclick1Handler);
+      ele.addEventListener("click", this.clickBtnclick1Handler);
+      ele.setAttribute("ref-ev-set", "");
+    });
+  }
+
+  connectedCallback() {
+    this.firstRender();
+    this.initListeners();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+      this.initListeners();
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      
+      
+            <div class="ref">
+        <button id="clickBtn" >click</button>
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<button id="clickBtn" >click</button>\`;
+
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot lifeCycle hooks 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  hookSomething() {
+    console.log("hooked");
+  }
+
+  connectedCallback() {
+    this.hookSomething();
+
+    this.firstRender();
+  }
+
+  disconnectedCallback() {
+    this.hookSomething();
+  }
+
+  adoptedCallback() {
+    this.hookSomething();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+    this.hookSomething(name, oldValue, newValue);
+  }
+
+  firstRender() {
+    this.beforeFirstRender();
+    this.shadowRoot.innerHTML = \`
+      
+      
+            <div class="ref">
+        
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
+    this.afterFirstRender();
+  }
+
+  render(attribute) {
+    this.beforeRender();
+
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`\`;
+
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+
+    this.afterRender();
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+
+  beforeFirstRender() {
+    this.hookSomething();
+  }
+
+  afterFirstRender() {
+    this.hookSomething();
+  }
+
+  beforeRender() {
+    this.hookSomething();
+  }
+
+  afterRender() {
+    this.hookSomething();
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot methods 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  testMethod() {
+    return "test";
+  }
+
+  connectedCallback() {
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      
+      
+            <div class="ref">
+        <p>Hello \${this.testMethod()}</p>
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<p>Hello \${this.testMethod()}</p>\`;
+
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot two attributes - observed and unobserved 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  static get observedAttributes() {
+    return ["name"];
+  }
+
+  get name() {
+    return this.getAttribute("name");
+  }
+
+  set name(value) {
+    this.setAttribute("name", value);
+  }
+
+  get name2() {
+    return this.getAttribute("name2");
+  }
+
+  set name2(value) {
+    this.setAttribute("name2", value);
+  }
+
+  initAttributes() {
+    !this.name && this.setAttribute("name", "world");
+    !this.name2 && this.setAttribute("name2", "world");
+  }
+
+  connectedCallback() {
+    this.initAttributes();
+
+    this.firstRender();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isRendered) {
+      this.render(name);
+    }
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      <style class="vars">:host {  }</style>
+      <style class="style">p{font-weight:bold}</style>
+            <div class="ref">
+        <p>Hello <span class="ref-name">\${this.name}</span></p><p>Hello <span class="ref-name2">\${this.name2}</span></p>
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
+  }
+
+  render(attribute) {
+    if (attribute.startsWith("style-")) {
+      this.renderCss();
+    }
+
+    const template = document.createElement("div");
+    template.className = "ref";
+    template.innerHTML = \`<p>Hello <span class="ref-name">\${this.name}</span></p><p>Hello <span class="ref-name2">\${this.name2}</span></p>\`;
+
+    this.updateRefsAttributes(template);
+    this.updateRefs(attribute, template);
+    this.updateMethods();
+
+    this.applyChanges(template);
+  }
+
+  updateRefsAttributes(template) {
+    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
+    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
+
+    refsAttributes.forEach((refAttribute, i) => {
+      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+        if (refAttribute.hasAttribute(attr.name)) {
+          refAttribute.setAttribute(attr.name, attr.value);
+        } else {
+          refAttribute.setAttribute(attr.name, attr.value);
+        }
+      });
+      Array.from(refAttribute.attributes).forEach((attr) => {
+        if (attr.name === "ref-ev-set") {
+          return;
+        }
+        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+          refAttribute.removeAttribute(attr.name);
+        }
+      });
+    });
+  }
+
+  updateRefs(attribute, template) {
+    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
+    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
+
+    refs.forEach((ref, i) => {
+      const elementsToRemove = [];
+      const elementsToAppend = [];
+      if (ref && futureRefs[i]) {
+        if (
+          ref.hasAttribute("ref-list") &&
+          futureRefs[i].hasAttribute("ref-list") &&
+          ref.getAttribute("ref-list") === attribute &&
+          futureRefs[i].getAttribute("ref-list") === attribute
+        ) {
+          ref.querySelectorAll("*").forEach((child, j) => {
+            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
+            }
+          });
+          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
+            if (!ref.children[j]) {
+              elementsToAppend.push(child);
+            }
+          });
+        } else {
+          ref.innerHTML = futureRefs[i].innerHTML;
+        }
+      } else if (ref && !futureRefs[i]) {
+        elementsToRemove.push(ref);
+      }
+      elementsToRemove.forEach((el) => el.remove());
+      elementsToAppend.forEach((el) => ref.appendChild(el));
+    });
+  }
+
+  updateMethods() {
+    const methods = this.shadowRoot.querySelectorAll(".ref-method");
+    methods.forEach((method) => {
+      const methodName = Array.from(method.classList.values())
+        .find((className) => className.startsWith("ref-method-"))
+        ?.replace("ref-method-", "");
+      method.innerHTML = \`\${this[methodName]()}\`;
+    });
+  }
+
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+
+  renderCss() {
+    const vars = this.shadowRoot.querySelector(".vars");
+    vars.innerText = \`:host {  }\`;
+  }
+}
+
+customElements.define("test-comp", TestComp);
+"
+`;
