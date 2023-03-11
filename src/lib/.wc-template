@@ -211,5 +211,6 @@ class {{CLASS_NAME}} extends HTMLElement {
     {{AFTER_RENDER_HOOK}}
   }
 }
+export { {{CLASS_NAME}} };
 
 customElements.define('{{TAG_NAME}}', {{CLASS_NAME}});
