@@ -8,7 +8,7 @@
   "bin": "./cli.cjs",
   "scripts": {
     "start": "node ./dist/index",
-    "test": "npm run build && jest",
+    "test": "jest",
     "build": "npm run clean && npm run build:ts",
     "clean": "rm -rf ./dist/*",
     "build:ts": "tsc",
