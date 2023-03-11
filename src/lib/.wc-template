@@ -78,7 +78,6 @@ class {{CLASS_NAME}} extends HTMLElement {
       <slot></slot>
       <div class="ref">
         {{TEMPLATE_HTML}}
-        Let's break the code!!
       </div>
     `.trim();
     this.checkIfs(this.shadowRoot);
