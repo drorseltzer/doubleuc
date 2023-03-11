@@ -180,7 +180,7 @@ Getter function will return the attribute value with its corresponding type - *p
  - `observed (optional)`: rerender on attribute updates - *default: false*
  - `type`: string | number | boolean | array | json - *array|json is using the JSON.parse method*.
 
-**Note that `type` used for type safety within attribute changed, type mismatch will throw a type error.**
+**Note that `type` used for type safety within attribute changes - type mismatch will throw a type error.**
 
 ## Methods
 Scoped functions that would be called from different parts of the component.
