@@ -8,7 +8,7 @@
   "bin": "./cli.cjs",
   "scripts": {
     "start": "node ./dist/index",
-    "test": "jest",
+    "test": "jest --ci --reporters=default --reporters=jest-Junit",
     "build": "npm run clean && npm run build:ts",
     "clean": "rm -rf ./dist/*",
     "build:ts": "tsc",
@@ -37,5 +37,14 @@
     "sass": "^1.58.3",
     "terser": "^5.16.4",
     "yargs": "^17.7.0"
+  },
+  "jest-junit": {
+    "outputDirectory": "reports",
+    "outputName": "jest-junit.xml",
+    "ancestorSeparator": " › ",
+    "uniqueOutputName": "false",
+    "suiteNameTemplate": "{filepath}",
+    "classNameTemplate": "{classname}",
+    "titleTemplate": "{title}"
   }
 }
