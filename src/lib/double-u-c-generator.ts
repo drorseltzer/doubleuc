@@ -627,6 +627,8 @@ export class DoubleUCGenerator {
       this.wcString = this.wcString.replace(/checkIfs\s*\([^)]*\)\s*\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)}/gs, '');
     }
 
+    this.wcString = this.wcString.replace(/^\s*[\r\n]/gms, '');
+
     return this;
   }
 

@@ -7,73 +7,55 @@ exports[`snapshot Template Attributes 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   static get observedAttributes() {
     return ["text", "link"];
   }
-
   get text() {
     return this.getAttribute("text");
   }
-
   set text(value) {
     if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("text", value);
   }
-
   get link() {
     return this.getAttribute("link");
   }
-
   set link(value) {
     if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("link", value);
   }
-
   initAttributes() {
     !this.text && this.setAttribute("text", "Google");
     !this.link && this.setAttribute("link", "https://google.com");
   }
-
   connectedCallback() {
     this.initAttributes();
-
     this.firstRender();
   }
-
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
       this.render(name);
     }
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      
-      
             <div class="ref">
         <a ref-attribute href="\${this.link}"><span class="ref-text">\${this.text}</span></a>
       </div>
     \`.trim();
-
     this.isRendered = true;
   }
-
   render(attribute) {
     const template = document.createElement("div");
     template.className = "ref";
     template.innerHTML = \`<a ref-attribute href="\${this.link}"><span class="ref-text">\${this.text}</span></a>\`;
-
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-
     this.applyChanges(template);
   }
-
   updateRefsAttributes(template) {
     const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
     const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
     refsAttributes.forEach((refAttribute, i) => {
       Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
         if (refAttribute.hasAttribute(attr.name)) {
@@ -92,11 +74,9 @@ exports[`snapshot Template Attributes 1`] = `
       });
     });
   }
-
   updateRefs(attribute, template) {
     const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
     const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
     refs.forEach((ref, i) => {
       const elementsToRemove = [];
       const elementsToAppend = [];
@@ -127,14 +107,12 @@ exports[`snapshot Template Attributes 1`] = `
       elementsToAppend.forEach((el) => ref.appendChild(el));
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -146,42 +124,32 @@ exports[`snapshot Template Lists 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   static get observedAttributes() {
     return ["items"];
   }
-
   get items() {
     return this.hasAttribute("items")
       ? JSON.parse(this.getAttribute("items"))
       : undefined;
   }
-
   set items(value) {
     if (!Array.isArray(value)) throw new TypeError("not an array");
     this.setAttribute("items", JSON.stringify(value));
   }
-
   initAttributes() {
     !this.items && this.setAttribute("items", "[1,2,3,4]");
   }
-
   connectedCallback() {
     this.initAttributes();
-
     this.firstRender();
   }
-
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
       this.render(name);
     }
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      
-      
             <div class="ref">
         <span ref-list="items" class="ref-items">\${(() => {
           if (!this.items) return;
@@ -209,10 +177,8 @@ exports[`snapshot Template Lists 1`] = `
         })()}</span>
       </div>
     \`.trim();
-
     this.isRendered = true;
   }
-
   render(attribute) {
     const template = document.createElement("div");
     template.className = "ref";
@@ -238,17 +204,13 @@ exports[`snapshot Template Lists 1`] = `
       }
       return listHtml;
     })()}</span>\`;
-
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-
     this.applyChanges(template);
   }
-
   updateRefsAttributes(template) {
     const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
     const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
     refsAttributes.forEach((refAttribute, i) => {
       Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
         if (refAttribute.hasAttribute(attr.name)) {
@@ -267,11 +229,9 @@ exports[`snapshot Template Lists 1`] = `
       });
     });
   }
-
   updateRefs(attribute, template) {
     const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
     const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
     refs.forEach((ref, i) => {
       const elementsToRemove = [];
       const elementsToAppend = [];
@@ -302,14 +262,12 @@ exports[`snapshot Template Lists 1`] = `
       elementsToAppend.forEach((el) => ref.appendChild(el));
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -321,79 +279,61 @@ exports[`snapshot Template Properties 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   static get observedAttributes() {
     return ["text", "disabled"];
   }
-
   get text() {
     return this.getAttribute("text");
   }
-
   set text(value) {
     if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("text", value);
   }
-
   get disabled() {
     return this.hasAttribute("disabled")
       ? this.getAttribute("disabled") === "true"
       : false;
   }
-
   set disabled(value) {
     if (typeof value !== "boolean") throw new TypeError("not a boolean");
     this.setAttribute("disabled", !!value ? "true" : "false");
   }
-
   initAttributes() {
     !this.text && this.setAttribute("text", "Google");
     !this.disabled && this.setAttribute("disabled", "true");
   }
-
   connectedCallback() {
     this.initAttributes();
-
     this.firstRender();
   }
-
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
       this.render(name);
     }
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      
-      
             <div class="ref">
         <button ref-attribute \${
           this.disabled ? "disabled" : ""
         }><span class="ref-text">\${this.text}</span></button>
       </div>
     \`.trim();
-
     this.isRendered = true;
   }
-
   render(attribute) {
     const template = document.createElement("div");
     template.className = "ref";
     template.innerHTML = \`<button ref-attribute \${
       this.disabled ? "disabled" : ""
     }><span class="ref-text">\${this.text}</span></button>\`;
-
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-
     this.applyChanges(template);
   }
-
   updateRefsAttributes(template) {
     const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
     const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
     refsAttributes.forEach((refAttribute, i) => {
       Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
         if (refAttribute.hasAttribute(attr.name)) {
@@ -412,11 +352,9 @@ exports[`snapshot Template Properties 1`] = `
       });
     });
   }
-
   updateRefs(attribute, template) {
     const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
     const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
     refs.forEach((ref, i) => {
       const elementsToRemove = [];
       const elementsToAppend = [];
@@ -447,14 +385,12 @@ exports[`snapshot Template Properties 1`] = `
       elementsToAppend.forEach((el) => ref.appendChild(el));
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -466,35 +402,27 @@ exports[`snapshot Tree Shaking 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   connectedCallback() {
     this.firstRender();
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      
-      
             <div class="ref">
-        
       </div>
     \`.trim();
-
     this.isRendered = true;
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
 
-exports[`snapshot Tree Shaking Minified 1`] = `"class TestComp extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"}),this.isRendered=!1}connectedCallback(){this.firstRender()}firstRender(){this.shadowRoot.innerHTML='\\n      \\n      \\n            <div class="ref">\\n        \\n      </div>\\n    '.trim(),this.isRendered=!0}applyChanges(e){e.replaceChildren(...Array.from(e.childNodes)),e.remove()}}export{TestComp};customElements.define("test-comp",TestComp);"`;
+exports[`snapshot Tree Shaking Minified 1`] = `"class TestComp extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"}),this.isRendered=!1}connectedCallback(){this.firstRender()}firstRender(){this.shadowRoot.innerHTML='\\n            <div class="ref">\\n      </div>\\n    '.trim(),this.isRendered=!0}applyChanges(e){e.replaceChildren(...Array.from(e.childNodes)),e.remove()}}export{TestComp};customElements.define("test-comp",TestComp);"`;
 
 exports[`snapshot basic hello world sanity 1`] = `
 "class TestComp extends HTMLElement {
@@ -503,36 +431,28 @@ exports[`snapshot basic hello world sanity 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   static get observedAttributes() {
     return ["name"];
   }
-
   get name() {
     return this.getAttribute("name");
   }
-
   set name(value) {
     if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name", value);
   }
-
   initAttributes() {
     !this.name && this.setAttribute("name", "world");
   }
-
   connectedCallback() {
     this.initAttributes();
-
     this.firstRender();
   }
-
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
       this.render(name);
     }
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
       <style class="vars">:host {  }</style>
@@ -541,29 +461,22 @@ exports[`snapshot basic hello world sanity 1`] = `
         <p>Hello <span class="ref-name">\${this.name}</span></p>
       </div>
     \`.trim();
-
     this.isRendered = true;
   }
-
   render(attribute) {
     if (attribute.startsWith("style-")) {
       this.renderCss();
     }
-
     const template = document.createElement("div");
     template.className = "ref";
     template.innerHTML = \`<p>Hello <span class="ref-name">\${this.name}</span></p>\`;
-
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-
     this.applyChanges(template);
   }
-
   updateRefsAttributes(template) {
     const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
     const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
     refsAttributes.forEach((refAttribute, i) => {
       Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
         if (refAttribute.hasAttribute(attr.name)) {
@@ -582,11 +495,9 @@ exports[`snapshot basic hello world sanity 1`] = `
       });
     });
   }
-
   updateRefs(attribute, template) {
     const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
     const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
     refs.forEach((ref, i) => {
       const elementsToRemove = [];
       const elementsToAppend = [];
@@ -617,19 +528,16 @@ exports[`snapshot basic hello world sanity 1`] = `
       elementsToAppend.forEach((el) => ref.appendChild(el));
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
-
   renderCss() {
     const vars = this.shadowRoot.querySelector(".vars");
     vars.innerText = \`:host {  }\`;
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -641,36 +549,28 @@ exports[`snapshot conditional if 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   static get observedAttributes() {
     return ["name"];
   }
-
   get name() {
     return this.getAttribute("name");
   }
-
   set name(value) {
     if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name", value);
   }
-
   initAttributes() {
     !this.name && this.setAttribute("name", "world");
   }
-
   connectedCallback() {
     this.initAttributes();
-
     this.firstRender();
   }
-
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
       this.render(name);
     }
   }
-
   checkIfs(node) {
     const ifsElements = node.querySelectorAll("[ref-if]");
     for (const ifElement of ifsElements) {
@@ -686,15 +586,12 @@ exports[`snapshot conditional if 1`] = `
       }
     }
   }
-
   commentElement(element) {
     element.innerHTML = \`<!-- \${element.innerHTML} //-->\`;
   }
-
   uncommentElement(element) {
     element.innerHTML = element.innerHTML.replace(/<!--[\\s\\S]*?-->/g, "");
   }
-
   checkIfElse(ifElement) {
     if (
       ifElement.nextElementSibling &&
@@ -704,7 +601,6 @@ exports[`snapshot conditional if 1`] = `
       this.uncommentElement(ifElement.nextElementSibling);
     }
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
       <style class="vars">:host {  }</style>
@@ -716,28 +612,22 @@ exports[`snapshot conditional if 1`] = `
     this.checkIfs(this.shadowRoot);
     this.isRendered = true;
   }
-
   render(attribute) {
     if (attribute.startsWith("style-")) {
       this.renderCss();
     }
-
     const template = document.createElement("div");
     template.className = "ref";
     template.innerHTML = \`<span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span>\`;
     this.checkIfs(template);
-
     this.updateRefsIfs(attribute, template);
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-
     this.applyChanges(template);
   }
-
   updateRefsIfs(attribute, template) {
     const refsIfs = this.shadowRoot.querySelectorAll(\`[ref-if]\`);
     const futureRefsIfs = template.querySelectorAll(\`[ref-if]\`);
-
     refsIfs.forEach((refIf, i) => {
       if (
         (refIf.getAttribute("ref-if") === "false" &&
@@ -762,11 +652,9 @@ exports[`snapshot conditional if 1`] = `
       }
     });
   }
-
   updateRefsAttributes(template) {
     const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
     const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
     refsAttributes.forEach((refAttribute, i) => {
       Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
         if (refAttribute.hasAttribute(attr.name)) {
@@ -785,11 +673,9 @@ exports[`snapshot conditional if 1`] = `
       });
     });
   }
-
   updateRefs(attribute, template) {
     const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
     const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
     refs.forEach((ref, i) => {
       const elementsToRemove = [];
       const elementsToAppend = [];
@@ -820,19 +706,16 @@ exports[`snapshot conditional if 1`] = `
       elementsToAppend.forEach((el) => ref.appendChild(el));
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
-
   renderCss() {
     const vars = this.shadowRoot.querySelector(".vars");
     vars.innerText = \`:host {  }\`;
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -844,34 +727,26 @@ exports[`snapshot conditional if else 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   static get observedAttributes() {
     return ["name"];
   }
-
   get name() {
     return this.getAttribute("name");
   }
-
   set name(value) {
     if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name", value);
   }
-
   initAttributes() {}
-
   connectedCallback() {
     this.initAttributes();
-
     this.firstRender();
   }
-
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
       this.render(name);
     }
   }
-
   checkIfs(node) {
     const ifsElements = node.querySelectorAll("[ref-if]");
     for (const ifElement of ifsElements) {
@@ -887,15 +762,12 @@ exports[`snapshot conditional if else 1`] = `
       }
     }
   }
-
   commentElement(element) {
     element.innerHTML = \`<!-- \${element.innerHTML} //-->\`;
   }
-
   uncommentElement(element) {
     element.innerHTML = element.innerHTML.replace(/<!--[\\s\\S]*?-->/g, "");
   }
-
   checkIfElse(ifElement) {
     if (
       ifElement.nextElementSibling &&
@@ -905,7 +777,6 @@ exports[`snapshot conditional if else 1`] = `
       this.uncommentElement(ifElement.nextElementSibling);
     }
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
       <style class="vars">:host {  }</style>
@@ -917,28 +788,22 @@ exports[`snapshot conditional if else 1`] = `
     this.checkIfs(this.shadowRoot);
     this.isRendered = true;
   }
-
   render(attribute) {
     if (attribute.startsWith("style-")) {
       this.renderCss();
     }
-
     const template = document.createElement("div");
     template.className = "ref";
     template.innerHTML = \`<span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span><span ref-attribute ref-else><p>Hello Anonymous</p></span>\`;
     this.checkIfs(template);
-
     this.updateRefsIfs(attribute, template);
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-
     this.applyChanges(template);
   }
-
   updateRefsIfs(attribute, template) {
     const refsIfs = this.shadowRoot.querySelectorAll(\`[ref-if]\`);
     const futureRefsIfs = template.querySelectorAll(\`[ref-if]\`);
-
     refsIfs.forEach((refIf, i) => {
       if (
         (refIf.getAttribute("ref-if") === "false" &&
@@ -963,11 +828,9 @@ exports[`snapshot conditional if else 1`] = `
       }
     });
   }
-
   updateRefsAttributes(template) {
     const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
     const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
     refsAttributes.forEach((refAttribute, i) => {
       Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
         if (refAttribute.hasAttribute(attr.name)) {
@@ -986,11 +849,9 @@ exports[`snapshot conditional if else 1`] = `
       });
     });
   }
-
   updateRefs(attribute, template) {
     const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
     const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
     refs.forEach((ref, i) => {
       const elementsToRemove = [];
       const elementsToAppend = [];
@@ -1021,19 +882,16 @@ exports[`snapshot conditional if else 1`] = `
       elementsToAppend.forEach((el) => ref.appendChild(el));
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
-
   renderCss() {
     const vars = this.shadowRoot.querySelector(".vars");
     vars.innerText = \`:host {  }\`;
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -1045,11 +903,9 @@ exports[`snapshot event listeners 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   clickMethod() {
     console.log("clicked");
   }
-
   initListeners() {
     if (!this.clickBtnclick1Handler)
       this.clickBtnclick1Handler = (ev) => {
@@ -1062,24 +918,18 @@ exports[`snapshot event listeners 1`] = `
       ele.setAttribute("ref-ev-set", "");
     });
   }
-
   connectedCallback() {
     this.firstRender();
     this.initListeners();
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      
-      
             <div class="ref">
         <button id="clickBtn" >click</button>
       </div>
     \`.trim();
-
     this.isRendered = true;
   }
-
   updateMethods() {
     const methods = this.shadowRoot.querySelectorAll(".ref-method");
     methods.forEach((method) => {
@@ -1089,14 +939,12 @@ exports[`snapshot event listeners 1`] = `
       method.innerHTML = \`\${this[methodName]()}\`;
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -1108,39 +956,28 @@ exports[`snapshot lifeCycle hooks 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   hookSomething() {
     console.log("hooked");
   }
-
   connectedCallback() {
     this.hookSomething();
-
     this.firstRender();
   }
-
   disconnectedCallback() {
     this.hookSomething();
   }
-
   adoptedCallback() {
     this.hookSomething();
   }
-
   firstRender() {
     this.beforeFirstRender();
     this.shadowRoot.innerHTML = \`
-      
-      
             <div class="ref">
-        
       </div>
     \`.trim();
-
     this.isRendered = true;
     this.afterFirstRender();
   }
-
   updateMethods() {
     const methods = this.shadowRoot.querySelectorAll(".ref-method");
     methods.forEach((method) => {
@@ -1150,30 +987,24 @@ exports[`snapshot lifeCycle hooks 1`] = `
       method.innerHTML = \`\${this[methodName]()}\`;
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
-
   beforeFirstRender() {
     this.hookSomething();
   }
-
   afterFirstRender() {
     this.hookSomething();
   }
-
   beforeRender() {
     this.hookSomething();
   }
-
   afterRender() {
     this.hookSomething();
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -1185,27 +1016,20 @@ exports[`snapshot methods 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   testMethod() {
     return "test";
   }
-
   connectedCallback() {
     this.firstRender();
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      
-      
             <div class="ref">
         <p>Hello \${this.testMethod()}</p>
       </div>
     \`.trim();
-
     this.isRendered = true;
   }
-
   updateMethods() {
     const methods = this.shadowRoot.querySelectorAll(".ref-method");
     methods.forEach((method) => {
@@ -1215,14 +1039,12 @@ exports[`snapshot methods 1`] = `
       method.innerHTML = \`\${this[methodName]()}\`;
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
@@ -1234,46 +1056,36 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
     this.attachShadow({ mode: "open" });
     this.isRendered = false;
   }
-
   static get observedAttributes() {
     return ["name"];
   }
-
   get name() {
     return this.getAttribute("name");
   }
-
   set name(value) {
     if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name", value);
   }
-
   get name2() {
     return this.getAttribute("name2");
   }
-
   set name2(value) {
     if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name2", value);
   }
-
   initAttributes() {
     !this.name && this.setAttribute("name", "world");
     !this.name2 && this.setAttribute("name2", "world");
   }
-
   connectedCallback() {
     this.initAttributes();
-
     this.firstRender();
   }
-
   attributeChangedCallback(name, oldValue, newValue) {
     if (newValue !== oldValue && this.isRendered) {
       this.render(name);
     }
   }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
       <style class="vars">:host {  }</style>
@@ -1282,29 +1094,22 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
         <p>Hello <span class="ref-name">\${this.name}</span></p><p>Hello <span class="ref-name2">\${this.name2}</span></p>
       </div>
     \`.trim();
-
     this.isRendered = true;
   }
-
   render(attribute) {
     if (attribute.startsWith("style-")) {
       this.renderCss();
     }
-
     const template = document.createElement("div");
     template.className = "ref";
     template.innerHTML = \`<p>Hello <span class="ref-name">\${this.name}</span></p><p>Hello <span class="ref-name2">\${this.name2}</span></p>\`;
-
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-
     this.applyChanges(template);
   }
-
   updateRefsAttributes(template) {
     const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
     const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
     refsAttributes.forEach((refAttribute, i) => {
       Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
         if (refAttribute.hasAttribute(attr.name)) {
@@ -1323,11 +1128,9 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
       });
     });
   }
-
   updateRefs(attribute, template) {
     const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
     const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
     refs.forEach((ref, i) => {
       const elementsToRemove = [];
       const elementsToAppend = [];
@@ -1358,19 +1161,16 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
       elementsToAppend.forEach((el) => ref.appendChild(el));
     });
   }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
   }
-
   renderCss() {
     const vars = this.shadowRoot.querySelector(".vars");
     vars.innerText = \`:host {  }\`;
   }
 }
 export { TestComp };
-
 customElements.define("test-comp", TestComp);
 "
 `;
