@@ -17,6 +17,7 @@ exports[`snapshot Template Attributes 1`] = `
   }
 
   set text(value) {
+    if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("text", value);
   }
 
@@ -25,6 +26,7 @@ exports[`snapshot Template Attributes 1`] = `
   }
 
   set link(value) {
+    if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("link", value);
   }
 
@@ -142,6 +144,7 @@ exports[`snapshot Template Attributes 1`] = `
     template.remove();
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -166,6 +169,7 @@ exports[`snapshot Template Lists 1`] = `
   }
 
   set items(value) {
+    if (!Array.isArray(value)) throw new TypeError("not an array");
     this.setAttribute("items", JSON.stringify(value));
   }
 
@@ -326,6 +330,7 @@ exports[`snapshot Template Lists 1`] = `
     template.remove();
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -348,6 +353,7 @@ exports[`snapshot Template Properties 1`] = `
   }
 
   set text(value) {
+    if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("text", value);
   }
 
@@ -358,6 +364,7 @@ exports[`snapshot Template Properties 1`] = `
   }
 
   set disabled(value) {
+    if (typeof value !== "boolean") throw new TypeError("not a boolean");
     this.setAttribute("disabled", !!value ? "true" : "false");
   }
 
@@ -479,6 +486,7 @@ exports[`snapshot Template Properties 1`] = `
     template.remove();
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -501,6 +509,7 @@ exports[`snapshot basic hello world sanity 1`] = `
   }
 
   set name(value) {
+    if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name", value);
   }
 
@@ -626,6 +635,7 @@ exports[`snapshot basic hello world sanity 1`] = `
     vars.innerText = \`:host {  }\`;
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -648,6 +658,7 @@ exports[`snapshot conditional if 1`] = `
   }
 
   set name(value) {
+    if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name", value);
   }
 
@@ -838,6 +849,7 @@ exports[`snapshot conditional if 1`] = `
     vars.innerText = \`:host {  }\`;
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -860,6 +872,7 @@ exports[`snapshot conditional if else 1`] = `
   }
 
   set name(value) {
+    if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name", value);
   }
 
@@ -1048,6 +1061,7 @@ exports[`snapshot conditional if else 1`] = `
     vars.innerText = \`:host {  }\`;
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -1187,6 +1201,7 @@ exports[`snapshot event listeners 1`] = `
     template.remove();
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -1344,6 +1359,7 @@ exports[`snapshot lifeCycle hooks 1`] = `
     this.hookSomething();
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -1468,6 +1484,7 @@ exports[`snapshot methods 1`] = `
     template.remove();
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
@@ -1490,6 +1507,7 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
   }
 
   set name(value) {
+    if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name", value);
   }
 
@@ -1498,6 +1516,7 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
   }
 
   set name2(value) {
+    if (typeof value !== "string") throw new TypeError("not a string");
     this.setAttribute("name2", value);
   }
 
@@ -1624,6 +1643,7 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
     vars.innerText = \`:host {  }\`;
   }
 }
+export { TestComp };
 
 customElements.define("test-comp", TestComp);
 "
