@@ -66,7 +66,6 @@ exports[`snapshot Template Attributes 1`] = `
 
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-    this.updateMethods();
 
     this.applyChanges(template);
   }
@@ -126,16 +125,6 @@ exports[`snapshot Template Attributes 1`] = `
       }
       elementsToRemove.forEach((el) => el.remove());
       elementsToAppend.forEach((el) => ref.appendChild(el));
-    });
-  }
-
-  updateMethods() {
-    const methods = this.shadowRoot.querySelectorAll(".ref-method");
-    methods.forEach((method) => {
-      const methodName = Array.from(method.classList.values())
-        .find((className) => className.startsWith("ref-method-"))
-        ?.replace("ref-method-", "");
-      method.innerHTML = \`\${this[methodName]()}\`;
     });
   }
 
@@ -252,7 +241,6 @@ exports[`snapshot Template Lists 1`] = `
 
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-    this.updateMethods();
 
     this.applyChanges(template);
   }
@@ -312,16 +300,6 @@ exports[`snapshot Template Lists 1`] = `
       }
       elementsToRemove.forEach((el) => el.remove());
       elementsToAppend.forEach((el) => ref.appendChild(el));
-    });
-  }
-
-  updateMethods() {
-    const methods = this.shadowRoot.querySelectorAll(".ref-method");
-    methods.forEach((method) => {
-      const methodName = Array.from(method.classList.values())
-        .find((className) => className.startsWith("ref-method-"))
-        ?.replace("ref-method-", "");
-      method.innerHTML = \`\${this[methodName]()}\`;
     });
   }
 
@@ -408,7 +386,6 @@ exports[`snapshot Template Properties 1`] = `
 
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-    this.updateMethods();
 
     this.applyChanges(template);
   }
@@ -471,14 +448,39 @@ exports[`snapshot Template Properties 1`] = `
     });
   }
 
-  updateMethods() {
-    const methods = this.shadowRoot.querySelectorAll(".ref-method");
-    methods.forEach((method) => {
-      const methodName = Array.from(method.classList.values())
-        .find((className) => className.startsWith("ref-method-"))
-        ?.replace("ref-method-", "");
-      method.innerHTML = \`\${this[methodName]()}\`;
-    });
+  applyChanges(template) {
+    template.replaceChildren(...Array.from(template.childNodes));
+    template.remove();
+  }
+}
+export { TestComp };
+
+customElements.define("test-comp", TestComp);
+"
+`;
+
+exports[`snapshot Tree Shaking 1`] = `
+"class TestComp extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.isRendered = false;
+  }
+
+  connectedCallback() {
+    this.firstRender();
+  }
+
+  firstRender() {
+    this.shadowRoot.innerHTML = \`
+      
+      
+            <div class="ref">
+        
+      </div>
+    \`.trim();
+
+    this.isRendered = true;
   }
 
   applyChanges(template) {
@@ -552,7 +554,6 @@ exports[`snapshot basic hello world sanity 1`] = `
 
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-    this.updateMethods();
 
     this.applyChanges(template);
   }
@@ -612,16 +613,6 @@ exports[`snapshot basic hello world sanity 1`] = `
       }
       elementsToRemove.forEach((el) => el.remove());
       elementsToAppend.forEach((el) => ref.appendChild(el));
-    });
-  }
-
-  updateMethods() {
-    const methods = this.shadowRoot.querySelectorAll(".ref-method");
-    methods.forEach((method) => {
-      const methodName = Array.from(method.classList.values())
-        .find((className) => className.startsWith("ref-method-"))
-        ?.replace("ref-method-", "");
-      method.innerHTML = \`\${this[methodName]()}\`;
     });
   }
 
@@ -737,7 +728,6 @@ exports[`snapshot conditional if 1`] = `
     this.updateRefsIfs(attribute, template);
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-    this.updateMethods();
 
     this.applyChanges(template);
   }
@@ -826,16 +816,6 @@ exports[`snapshot conditional if 1`] = `
       }
       elementsToRemove.forEach((el) => el.remove());
       elementsToAppend.forEach((el) => ref.appendChild(el));
-    });
-  }
-
-  updateMethods() {
-    const methods = this.shadowRoot.querySelectorAll(".ref-method");
-    methods.forEach((method) => {
-      const methodName = Array.from(method.classList.values())
-        .find((className) => className.startsWith("ref-method-"))
-        ?.replace("ref-method-", "");
-      method.innerHTML = \`\${this[methodName]()}\`;
     });
   }
 
@@ -949,7 +929,6 @@ exports[`snapshot conditional if else 1`] = `
     this.updateRefsIfs(attribute, template);
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-    this.updateMethods();
 
     this.applyChanges(template);
   }
@@ -1041,16 +1020,6 @@ exports[`snapshot conditional if else 1`] = `
     });
   }
 
-  updateMethods() {
-    const methods = this.shadowRoot.querySelectorAll(".ref-method");
-    methods.forEach((method) => {
-      const methodName = Array.from(method.classList.values())
-        .find((className) => className.startsWith("ref-method-"))
-        ?.replace("ref-method-", "");
-      method.innerHTML = \`\${this[methodName]()}\`;
-    });
-  }
-
   applyChanges(template) {
     template.replaceChildren(...Array.from(template.childNodes));
     template.remove();
@@ -1097,13 +1066,6 @@ exports[`snapshot event listeners 1`] = `
     this.initListeners();
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue && this.isRendered) {
-      this.render(name);
-      this.initListeners();
-    }
-  }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
       
@@ -1114,76 +1076,6 @@ exports[`snapshot event listeners 1`] = `
     \`.trim();
 
     this.isRendered = true;
-  }
-
-  render(attribute) {
-    const template = document.createElement("div");
-    template.className = "ref";
-    template.innerHTML = \`<button id="clickBtn" >click</button>\`;
-
-    this.updateRefsAttributes(template);
-    this.updateRefs(attribute, template);
-    this.updateMethods();
-
-    this.applyChanges(template);
-  }
-
-  updateRefsAttributes(template) {
-    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
-    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
-    refsAttributes.forEach((refAttribute, i) => {
-      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
-        if (refAttribute.hasAttribute(attr.name)) {
-          refAttribute.setAttribute(attr.name, attr.value);
-        } else {
-          refAttribute.setAttribute(attr.name, attr.value);
-        }
-      });
-      Array.from(refAttribute.attributes).forEach((attr) => {
-        if (attr.name === "ref-ev-set") {
-          return;
-        }
-        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
-          refAttribute.removeAttribute(attr.name);
-        }
-      });
-    });
-  }
-
-  updateRefs(attribute, template) {
-    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
-    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
-    refs.forEach((ref, i) => {
-      const elementsToRemove = [];
-      const elementsToAppend = [];
-      if (ref && futureRefs[i]) {
-        if (
-          ref.hasAttribute("ref-list") &&
-          futureRefs[i].hasAttribute("ref-list") &&
-          ref.getAttribute("ref-list") === attribute &&
-          futureRefs[i].getAttribute("ref-list") === attribute
-        ) {
-          ref.querySelectorAll("*").forEach((child, j) => {
-            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
-              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
-            }
-          });
-          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
-            if (!ref.children[j]) {
-              elementsToAppend.push(child);
-            }
-          });
-        } else {
-          ref.innerHTML = futureRefs[i].innerHTML;
-        }
-      } else if (ref && !futureRefs[i]) {
-        elementsToRemove.push(ref);
-      }
-      elementsToRemove.forEach((el) => el.remove());
-      elementsToAppend.forEach((el) => ref.appendChild(el));
-    });
   }
 
   updateMethods() {
@@ -1233,13 +1125,6 @@ exports[`snapshot lifeCycle hooks 1`] = `
     this.hookSomething();
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue && this.isRendered) {
-      this.render(name);
-    }
-    this.hookSomething(name, oldValue, newValue);
-  }
-
   firstRender() {
     this.beforeFirstRender();
     this.shadowRoot.innerHTML = \`
@@ -1252,80 +1137,6 @@ exports[`snapshot lifeCycle hooks 1`] = `
 
     this.isRendered = true;
     this.afterFirstRender();
-  }
-
-  render(attribute) {
-    this.beforeRender();
-
-    const template = document.createElement("div");
-    template.className = "ref";
-    template.innerHTML = \`\`;
-
-    this.updateRefsAttributes(template);
-    this.updateRefs(attribute, template);
-    this.updateMethods();
-
-    this.applyChanges(template);
-
-    this.afterRender();
-  }
-
-  updateRefsAttributes(template) {
-    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
-    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
-    refsAttributes.forEach((refAttribute, i) => {
-      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
-        if (refAttribute.hasAttribute(attr.name)) {
-          refAttribute.setAttribute(attr.name, attr.value);
-        } else {
-          refAttribute.setAttribute(attr.name, attr.value);
-        }
-      });
-      Array.from(refAttribute.attributes).forEach((attr) => {
-        if (attr.name === "ref-ev-set") {
-          return;
-        }
-        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
-          refAttribute.removeAttribute(attr.name);
-        }
-      });
-    });
-  }
-
-  updateRefs(attribute, template) {
-    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
-    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
-    refs.forEach((ref, i) => {
-      const elementsToRemove = [];
-      const elementsToAppend = [];
-      if (ref && futureRefs[i]) {
-        if (
-          ref.hasAttribute("ref-list") &&
-          futureRefs[i].hasAttribute("ref-list") &&
-          ref.getAttribute("ref-list") === attribute &&
-          futureRefs[i].getAttribute("ref-list") === attribute
-        ) {
-          ref.querySelectorAll("*").forEach((child, j) => {
-            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
-              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
-            }
-          });
-          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
-            if (!ref.children[j]) {
-              elementsToAppend.push(child);
-            }
-          });
-        } else {
-          ref.innerHTML = futureRefs[i].innerHTML;
-        }
-      } else if (ref && !futureRefs[i]) {
-        elementsToRemove.push(ref);
-      }
-      elementsToRemove.forEach((el) => el.remove());
-      elementsToAppend.forEach((el) => ref.appendChild(el));
-    });
   }
 
   updateMethods() {
@@ -1381,12 +1192,6 @@ exports[`snapshot methods 1`] = `
     this.firstRender();
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue && this.isRendered) {
-      this.render(name);
-    }
-  }
-
   firstRender() {
     this.shadowRoot.innerHTML = \`
       
@@ -1397,76 +1202,6 @@ exports[`snapshot methods 1`] = `
     \`.trim();
 
     this.isRendered = true;
-  }
-
-  render(attribute) {
-    const template = document.createElement("div");
-    template.className = "ref";
-    template.innerHTML = \`<p>Hello \${this.testMethod()}</p>\`;
-
-    this.updateRefsAttributes(template);
-    this.updateRefs(attribute, template);
-    this.updateMethods();
-
-    this.applyChanges(template);
-  }
-
-  updateRefsAttributes(template) {
-    const refsAttributes = this.shadowRoot.querySelectorAll(\`[ref-attribute]\`);
-    const futureRefsAttributes = template.querySelectorAll(\`[ref-attribute]\`);
-
-    refsAttributes.forEach((refAttribute, i) => {
-      Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
-        if (refAttribute.hasAttribute(attr.name)) {
-          refAttribute.setAttribute(attr.name, attr.value);
-        } else {
-          refAttribute.setAttribute(attr.name, attr.value);
-        }
-      });
-      Array.from(refAttribute.attributes).forEach((attr) => {
-        if (attr.name === "ref-ev-set") {
-          return;
-        }
-        if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
-          refAttribute.removeAttribute(attr.name);
-        }
-      });
-    });
-  }
-
-  updateRefs(attribute, template) {
-    const refs = this.shadowRoot.querySelectorAll(\`.ref-\${attribute}\`);
-    const futureRefs = template.querySelectorAll(\`.ref-\${attribute}\`);
-
-    refs.forEach((ref, i) => {
-      const elementsToRemove = [];
-      const elementsToAppend = [];
-      if (ref && futureRefs[i]) {
-        if (
-          ref.hasAttribute("ref-list") &&
-          futureRefs[i].hasAttribute("ref-list") &&
-          ref.getAttribute("ref-list") === attribute &&
-          futureRefs[i].getAttribute("ref-list") === attribute
-        ) {
-          ref.querySelectorAll("*").forEach((child, j) => {
-            if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
-              child.innerHTML = futureRefs[i].children[j]?.innerHTML || "";
-            }
-          });
-          futureRefs[i].querySelectorAll("*").forEach((child, j) => {
-            if (!ref.children[j]) {
-              elementsToAppend.push(child);
-            }
-          });
-        } else {
-          ref.innerHTML = futureRefs[i].innerHTML;
-        }
-      } else if (ref && !futureRefs[i]) {
-        elementsToRemove.push(ref);
-      }
-      elementsToRemove.forEach((el) => el.remove());
-      elementsToAppend.forEach((el) => ref.appendChild(el));
-    });
   }
 
   updateMethods() {
@@ -1560,7 +1295,6 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
 
     this.updateRefsAttributes(template);
     this.updateRefs(attribute, template);
-    this.updateMethods();
 
     this.applyChanges(template);
   }
@@ -1620,16 +1354,6 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
       }
       elementsToRemove.forEach((el) => el.remove());
       elementsToAppend.forEach((el) => ref.appendChild(el));
-    });
-  }
-
-  updateMethods() {
-    const methods = this.shadowRoot.querySelectorAll(".ref-method");
-    methods.forEach((method) => {
-      const methodName = Array.from(method.classList.values())
-        .find((className) => className.startsWith("ref-method-"))
-        ?.replace("ref-method-", "");
-      method.innerHTML = \`\${this[methodName]()}\`;
     });
   }
 

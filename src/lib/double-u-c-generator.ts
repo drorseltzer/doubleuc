@@ -587,6 +587,24 @@ export class DoubleUCGenerator {
       this.wcString = this.wcString.replace('static get observedAttributes() {}', '');
       this.wcString = this.wcString.replace('this.initAttributes();', '');
     }
+    if (!this.declaration.attributes || this.declaration.attributes.every(attr => attr.observed === false)) {
+      this.wcString = this.wcString.replaceAll(/this.updateRefsAttributes\(.*?\);/gs, '');
+      this.wcString = this.wcString.replaceAll(/this.updateRefs\(.*?\);/gs, '');
+      this.wcString = this.wcString.replace(
+        /updateRefsAttributes\s*\([^)]*\)\s*\{((?:[^{}]*|\{((?:[^{}]*|\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)})*?)})*?)}/gs,
+        ''
+      );
+      this.wcString = this.wcString.replace(/updateRefs\s*\([^)]*\)\s*\{((?:[^{}]*|\{((?:[^{}]*|\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)})*?)})*?)}/gs, '');
+      this.wcString = this.wcString.replace(
+        /attributeChangedCallback\s*\([^)]*\)\s*\{((?:[^{}]*|\{((?:[^{}]*|\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)})*?)})*?)}/gs,
+        ''
+      );
+      this.wcString = this.wcString.replace(/render\s*\([^)]*\)\s*\{((?:[^{}]*|\{((?:[^{}]*|\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)})*?)})*?)}/gs, '');
+    }
+    if (!this.declaration.methods || !Object.keys(this.declaration.methods).length) {
+      this.wcString = this.wcString.replaceAll(/this.updateMethods\(.*?\);/gs, '');
+      this.wcString = this.wcString.replace(/updateMethods\s*\([^)]*\)\s*\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)}/gs, '');
+    }
     if (!this.declaration.slotted) {
       this.wcString = this.wcString.replace('<slot></slot>\n', '');
     }
