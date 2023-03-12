@@ -45,8 +45,7 @@ async function generateFiles(filesPaths) {
 
 async function generateFile(path) {
   const declaration = require(path);
-  const generator = new DoubleUCGenerator(declaration);
-  const file = await generator.generateWebComponent();
+  const file = await DoubleUCGenerator(declaration);
   console.log(`Generated ${file}`);
 }
 
