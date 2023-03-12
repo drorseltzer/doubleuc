@@ -1,4 +1,4 @@
-import { kebabToPascal, pascalToKebab } from './utils.js';
+import { kebabToPascal, pascalToKebab } from './compiler/utils.js';
 import path from 'path';
 import fs from 'fs';
 import { DeclarativeWebComponentGeneratorOutputType } from '../types.js';
@@ -11,10 +11,7 @@ export class DoubleUCComponentGenerator {
   componentString = '';
   outputType: DeclarativeWebComponentGeneratorOutputType;
 
-  constructor(
-    name: string,
-    outputType: DeclarativeWebComponentGeneratorOutputType = DeclarativeWebComponentGeneratorOutputType.JS
-  ) {
+  constructor(name: string, outputType: DeclarativeWebComponentGeneratorOutputType = DeclarativeWebComponentGeneratorOutputType.JS) {
     if (name.includes('/')) {
       const parts = name.split('/');
       this.name = parts.at(-1) || '';
@@ -28,20 +25,11 @@ export class DoubleUCComponentGenerator {
   }
 
   generateComponentDeclarationFiles() {
-    return this.getTemplateFile()
-      .replaceTagName()
-      .replaceClassName()
-      .replaceTemplateFilePath()
-      .replaceStyleFilePath()
-      .createDir()
-      .output();
+    return this.getTemplateFile().replaceTagName().replaceClassName().replaceTemplateFilePath().replaceStyleFilePath().createDir().output();
   }
 
   private getTemplateFile() {
-    const templateFileName =
-      this.outputType === DeclarativeWebComponentGeneratorOutputType.TS
-        ? '.wc-component-template-ts'
-        : '.wc-component-template';
+    const templateFileName = this.outputType === DeclarativeWebComponentGeneratorOutputType.TS ? '.wc-component-template-ts' : '.wc-component-template';
     const filePath = path.join(__dirname, '../../src/lib', templateFileName);
     const file = fs.readFileSync(filePath);
     this.componentString = file.toString();
@@ -56,21 +44,13 @@ export class DoubleUCComponentGenerator {
   }
 
   private replaceClassName() {
-    this.componentString = this.componentString.replaceAll(
-      '{{COMPONENT_CLASS_NAME}}',
-      kebabToPascal(this.tagName)
-    );
+    this.componentString = this.componentString.replaceAll('{{COMPONENT_CLASS_NAME}}', kebabToPascal(this.tagName));
 
     return this;
   }
 
   private replaceTemplateFilePath() {
-    const htmlFilePath = path.join(
-      process.cwd(),
-      this.argPath,
-      this.tagName,
-      this.tagName + '.html'
-    );
+    const htmlFilePath = path.join(process.cwd(), this.argPath, this.tagName, this.tagName + '.html');
     console.log(htmlFilePath);
     this.componentString = this.componentString.replaceAll('{{TEMPLATE_FILE_PATH}}', htmlFilePath);
 
@@ -78,12 +58,7 @@ export class DoubleUCComponentGenerator {
   }
 
   private replaceStyleFilePath() {
-    const scssFilePath = path.join(
-      process.cwd(),
-      this.argPath,
-      this.tagName,
-      this.tagName + '.scss'
-    );
+    const scssFilePath = path.join(process.cwd(), this.argPath, this.tagName, this.tagName + '.scss');
     this.componentString = this.componentString.replaceAll('{{STYLE_FILE_PATH}}', scssFilePath);
 
     return this;
@@ -102,26 +77,10 @@ export class DoubleUCComponentGenerator {
   }
 
   private output() {
-    const extension =
-      this.outputType === DeclarativeWebComponentGeneratorOutputType.TS ? '.ts' : '.js';
-    const jsFilePath = path.join(
-      process.cwd(),
-      this.argPath,
-      this.tagName,
-      this.tagName + extension
-    );
-    const htmlFilePath = path.join(
-      process.cwd(),
-      this.argPath,
-      this.tagName,
-      this.tagName + '.html'
-    );
-    const scssFilePath = path.join(
-      process.cwd(),
-      this.argPath,
-      this.tagName,
-      this.tagName + '.scss'
-    );
+    const extension = this.outputType === DeclarativeWebComponentGeneratorOutputType.TS ? '.ts' : '.js';
+    const jsFilePath = path.join(process.cwd(), this.argPath, this.tagName, this.tagName + extension);
+    const htmlFilePath = path.join(process.cwd(), this.argPath, this.tagName, this.tagName + '.html');
+    const scssFilePath = path.join(process.cwd(), this.argPath, this.tagName, this.tagName + '.scss');
     fs.writeFileSync(jsFilePath, Buffer.from(this.componentString));
     fs.writeFileSync(htmlFilePath, Buffer.from(''));
     fs.writeFileSync(scssFilePath, Buffer.from(''));

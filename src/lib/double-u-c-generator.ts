@@ -2,7 +2,7 @@ import { DeclarativeWebComponent, DeclarativeWebComponentOutputType } from '../t
 import path from 'path';
 import fs from 'fs';
 import prettier from 'prettier';
-import { fileExist, kebabToPascal, pascalToKebab } from './utils.js';
+import { fileExist, kebabToPascal, pascalToKebab } from './compiler/utils.js';
 import sass from 'sass';
 import { minify } from 'terser';
 
