@@ -1,215 +1,215 @@
 class {{CLASS_NAME}} extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.isRendered = false;
-  }
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
+		this.isRendered = false;
+	}
 
-  static get observedAttributes() {
-    {{OBSERVED_ATTRIBUTES}};
-  }
+	static get observedAttributes() {
+		{{OBSERVED_ATTRIBUTES}};
+	}
 
-  {{GETTERS_SETTERS}}
+	{{GETTERS_SETTERS}}
 
-  {{METHODS}}
+	{{METHODS}}
 
-  initAttributes() {
-    {{ATTRIBUTES_INITS}}
-  }
+	initAttributes() {
+		{{ATTRIBUTES_INITS}}
+	}
 
-  initListeners() {
-    {{LISTENERS_INITS}}
-  }
+	initListeners() {
+		{{LISTENERS_INITS}}
+	}
 
-  connectedCallback() {
-    this.initAttributes();
-    {{CONNECTED_CALLBACKS}}
-    this.firstRender();
-    this.initListeners();
-  }
+	connectedCallback() {
+		this.initAttributes();
+		{{CONNECTED_CALLBACKS}}
+		this.firstRender();
+		this.initListeners();
+	}
 
-  disconnectedCallback() {
-    {{DISCONNECTED_CALLBACKS}}
-  }
+	disconnectedCallback() {
+		{{DISCONNECTED_CALLBACKS}}
+	}
 
-  adoptedCallback() {
-    {{ADOPTED_CALLBACKS}}
-  }
+	adoptedCallback() {
+		{{ADOPTED_CALLBACKS}}
+	}
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (newValue !== oldValue && this.isRendered) {
-      this.render(name);
-      this.initListeners();
-    }
-    {{ATTRIBUTE_CHANGED_CALLBACKS}}
-  }
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (newValue !== oldValue && this.isRendered) {
+			this.render(name);
+			this.initListeners();
+		}
+		{{ATTRIBUTE_CHANGED_CALLBACKS}}
+	}
 
-  checkIfs(node) {
-    const ifsElements = node.querySelectorAll('[ref-if]');
-    for(const ifElement of ifsElements){
-      if (ifElement.getAttribute('ref-if') === 'false') {
-        this.commentElement(ifElement);
-        this.checkIfElse(ifElement);
-      } else if (ifElement.getAttribute('ref-if') === 'true' && ifElement.nextElementSibling && ifElement.nextElementSibling.hasAttribute('ref-else')) {
-        this.commentElement(ifElement.nextElementSibling);
-      }
-    }
-  }
+	checkIfs(node) {
+		const ifsElements = node.querySelectorAll('[ref-if]');
+		for(const ifElement of ifsElements){
+			if (ifElement.getAttribute('ref-if') === 'false') {
+				this.commentElement(ifElement);
+				this.checkIfElse(ifElement);
+			} else if (ifElement.getAttribute('ref-if') === 'true' && ifElement.nextElementSibling && ifElement.nextElementSibling.hasAttribute('ref-else')) {
+				this.commentElement(ifElement.nextElementSibling);
+			}
+		}
+	}
 
-  commentElement(element) {
-    element.innerHTML = `<!-- ${element.innerHTML} //-->`;
-  }
+	commentElement(element) {
+		element.innerHTML = `<!-- ${element.innerHTML} //-->`;
+	}
 
-  uncommentElement(element) {
-    element.innerHTML = element.innerHTML.replace(/<!--[\s\S]*?-->/g, '');
-  }
+	uncommentElement(element) {
+		element.innerHTML = element.innerHTML.replace(/<!--[\s\S]*?-->/g, '');
+	}
 
-  checkIfElse(ifElement) {
-    if (ifElement.nextElementSibling && ifElement.nextElementSibling.hasAttribute('ref-else') && ifElement.nextElementSibling.innerHTML.startsWith('<!--')) {
-      this.uncommentElement(ifElement.nextElementSibling);
-    }
-  }
+	checkIfElse(ifElement) {
+		if (ifElement.nextElementSibling && ifElement.nextElementSibling.hasAttribute('ref-else') && ifElement.nextElementSibling.innerHTML.startsWith('<!--')) {
+			this.uncommentElement(ifElement.nextElementSibling);
+		}
+	}
 
-  firstRender() {
-    this.beforeFirstRender();
-    this.shadowRoot.innerHTML = `
-      <style class="vars">:host { {{CSS_VARS}} }</style>
-      <style class="style">{{STYLE}}</style>
-      <slot></slot>
-      <div class="ref">
-        {{TEMPLATE_HTML}}
-      </div>
-    `.trim();
-    this.checkIfs(this.shadowRoot);
-    this.isRendered = true;
-    this.afterFirstRender();
-  }
+	firstRender() {
+		this.beforeFirstRender();
+		this.shadowRoot.innerHTML = `
+			<style class="vars">:host { {{CSS_VARS}} }</style>
+			<style class="style">{{STYLE}}</style>
+			<slot></slot>
+			<div class="ref">
+				{{TEMPLATE_HTML}}
+			</div>
+		`.trim();
+		this.checkIfs(this.shadowRoot);
+		this.isRendered = true;
+		this.afterFirstRender();
+	}
 
-    render(attribute) {
-      this.beforeRender();
-      if (attribute.startsWith('style-')) {
-        this.renderCss();
-      }
+		render(attribute) {
+			this.beforeRender();
+			if (attribute.startsWith('style-')) {
+				this.renderCss();
+			}
 
-      const template = document.createElement('div');
-      template.className = 'ref';
-      template.innerHTML = `{{TEMPLATE_HTML}}`;
-      this.checkIfs(template);
+			const template = document.createElement('div');
+			template.className = 'ref';
+			template.innerHTML = `{{TEMPLATE_HTML}}`;
+			this.checkIfs(template);
 
-      this.updateRefsIfs(attribute, template);
-      this.updateRefsAttributes(template);
-      this.updateRefs(attribute, template);
-      this.updateMethods();
+			this.updateRefsIfs(attribute, template);
+			this.updateRefsAttributes(template);
+			this.updateRefs(attribute, template);
+			this.updateMethods();
 
-      this.applyChanges(template);
+			this.applyChanges(template);
 
-      this.afterRender();
-    }
+			this.afterRender();
+		}
 
-    updateRefsIfs(attribute, template) {
-      const refsIfs = this.shadowRoot.querySelectorAll(`[ref-if]`);
-      const futureRefsIfs = template.querySelectorAll(`[ref-if]`);
+		updateRefsIfs(attribute, template) {
+			const refsIfs = this.shadowRoot.querySelectorAll(`[ref-if]`);
+			const futureRefsIfs = template.querySelectorAll(`[ref-if]`);
 
-      refsIfs.forEach((refIf, i) => {
-        if ((refIf.getAttribute('ref-if') === 'false' && futureRefsIfs[i].getAttribute('ref-if') === 'false') || refIf.getAttribute('ref-if') === futureRefsIfs[i].getAttribute('ref-if')) {
-          return;
-        }
-        if (refIf.innerHTML !== futureRefsIfs[i].innerHTML) {
-          refIf.innerHTML = futureRefsIfs[i].innerHTML;
-        }
-        if (refIf.nextElementSibling && refIf.nextElementSibling.hasAttribute('ref-else') && futureRefsIfs[i].nextElementSibling && futureRefsIfs[i].nextElementSibling.hasAttribute('ref-else') && refIf.nextElementSibling.innerHTML !== futureRefsIfs[i].nextElementSibling.innerHTML) {
-          refIf.nextElementSibling.innerHTML = futureRefsIfs[i].nextElementSibling.innerHTML;
-        }
-      });
-    }
+			refsIfs.forEach((refIf, i) => {
+				if ((refIf.getAttribute('ref-if') === 'false' && futureRefsIfs[i].getAttribute('ref-if') === 'false') || refIf.getAttribute('ref-if') === futureRefsIfs[i].getAttribute('ref-if')) {
+					return;
+				}
+				if (refIf.innerHTML !== futureRefsIfs[i].innerHTML) {
+					refIf.innerHTML = futureRefsIfs[i].innerHTML;
+				}
+				if (refIf.nextElementSibling && refIf.nextElementSibling.hasAttribute('ref-else') && futureRefsIfs[i].nextElementSibling && futureRefsIfs[i].nextElementSibling.hasAttribute('ref-else') && refIf.nextElementSibling.innerHTML !== futureRefsIfs[i].nextElementSibling.innerHTML) {
+					refIf.nextElementSibling.innerHTML = futureRefsIfs[i].nextElementSibling.innerHTML;
+				}
+			});
+		}
 
-    updateRefsAttributes(template) {
-      const refsAttributes = this.shadowRoot.querySelectorAll(`[ref-attribute]`);
-      const futureRefsAttributes = template.querySelectorAll(`[ref-attribute]`);
+		updateRefsAttributes(template) {
+			const refsAttributes = this.shadowRoot.querySelectorAll(`[ref-attribute]`);
+			const futureRefsAttributes = template.querySelectorAll(`[ref-attribute]`);
 
-      refsAttributes.forEach((refAttribute, i) => {
-        Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
-          if (refAttribute.hasAttribute(attr.name)) {
-            refAttribute.setAttribute(attr.name, attr.value);
-          } else {
-            refAttribute.setAttribute(attr.name, attr.value);
-          }
-        });
-        Array.from(refAttribute.attributes).forEach((attr) => {
-          if (attr.name === 'ref-ev-set') {
-            return;
-          }
-          if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
-            refAttribute.removeAttribute(attr.name);
-          }
-        });
-      });
-    }
+			refsAttributes.forEach((refAttribute, i) => {
+				Array.from(futureRefsAttributes[i].attributes).forEach((attr) => {
+					if (refAttribute.hasAttribute(attr.name)) {
+						refAttribute.setAttribute(attr.name, attr.value);
+					} else {
+						refAttribute.setAttribute(attr.name, attr.value);
+					}
+				});
+				Array.from(refAttribute.attributes).forEach((attr) => {
+					if (attr.name === 'ref-ev-set') {
+						return;
+					}
+					if (!futureRefsAttributes[i].hasAttribute(attr.name)) {
+						refAttribute.removeAttribute(attr.name);
+					}
+				});
+			});
+		}
 
-    updateRefs(attribute, template) {
-      const refs = this.shadowRoot.querySelectorAll(`.ref-${attribute}`);
-      const futureRefs = template.querySelectorAll(`.ref-${attribute}`);
+		updateRefs(attribute, template) {
+			const refs = this.shadowRoot.querySelectorAll(`.ref-${attribute}`);
+			const futureRefs = template.querySelectorAll(`.ref-${attribute}`);
 
-      refs.forEach((ref, i) => {
-        const elementsToRemove = [];
-        const elementsToAppend = [];
-        if (ref && futureRefs[i]) {
-          if (ref.hasAttribute('ref-list') && futureRefs[i].hasAttribute('ref-list') && ref.getAttribute('ref-list') === attribute && futureRefs[i].getAttribute('ref-list') === attribute) {
-            ref.querySelectorAll('*').forEach((child, j) => {
-              if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
-                child.innerHTML = futureRefs[i].children[j]?.innerHTML || '';
-              }
-            });
-            futureRefs[i].querySelectorAll('*').forEach((child, j) => {
-              if (!ref.children[j]) {
-                elementsToAppend.push(child);
-              }
-            });
-          } else {
-            ref.innerHTML = futureRefs[i].innerHTML;
-          }
-        } else if (ref && !futureRefs[i]) {
-          elementsToRemove.push(ref);
-        }
-        elementsToRemove.forEach((el) => el.remove());
-        elementsToAppend.forEach((el) => ref.appendChild(el));
-      });
-    }
+			refs.forEach((ref, i) => {
+				const elementsToRemove = [];
+				const elementsToAppend = [];
+				if (ref && futureRefs[i]) {
+					if (ref.hasAttribute('ref-list') && futureRefs[i].hasAttribute('ref-list') && ref.getAttribute('ref-list') === attribute && futureRefs[i].getAttribute('ref-list') === attribute) {
+						ref.querySelectorAll('*').forEach((child, j) => {
+							if (child.innerHTML !== futureRefs[i].children[j]?.innerHTML) {
+								child.innerHTML = futureRefs[i].children[j]?.innerHTML || '';
+							}
+						});
+						futureRefs[i].querySelectorAll('*').forEach((child, j) => {
+							if (!ref.children[j]) {
+								elementsToAppend.push(child);
+							}
+						});
+					} else {
+						ref.innerHTML = futureRefs[i].innerHTML;
+					}
+				} else if (ref && !futureRefs[i]) {
+					elementsToRemove.push(ref);
+				}
+				elementsToRemove.forEach((el) => el.remove());
+				elementsToAppend.forEach((el) => ref.appendChild(el));
+			});
+		}
 
-    updateMethods() {
-      const methods = this.shadowRoot.querySelectorAll('.ref-method');
-      methods.forEach((method) => {
-        const methodName = Array.from(method.classList.values()).find((className) => className.startsWith('ref-method-'))?.replace('ref-method-', '');
-        method.innerHTML = `${this[methodName]()}`;
-      });
-    }
+		updateMethods() {
+			const methods = this.shadowRoot.querySelectorAll('.ref-method');
+			methods.forEach((method) => {
+				const methodName = Array.from(method.classList.values()).find((className) => className.startsWith('ref-method-'))?.replace('ref-method-', '');
+				method.innerHTML = `${this[methodName]()}`;
+			});
+		}
 
-    applyChanges(template) {
-      template.replaceChildren(...Array.from(template.childNodes));
-      template.remove();
-    }
+		applyChanges(template) {
+			template.replaceChildren(...Array.from(template.childNodes));
+			template.remove();
+		}
 
-  renderCss() {
-    const vars = this.shadowRoot.querySelector('.vars');
-    vars.innerText = `:host { {{CSS_VARS}} }`;
-  }
+	renderCss() {
+		const vars = this.shadowRoot.querySelector('.vars');
+		vars.innerText = `:host { {{CSS_VARS}} }`;
+	}
 
-  beforeFirstRender() {
-    {{BEFORE_FIRST_RENDER_HOOK}}
-  }
+	beforeFirstRender() {
+		{{BEFORE_FIRST_RENDER_HOOK}}
+	}
 
 
-  afterFirstRender() {
-    {{AFTER_FIRST_RENDER_HOOK}}
-  }
+	afterFirstRender() {
+		{{AFTER_FIRST_RENDER_HOOK}}
+	}
 
-  beforeRender() {
-    {{BEFORE_RENDER_HOOK}}
-  }
+	beforeRender() {
+		{{BEFORE_RENDER_HOOK}}
+	}
 
-  afterRender() {
-    {{AFTER_RENDER_HOOK}}
-  }
+	afterRender() {
+		{{AFTER_RENDER_HOOK}}
+	}
 }
 export { {{CLASS_NAME}} };
 

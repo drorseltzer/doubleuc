@@ -39,10 +39,10 @@ exports[`snapshot Template Attributes 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-            <div class="ref">
-        <a ref-attribute href="\${this.link}"><span class="ref-text">\${this.text}</span></a>
-      </div>
-    \`.trim();
+<div class="ref">
+<a ref-attribute href="\${this.link}"><span class="ref-text">\${this.text}</span></a>
+</div>
+\`.trim();
     this.isRendered = true;
   }
   render(attribute) {
@@ -150,33 +150,31 @@ exports[`snapshot Template Lists 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-            <div class="ref">
-        <span ref-list="items" class="ref-items">\${(() => {
-          if (!this.items) return;
-          const listString = \`<li  ref-attribute data="{item}">{item}</li>\`;
-          let listHtml = listString.repeat(this.items.length);
-          for (const item of this.items) {
-            const regex = new RegExp(\`{item(.*?)}\`, "gs");
-            const matches = listString.matchAll(regex);
-            for (const match of matches) {
-              const [full, additions] = match;
-              if (additions) {
-                const prop = additions.startsWith(".")
-                  ? additions.substring(1).replaceAll(".", "][")
-                  : additions.replaceAll(".", "][");
-                const finalProp = prop.startsWith("]")
-                  ? prop.substring(1)
-                  : prop;
-                listHtml = listHtml.replace(full, item[\`\${finalProp}\`]);
-              } else {
-                listHtml = listHtml.replace(full, item);
-              }
-            }
+<div class="ref">
+<span ref-list="items" class="ref-items">\${(() => {
+      if (!this.items) return;
+      const listString = \`<li  ref-attribute data="{item}">{item}</li>\`;
+      let listHtml = listString.repeat(this.items.length);
+      for (const item of this.items) {
+        const regex = new RegExp(\`{item(.*?)}\`, "gs");
+        const matches = listString.matchAll(regex);
+        for (const match of matches) {
+          const [full, additions] = match;
+          if (additions) {
+            const prop = additions.startsWith(".")
+              ? additions.substring(1).replaceAll(".", "][")
+              : additions.replaceAll(".", "][");
+            const finalProp = prop.startsWith("]") ? prop.substring(1) : prop;
+            listHtml = listHtml.replace(full, item[\`\${finalProp}\`]);
+          } else {
+            listHtml = listHtml.replace(full, item);
           }
-          return listHtml;
-        })()}</span>
-      </div>
-    \`.trim();
+        }
+      }
+      return listHtml;
+    })()}</span>
+</div>
+\`.trim();
     this.isRendered = true;
   }
   render(attribute) {
@@ -313,12 +311,12 @@ exports[`snapshot Template Properties 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-            <div class="ref">
-        <button ref-attribute \${
-          this.disabled ? "disabled" : ""
-        }><span class="ref-text">\${this.text}</span></button>
-      </div>
-    \`.trim();
+<div class="ref">
+<button ref-attribute \${
+      this.disabled ? "disabled" : ""
+    }><span class="ref-text">\${this.text}</span></button>
+</div>
+\`.trim();
     this.isRendered = true;
   }
   render(attribute) {
@@ -407,9 +405,9 @@ exports[`snapshot Tree Shaking 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-            <div class="ref">
-      </div>
-    \`.trim();
+<div class="ref">
+</div>
+\`.trim();
     this.isRendered = true;
   }
   applyChanges(template) {
@@ -422,7 +420,7 @@ customElements.define("test-comp", TestComp);
 "
 `;
 
-exports[`snapshot Tree Shaking Minified 1`] = `"class TestComp extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"}),this.isRendered=!1}connectedCallback(){this.firstRender()}firstRender(){this.shadowRoot.innerHTML='\\n            <div class="ref">\\n      </div>\\n    '.trim(),this.isRendered=!0}applyChanges(e){e.replaceChildren(...Array.from(e.childNodes)),e.remove()}}export{TestComp};customElements.define("test-comp",TestComp);"`;
+exports[`snapshot Tree Shaking Minified 1`] = `"class TestComp extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"}),this.isRendered=!1}connectedCallback(){this.firstRender()}firstRender(){this.shadowRoot.innerHTML='\\n<div class="ref">\\n</div>\\n'.trim(),this.isRendered=!0}applyChanges(e){e.replaceChildren(...Array.from(e.childNodes)),e.remove()}}export{TestComp};customElements.define("test-comp",TestComp);"`;
 
 exports[`snapshot basic hello world sanity 1`] = `
 "class TestComp extends HTMLElement {
@@ -455,12 +453,12 @@ exports[`snapshot basic hello world sanity 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      <style class="vars">:host {  }</style>
-      <style class="style">p{font-weight:bold}</style>
-            <div class="ref">
-        <p>Hello <span class="ref-name">\${this.name}</span></p>
-      </div>
-    \`.trim();
+<style class="vars">:host {  }</style>
+<style class="style">p{font-weight:bold}</style>
+<div class="ref">
+<p>Hello <span class="ref-name">\${this.name}</span></p>
+</div>
+\`.trim();
     this.isRendered = true;
   }
   render(attribute) {
@@ -603,12 +601,12 @@ exports[`snapshot conditional if 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      <style class="vars">:host {  }</style>
-      <style class="style">p{font-weight:bold}</style>
-            <div class="ref">
-        <span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span>
-      </div>
-    \`.trim();
+<style class="vars">:host {  }</style>
+<style class="style">p{font-weight:bold}</style>
+<div class="ref">
+<span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span>
+</div>
+\`.trim();
     this.checkIfs(this.shadowRoot);
     this.isRendered = true;
   }
@@ -779,12 +777,12 @@ exports[`snapshot conditional if else 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      <style class="vars">:host {  }</style>
-      <style class="style">p{font-weight:bold}</style>
-            <div class="ref">
-        <span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span><span ref-attribute ref-else><p>Hello Anonymous</p></span>
-      </div>
-    \`.trim();
+<style class="vars">:host {  }</style>
+<style class="style">p{font-weight:bold}</style>
+<div class="ref">
+<span ref-attribute ref-if="\${this.name}"><p>Hello <span class="ref-name">\${this.name}</span></p></span><span ref-attribute ref-else><p>Hello Anonymous</p></span>
+</div>
+\`.trim();
     this.checkIfs(this.shadowRoot);
     this.isRendered = true;
   }
@@ -924,10 +922,10 @@ exports[`snapshot event listeners 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-            <div class="ref">
-        <button id="clickBtn" >click</button>
-      </div>
-    \`.trim();
+<div class="ref">
+<button id="clickBtn" >click</button>
+</div>
+\`.trim();
     this.isRendered = true;
   }
   updateMethods() {
@@ -972,9 +970,9 @@ exports[`snapshot lifeCycle hooks 1`] = `
   firstRender() {
     this.beforeFirstRender();
     this.shadowRoot.innerHTML = \`
-            <div class="ref">
-      </div>
-    \`.trim();
+<div class="ref">
+</div>
+\`.trim();
     this.isRendered = true;
     this.afterFirstRender();
   }
@@ -1024,10 +1022,10 @@ exports[`snapshot methods 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-            <div class="ref">
-        <p>Hello \${this.testMethod()}</p>
-      </div>
-    \`.trim();
+<div class="ref">
+<p>Hello \${this.testMethod()}</p>
+</div>
+\`.trim();
     this.isRendered = true;
   }
   updateMethods() {
@@ -1088,12 +1086,12 @@ exports[`snapshot two attributes - observed and unobserved 1`] = `
   }
   firstRender() {
     this.shadowRoot.innerHTML = \`
-      <style class="vars">:host {  }</style>
-      <style class="style">p{font-weight:bold}</style>
-            <div class="ref">
-        <p>Hello <span class="ref-name">\${this.name}</span></p><p>Hello <span class="ref-name2">\${this.name2}</span></p>
-      </div>
-    \`.trim();
+<style class="vars">:host {  }</style>
+<style class="style">p{font-weight:bold}</style>
+<div class="ref">
+<p>Hello <span class="ref-name">\${this.name}</span></p><p>Hello <span class="ref-name2">\${this.name2}</span></p>
+</div>
+\`.trim();
     this.isRendered = true;
   }
   render(attribute) {

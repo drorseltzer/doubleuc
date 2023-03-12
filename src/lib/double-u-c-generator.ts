@@ -628,6 +628,7 @@ export class DoubleUCGenerator {
     }
 
     this.wcString = this.wcString.replace(/^\s*[\r\n]/gms, '');
+    this.wcString = this.wcString.replace(/\t/gms, '');
 
     return this;
   }
