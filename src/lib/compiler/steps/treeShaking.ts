@@ -1,6 +1,8 @@
 import { DeclarativeWebComponent } from '../../../types.js';
+import { getHtmlFile } from './replaceTemplateHtml.js';
 
-export const treeShaking = (declaration: DeclarativeWebComponent, html: string, wcString: string) => {
+export const treeShaking = (declaration: DeclarativeWebComponent, wcString: string) => {
+  const html = getHtmlFile(declaration) || declaration.templateHtml || '';
   let tempWcString = wcString.toString();
   if (!declaration.hooks?.disconnected) {
     tempWcString = tempWcString.replace('disconnectedCallback() {}', '');
@@ -9,33 +11,33 @@ export const treeShaking = (declaration: DeclarativeWebComponent, html: string, 
     tempWcString = tempWcString.replace('adoptedCallback() {}', '');
   }
   if (!declaration.hooks?.beforeFirstRendered) {
-    tempWcString = tempWcString.replace('beforeFirstRender()', '');
+    tempWcString = tempWcString.replace('this.beforeFirstRender()', '');
     tempWcString = tempWcString.replace('beforeFirstRender() {}', '');
   }
   if (!declaration.hooks?.firstRendered) {
-    tempWcString = tempWcString.replace('afterFirstRender()', '');
+    tempWcString = tempWcString.replace('this.afterFirstRender()', '');
     tempWcString = tempWcString.replace('afterFirstRender() {}', '');
   }
   if (!declaration.hooks?.beforeRendered) {
-    tempWcString = tempWcString.replace('beforeRender()', '');
+    tempWcString = tempWcString.replace('this.beforeRender()', '');
     tempWcString = tempWcString.replace('beforeRender() {}', '');
   }
   if (!declaration.hooks?.rendered) {
-    tempWcString = tempWcString.replace('afterRender()', '');
+    tempWcString = tempWcString.replace('this.afterRender()', '');
     tempWcString = tempWcString.replace('afterRender() {}', '');
   }
   if (!declaration.listeners?.length) {
     tempWcString = tempWcString.replace('initListeners() {}', '');
-    tempWcString = tempWcString.replaceAll('initListeners();', '');
+    tempWcString = tempWcString.replaceAll('this.initListeners();', '');
   }
   if (!declaration.attributes.length) {
     tempWcString = tempWcString.replace('initAttributes() {}', '');
     tempWcString = tempWcString.replace('static get observedAttributes() {}', '');
-    tempWcString = tempWcString.replace('initAttributes();', '');
+    tempWcString = tempWcString.replace('this.initAttributes();', '');
   }
   if (!declaration.attributes || declaration.attributes.every(attr => attr.observed === false)) {
-    tempWcString = tempWcString.replaceAll(/updateRefsAttributes\(.*?\);/gs, '');
-    tempWcString = tempWcString.replaceAll(/updateRefs\(.*?\);/gs, '');
+    tempWcString = tempWcString.replaceAll(/this.updateRefsAttributes\(.*?\);/gs, '');
+    tempWcString = tempWcString.replaceAll(/this.updateRefs\(.*?\);/gs, '');
     tempWcString = tempWcString.replace(
       /updateRefsAttributes\s*\([^)]*\)\s*\{((?:[^{}]*|\{((?:[^{}]*|\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)})*?)})*?)}/gs,
       ''
@@ -48,7 +50,7 @@ export const treeShaking = (declaration: DeclarativeWebComponent, html: string, 
     tempWcString = tempWcString.replace(/render\s*\([^)]*\)\s*\{((?:[^{}]*|\{((?:[^{}]*|\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)})*?)})*?)}/gs, '');
   }
   if (!declaration.methods || !Object.keys(declaration.methods).length) {
-    tempWcString = tempWcString.replaceAll(/updateMethods\(.*?\);/gs, '');
+    tempWcString = tempWcString.replaceAll(/this.updateMethods\(.*?\);/gs, '');
     tempWcString = tempWcString.replace(/updateMethods\s*\([^)]*\)\s*\{((?:[^{}]*|\{(?:[^{}]*|\{(?:[^{}]*|\{[\s\S]*?})*?})*?})*?)}/gs, '');
   }
   if (!declaration.slotted) {
@@ -64,8 +66,8 @@ export const treeShaking = (declaration: DeclarativeWebComponent, html: string, 
   const ifRegex = new RegExp(/<[^>]*\s~if[^>]*>/g);
   const ifsElements = html && html.matchAll(ifRegex);
   if (!Array.from(ifsElements || []).length) {
-    tempWcString = tempWcString.replaceAll(/checkIfs\(.*?\);/gs, '');
-    tempWcString = tempWcString.replaceAll(/updateRefsIfs\(.*?\);/gs, '');
+    tempWcString = tempWcString.replaceAll(/this.checkIfs\(.*?\);/gs, '');
+    tempWcString = tempWcString.replaceAll(/this.updateRefsIfs\(.*?\);/gs, '');
     tempWcString = tempWcString.replace(/updateRefsIfs\s*\([^)]*\)\s*{(?:[^{}]*|{(?:[^{}]*|{[^{}]*})*})*}/gs, '');
     tempWcString = tempWcString.replace(/checkIfElse\s*\([^)]*\)\s*{(?:[^{}]*|{(?:[^{}]*|{[^{}]*})*})*}/gs, '');
     tempWcString = tempWcString.replace(/uncommentElement\s*\([^)]*\)\s*{(?:[^{}]*|{(?:[^{}]*|{[^{}]*})*})*}/gs, '');
@@ -74,7 +76,7 @@ export const treeShaking = (declaration: DeclarativeWebComponent, html: string, 
   }
 
   tempWcString = tempWcString.replace(/^\s*[\r\n]/gms, '');
-  // tempWcString = tempWcString.replace(/\t/gms, '');
+  tempWcString = tempWcString.replace(/\t/gms, '');
 
   return tempWcString;
 };

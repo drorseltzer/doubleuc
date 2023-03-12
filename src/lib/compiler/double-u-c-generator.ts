@@ -46,7 +46,7 @@ export const DoubleUCGenerator = async (declaration: DeclarativeWebComponent, ou
     const replacedBeforeRenderHook = replaceBeforeRenderHook(replacedAfterFirstRenderHook, declaration.hooks?.beforeRendered);
     const replacedAfterRenderHook = replaceAfterRenderHook(replacedBeforeRenderHook, declaration.hooks?.rendered);
     const formatted = format(className, replacedAfterRenderHook);
-    const treeShaken = treeShaking(declaration, templateFile, formatted);
+    const treeShaken = treeShaking(declaration, formatted);
     const formattedAgain = format(className, treeShaken);
     const minified = await minify(className, formattedAgain, declaration.config);
     return output(outputType, tagName, className, minified, declaration.config);

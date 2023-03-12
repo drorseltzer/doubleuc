@@ -14,8 +14,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -40,8 +39,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -61,8 +59,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -82,8 +79,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -112,8 +108,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -130,8 +125,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -148,8 +142,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -168,8 +161,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -188,8 +180,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -205,8 +196,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -220,8 +210,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -230,8 +219,7 @@ describe('snapshot', () => {
       tagName: 'test-comp',
       attributes: []
     };
-    const duc = new DoubleUCGenerator(declaration);
-    let testComponentString = await duc.generateWebComponent(1);
+    const testComponentString = await DoubleUCGenerator(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 });

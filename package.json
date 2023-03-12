@@ -10,6 +10,7 @@
     "start": "node ./dist/index",
     "test": "jest --ci --reporters=default --reporters=jest-junit",
     "build": "npm run clean && npm run build:ts",
+    "cli": "npx doubleuc build ./mocks/test-comp",
     "clean": "rm -rf ./dist/*",
     "build:ts": "tsc",
     "prepare": "npm run build"
