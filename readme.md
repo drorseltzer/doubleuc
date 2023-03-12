@@ -100,9 +100,8 @@ npx doubleuc b ./components/comnponent.js
 import { DoubleUCGenerator, DeclarativeWebComponent, DeclarativeWebComponentOutputType } from 'doubleuc';
 
 const mockDec: DeclarativeWebComponent = { ... }
-const generator = new DoubleUCGenerator(mockDec);
-const stringComponent = await generateWebComponent(DeclarativeWebComponentOutputType.STRING);
-await generateWebComponent(); // File
+const stringComponent = await DoubleUCGenerator(mockDec, DeclarativeWebComponentOutputType.STRING);
+const filePathComponent = await DoubleUCGenerator(mockDec, DeclarativeWebComponentOutputType.FILE);
 ```
 
 ## Declarative Web Component

@@ -58,34 +58,3 @@ export type DeclarativeWebComponentConfig = {
 };
 
 export type DeclarativeWebComponentInterface = Record<string, unknown>;
-
-export declare class DoubleUCGenerator {
-  private wcString;
-  private readonly declaration;
-  private className?;
-
-  constructor(declaration: DeclarativeWebComponent);
-
-  generateWebComponent(outputType?: DeclarativeWebComponentOutputType): Promise<string>;
-
-  private getTemplateFile;
-  private replaceClassName;
-  private replaceTagName;
-  private replaceTemplateHtml;
-  private getHtmlFile;
-  private replaceStyle;
-  private replaceTemplateHtmlLiterals;
-  private replaceMethods;
-  private replaceConnectedCallback;
-  private replaceDisconnectedCallback;
-  private replaceAdoptedCallback;
-  private replaceAttributeChangedCallback;
-  private replaceObservedAttributes;
-  private replaceAttributesInits;
-  private replaceListenersInits;
-  private treeShaking;
-  private format;
-  private minify;
-  private output;
-  private outputFile;
-}
