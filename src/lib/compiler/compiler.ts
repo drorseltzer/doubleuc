@@ -1,4 +1,4 @@
-import { DeclarativeWebComponent, DeclarativeWebComponentOutputType } from '../../types.js';
+import { DeclarativeWebComponent, DeclarativeWebComponentOutputType, DoubleUCCompilerFunction } from '../../types.js';
 import { setClassName } from './steps/setClassName.js';
 import { getTemplateFile } from './steps/getTemplateFile.js';
 import { replaceClassName } from './steps/replaceClassName.js';
@@ -17,7 +17,10 @@ import { minify } from './steps/minify.js';
 import { output } from './steps/output.js';
 import { replaceCallbacks } from './steps/replaceCallbacks.js';
 
-export const DoubleUCGenerator = async (declaration: DeclarativeWebComponent, outputType: DeclarativeWebComponentOutputType = DeclarativeWebComponentOutputType.FILE) => {
+export const DoubleUCCompiler: DoubleUCCompilerFunction = async (
+  declaration: DeclarativeWebComponent,
+  outputType: DeclarativeWebComponentOutputType = DeclarativeWebComponentOutputType.FILE
+) => {
   const { tagName } = declaration;
   const className = setClassName(tagName);
   try {

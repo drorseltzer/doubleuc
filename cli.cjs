@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const yargs = require("yargs");
-const { DoubleUCGenerator } = require("./dist/index.js");
+const { DoubleUCCompiler } = require("./dist/index.js");
 const fs = require("fs");
 const path = require("path");
 const { DoubleUCComponentGenerator } = require("./dist/lib/double-u-c-component-generator.js");
@@ -45,7 +45,7 @@ async function generateFiles(filesPaths) {
 
 async function generateFile(path) {
   const declaration = require(path);
-  const file = await DoubleUCGenerator(declaration);
+  const file = await DoubleUCCompiler(declaration);
   console.log(`Generated ${file}`);
 }
 

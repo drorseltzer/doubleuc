@@ -58,3 +58,8 @@ export type DeclarativeWebComponentConfig = {
 };
 
 export type DeclarativeWebComponentInterface = Record<string, unknown>;
+
+export type DoubleUCCompilerFunction = (
+  declaration: DeclarativeWebComponent,
+  outputType: DeclarativeWebComponentOutputType = DeclarativeWebComponentOutputType.FILE
+) => Promise<string | undefined>;
