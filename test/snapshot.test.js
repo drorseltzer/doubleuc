@@ -1,5 +1,5 @@
 describe('snapshot', () => {
-  const { DoubleUCGenerator } = require('../dist/index');
+  const { DoubleUCCompiler } = require('../dist/index');
 
   it('basic hello world sanity', async () => {
     const declaration = {
@@ -14,7 +14,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -39,7 +39,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -59,7 +59,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -79,7 +79,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -108,7 +108,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -125,7 +125,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -142,7 +142,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -161,7 +161,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -180,7 +180,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -196,7 +196,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -210,7 +210,7 @@ describe('snapshot', () => {
         }
       }
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 
@@ -219,7 +219,7 @@ describe('snapshot', () => {
       tagName: 'test-comp',
       attributes: []
     };
-    const testComponentString = await DoubleUCGenerator(declaration, 1);
+    const testComponentString = await DoubleUCCompiler(declaration, 1);
     expect(testComponentString).toMatchSnapshot();
   });
 });
