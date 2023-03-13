@@ -199,6 +199,7 @@ export const DoubleUCCompiler: DoubleUCCompilerFunction = async (
   );
 
   if (process.env.DEBUG) {
+    console.debug(`Debugging ${tagName}:`);
     console.table(
       logger.getLogs().map(log => {
         const { step, type } = log;
@@ -215,7 +216,7 @@ export const DoubleUCCompiler: DoubleUCCompilerFunction = async (
     const mapFn = (log: DeclarativeWebComponentCompilerLog) => {
       return `[${log.step.toUpperCase()}] - ${(log.output as Error).name}: ${(log.output as Error).message}`;
     };
-    throw new Error(`Failed to compile doubleuc component, fix these error and run again:\n${isExceptions.map(mapFn).join('\n')}`);
+    throw new Error(`Failed to compile component ${tagName}, fix these error and run again:\n${isExceptions.map(mapFn).join('\n')}`);
   }
 
   return await runCompilerStep(
