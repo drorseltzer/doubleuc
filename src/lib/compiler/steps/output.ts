@@ -17,6 +17,6 @@ export const outputFile = (tagName: string, className: string, wcString: string,
     fs.writeFileSync(filePath, Buffer.from(wcString));
     return filePath;
   } catch (e) {
-    throw new Error(`\n [${className}] - failed to output file ${(e as Error).message}`);
+    throw new Error(`failed to output file ${(e as Error).message}`);
   }
 };

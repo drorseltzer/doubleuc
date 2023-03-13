@@ -12,13 +12,13 @@ export const replaceStyle = (declaration: DeclarativeWebComponent, className: st
 
     return replaceCssVars(declaration, className, style || '', replacedStyle);
   } catch (e) {
-    throw new Error(`\n [${className}] - failed to replace style ${(e as Error).message}`);
+    throw new Error(`failed to replace style ${(e as Error).message}`);
   }
 };
 
 export const loadStyleFile = (className: string, styleFile?: string) => {
   if (!styleFile) return;
-  if (!fileExist(styleFile)) throw new Error(`\n [${className}] - component style template file not exists ${styleFile}`);
+  if (!fileExist(styleFile)) throw new Error(`component style template file not exists ${styleFile}`);
   return fs.readFileSync(styleFile).toString();
 };
 
@@ -30,7 +30,7 @@ export const replaceTemplateCssLiterals = (declaration: DeclarativeWebComponent,
   for (const literal of literals) {
     const stripped = literal.replaceAll(/({{~|}})/g, '');
     const findAttribute = declaration.attributes.find(attribute => attribute.name === stripped);
-    if (!findAttribute) throw new Error(`\n [${className}] - css template attribute not found ${stripped}`);
+    if (!findAttribute) throw new Error(`css template attribute not found ${stripped}`);
     replacedTemplateCss = replacedTemplateCss.replace(literal, `var(--${pascalToKebab(stripped)});`);
   }
   return replacedTemplateCss;
@@ -46,7 +46,7 @@ export const replaceCssVars = (declaration: DeclarativeWebComponent, className: 
   for (const literal of literals) {
     const stripped = literal.replaceAll(/({{~|}})/g, '');
     const findAttribute = declaration.attributes.find(attribute => attribute.name === stripped);
-    if (!findAttribute) throw new Error(`\n [${className}] - css template attribute not found ${stripped}`);
+    if (!findAttribute) throw new Error(`css template attribute not found ${stripped}`);
     replacedCssVars += `--${pascalToKebab(stripped)}: \${this.${stripped}};`;
   }
 

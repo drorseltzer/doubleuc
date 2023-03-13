@@ -63,3 +63,14 @@ export type DoubleUCCompilerFunction = (
   declaration: DeclarativeWebComponent,
   outputType: DeclarativeWebComponentOutputType = DeclarativeWebComponentOutputType.FILE
 ) => Promise<string | undefined>;
+
+export declare const enum DeclarativeWebComponentCompilerLogType {
+  OK = 0,
+  ERROR = 1
+}
+
+export type DeclarativeWebComponentCompilerLog = {
+  step: string;
+  type: DeclarativeWebComponentCompilerLogType;
+  output: string | Error;
+};

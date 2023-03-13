@@ -6,6 +6,6 @@ export const minify = async (className: string, wcString: string, config?: Decla
   try {
     return (await terserMinify(wcString, config?.minify?.config)).code || wcString;
   } catch (e) {
-    throw new Error(`\n [${className}] - failed to minify ${(e as Error).message}`);
+    throw new Error(`failed to minify ${(e as Error).message}`);
   }
 };
